@@ -3,6 +3,14 @@ import sqlite3
 from flask import current_app, g
 
 
+
+def init_db():
+    db = get_db()
+
+    with current_app.open_resource('schema.sql') as f:
+        db.executescript(f.read().decode('utf8'))
+
+
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
@@ -19,13 +27,6 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
-
-
-def init_db():
-    db = get_db()
-
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
 
 
 # Registers a commands with the app
