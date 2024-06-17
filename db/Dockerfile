@@ -1,13 +1,12 @@
 FROM python:3.10
 
-WORKDIR /app
+COPY . ./app
 
-COPY . .
+WORKDIR /app
 
 EXPOSE 5432
 
 RUN apt update
 RUN apt upgrade
-RUN apt install mysql-server-core
 
-CMD ["systemctl", "start", "mysql"]
+CMD ["python3", "-u", "db.py"]
