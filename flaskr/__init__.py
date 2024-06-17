@@ -26,10 +26,3 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    # view 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
-    return app
