@@ -1,16 +1,14 @@
 import functools
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from lib.db_helper import *
 
 
-bp = Blueprint("auth", __name__, url_prefix="/auth")
+auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 # Binds a URL to the app for requesting the register template and also signing up a user
-@bp.route('/register', methods=('GET', 'POST'))
+@auth.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -25,7 +23,7 @@ def register():
     
 
 # Registers a login page
-@bp.route('/login', methods=('GET', 'POST'))
+@auth.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -41,7 +39,7 @@ def login():
 
 
 # Check whether the user has an active session
-@bp.before_app_request
+@auth.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
 
@@ -54,7 +52,7 @@ def load_logged_in_user():
 
 
 # Logout and clear session 
-@bp.route('/logout')
+@auth.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
