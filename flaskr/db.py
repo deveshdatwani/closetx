@@ -28,10 +28,8 @@ def close_db(e=None):
         db.close()
 
 
-# Registers a commands with the app
 @click.command('init-db')
 def init_db_command():
-    # Clear the existing data and create new tables
     init_db()
     click.echo('Initialized the database.')
 
