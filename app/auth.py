@@ -1,6 +1,5 @@
 import functools
-from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for
 from lib.db_helper import *
 
 
@@ -16,10 +15,12 @@ def register():
 
         if username and password:
             register_user(username, password)
+            return "SUCCESSFULLY REGISTERED USER"
         else:
             redirect(url_for("auth.register"))
 
-    return render_template('auth/register.html')
+
+    return "welcome to closetX"
     
 
 # Registers a login page
@@ -35,7 +36,14 @@ def login():
             else: redirect(url_for("auth.login"))
         else: redirect(url_for("auth.login"))
 
-    return render_template('auth/login.html')
+    return "welcome to closetX"
+
+
+# Logout and clear session 
+@auth.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 
 # Check whether the user has an active session
@@ -49,13 +57,6 @@ def load_logged_in_user():
         g.user = get_db().execute(
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
-
-
-# Logout and clear session 
-@auth.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
 
 
 # Authenticate user is logged in 
