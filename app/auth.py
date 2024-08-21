@@ -1,9 +1,14 @@
 import functools
-from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for
-from lib.db_helper import *
+from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app
+from lib.db_helper import * 
 
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
+
+
+@auth.route('/')
+def index():
+    return render_template("index.html")
 
 
 # Binds a URL to the app for requesting the register template and also signing up a user
@@ -18,7 +23,6 @@ def register():
             return "SUCCESSFULLY REGISTERED USER"
         else:
             redirect(url_for("auth.register"))
-
 
     return "welcome to closetX"
     

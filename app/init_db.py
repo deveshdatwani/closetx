@@ -11,4 +11,4 @@ def init_app_db():
         db.executescript(f.read().decode('utf8'))
     db.close()
     
-    return "SUCCESSFULLY INITIALIZED DATABASE"
+    return 1
