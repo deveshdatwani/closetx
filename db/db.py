@@ -2,6 +2,7 @@ import click
 import sqlite3
 from logging import Logger
 from flask import current_app, g
+from sqlalchemy import create_engine
 log = Logger('db logger')
 
 
@@ -12,7 +13,15 @@ def init_db():
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
     
-    return "SUCCESS" 
+    return "SUCCESS " 
+
+
+def get_db_connector():
+    if 'db' not in g:
+        db_config = current_app.config['DATABASE'] 
+        print(db_config)
+        
+        return None
 
 
 def get_db():
