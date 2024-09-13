@@ -13,15 +13,7 @@ def init_db():
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
     
-    return "SUCCESS " 
-
-
-def get_db_connector():
-    if 'db' not in g:
-        db_config = current_app.config['DATABASE'] 
-        print(db_config)
-        
-        return None
+    return "SUCCESS" 
 
 
 def get_db():
