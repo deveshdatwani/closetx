@@ -7,7 +7,7 @@ import logging
 
 def create_app(config_file=None): 
     app = Flask(__name__)
-    app.logger = logging.Logger("closetx base logger")    
+    app.logger = logging.Logger("INITIALIZING CLOSETX LOGGER")    
 
     if config_file:
         try:
