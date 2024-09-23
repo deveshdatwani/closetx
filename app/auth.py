@@ -1,9 +1,9 @@
 import functools
 from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app
-from lib.db_helper import * 
+from .lib.db_helper import * 
 
 
-auth = Blueprint("auth", __name__, url_prefix="/auth")
+auth = Blueprint("auth", __name__)
 
 
 @auth.route('/')
@@ -14,17 +14,20 @@ def index():
 # Binds a URL to the app for requesting the register template and also signing up a user
 @auth.route('/register', methods=('GET', 'POST'))
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
+    if request.method == 'POST': 
+        try:
+            username = request.form['username']
+            password = request.form['password']
+        except KeyError:
+            return "422 username or password not submitted"
+        
         if username and password:
-            register_user(username, password)
-            return "SUCCESSFULLY REGISTERED USER"
-        else:
-            redirect(url_for("auth.register"))
+            if register_user(username, password):
+                return "200 SUCCESSFULLY REGISTERED USER"
+            else:
+                return "409 Duplicate entries"
 
-    return "welcome to closetX"
+    return render_template("index.html")
     
 
 # Registers a login page
@@ -58,7 +61,7 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute(
+        g.user = get_db_x().execute(
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
