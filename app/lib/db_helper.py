@@ -7,6 +7,7 @@ import logging
 
 '''
 SQL queries should not be string formatted. It is susceptible to SQL injections. Use ? instead. To work on when I can -- 09/24/2024
+DB connector should make repeated attempts to connect to the db and not give up on a single try
 '''
 
 
@@ -50,41 +51,44 @@ def register_user(username, password):
 
 
 def login_user(username, password):
-    try:
-        dbx = get_db_x()
-        crx = dbx.cursor()
-        crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-        user = crx.fetchone()
-        crx.close()
-        dbx.close()    
-        if not user:
-            return "USER NOT FOUND"        
-        # elif check_password_hash(password, user[3]):
-        elif user[3] == password:            
-            return "CORRECT PASSWORD"        
-        else:
-            return None 
-    except Exception as e:
-        print(e, "redirecting")
-        return False
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            crx.execute("SELECT * FROM user WHERE username = %s", (username,))
+            user = crx.fetchone()
+            crx.close()
+            dbx.close()    
+            if not user:
+                return "USER NOT FOUND"        
+            # elif check_password_hash(password, user[3]): need to check for password hash instead of string, 
+            elif user[3] == password:            
+                return "CORRECT PASSWORD"        
+            else:
+                return None 
+        except Exception as e:
+            print(e, "redirecting")
+            return False
     
 
 def delete_user(username):
-    try:
-        dbx = get_db_x()
-        crx = dbx.cursor()
-        crx.execute("DELETE FROM user WHERE username = %s", (username,))
-        if crx.fetchall():
-            print("DELETED USER")
-            dbx.commit()
-            crx.close()
-            dbx.close()
-            return True
-        else:
-            print("COULD NOT FIND USER")
-            crx.close()
-            dbx.close()
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            user = crx.execute("SELECT * FROM user WHERE username = %s", (username,))
+            if crx.fetchall():
+                crx.execute("DELETE FROM user WHERE username = %s", (username,))
+                print("DELETED USER")
+                dbx.commit()
+                crx.close()
+                dbx.close()
+                return True
+            else:
+                print("COULD NOT FIND USER")
+                crx.close()
+                dbx.close()
+                return False
+        except Exception as e:
+            print(e)
             return False
-    except Exception as e:
-        print(e)
-        return False
