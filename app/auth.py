@@ -19,13 +19,13 @@ def register():
             username = request.form['username']
             password = request.form['password']
         except KeyError:
-            return "422 username or password not submitted"
+            return "422 USERNAME OR PASSWORD NOT SUBMITTED"
         
         if username and password:
             if register_user(username, password):
                 return "200 SUCCESSFULLY REGISTERED USER"
             else:
-                return "409 Duplicate entries"
+                return "409 DUPLICATE ENTRIES"
 
     return render_template("index.html")
     
@@ -38,14 +38,14 @@ def login():
         password = request.form['password']
 
         if username and password:
-            if login_user(username, password):
-                return "LOGIN SUCCESS 200"
+            if login_user(username, password) == "CORRECT PASSWORD":
+                return "LOGIN SUCCESS"
             else: 
-                return "Incorrect password"      
+                return "INCORRECT PASSWORD"      
         else: 
-            return "Username or password not submitted"
+            return "USERNAME AND PASSWORD NOT SUBMITTED"
 
-    return "GET welcome to closetX"
+    return "GET WELCOME TO CLOSETX"
 
 
 # Logout and clear session 
