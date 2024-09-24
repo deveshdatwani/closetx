@@ -8,7 +8,12 @@ auth = Blueprint("auth", __name__)
 
 @auth.route('/')
 def index():
-    return render_template("index.html")
+    if request.method == "POST":
+        
+        return "405"
+    else:
+        
+        return render_template("index.html")
 
 
 # Binds a URL to the app for requesting the register template and also signing up a user
@@ -19,13 +24,16 @@ def register():
             username = request.form['username']
             password = request.form['password']
         except KeyError:
+            
             return "422 USERNAME OR PASSWORD NOT SUBMITTED"
         
         if username and password:
             if register_user(username, password):
+            
                 return "200 SUCCESSFULLY REGISTERED USER"
             else:
-                return "409 DUPLICATE ENTRIES"
+            
+                return "SOMETHING WENT WRONG"
 
     return render_template("index.html")
     
@@ -39,10 +47,13 @@ def login():
 
         if username and password:
             if login_user(username, password) == "CORRECT PASSWORD":
+            
                 return "LOGIN SUCCESS"
             else: 
+            
                 return "INCORRECT PASSWORD"      
         else: 
+            
             return "USERNAME AND PASSWORD NOT SUBMITTED"
 
     return "GET WELCOME TO CLOSETX"
@@ -52,7 +63,22 @@ def login():
 @auth.route('/logout')
 def logout():
     session.clear()
+    
     return redirect(url_for('index'))
+
+
+# Delete user account
+@auth.route('/delete', methods=('POST', 'GET'))
+def delete():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if delete_user(username,):
+            
+            return "USER DELETED SUCCESSFULLY"
+        else:
+            
+            return "SOMETHING WENT WRONG"
 
 
 # Check whether the user has an active session
@@ -73,6 +99,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
+            
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)
