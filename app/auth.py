@@ -36,14 +36,16 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         if username and password:
             if login_user(username, password):
-                return redirect(url_for("index"))
-            else: redirect(url_for("auth.login"))
-        else: redirect(url_for("auth.login"))
+                return "LOGIN SUCCESS 200"
+            else: 
+                return "Incorrect password"      
+        else: 
+            return "Username or password not submitted"
 
-    return "welcome to closetX"
+    return "GET welcome to closetX"
 
 
 # Logout and clear session 
