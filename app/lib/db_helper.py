@@ -60,15 +60,14 @@ def login_user(username, password):
         print(user[3] == password)
 
         if not user:
-            print("USER NOT FOUND") 
-            return False
+            return "USER NOT FOUND"
+        
         # elif check_password_hash(password, user[3]):
         elif user[3] == password:
-            print("CORRECT PASSWORD")
-            return True
+            return "CORRECT PASSWORD"
+        
         else:
-            print("WTF")
-            return False
+            return None 
 
     except Exception as e:
         print(e, "redirecting")
