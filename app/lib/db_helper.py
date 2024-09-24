@@ -19,18 +19,15 @@ def get_db_x():
             database='closetx'
         )
         g.db = cnx
-        print("MYSQL connector successfully connected to db")
-
+        print("MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB")
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("FAILED TO AUTHENTICATE MYSQL CONNECTOR")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("DATABASE DOES NOT EXIST")
         else:
-            print(err)
-        
+            print(err)        
         return None
-    
     return cnx
 
 
@@ -44,14 +41,11 @@ def register_user(username, password):
             crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
-            print("DUPLICATE ENTRIES")
-            
+            print("DUPLICATE ENTRIES")            
             return False
-        
         return True
     else:
-        print("COULD NOT CONNECT") 
-        
+        print("COULD NOT CONNECT")         
         return False
 
 
@@ -63,18 +57,13 @@ def login_user(username, password):
         user = crx.fetchone()
         crx.close()
         dbx.close()    
-
         if not user:
-            return "USER NOT FOUND"
-        
+            return "USER NOT FOUND"        
         # elif check_password_hash(password, user[3]):
-        elif user[3] == password:
-            
-            return "CORRECT PASSWORD"
-        
+        elif user[3] == password:            
+            return "CORRECT PASSWORD"        
         else:
             return None 
-
     except Exception as e:
         print(e, "redirecting")
         return False
@@ -85,12 +74,17 @@ def delete_user(username):
         dbx = get_db_x()
         crx = dbx.cursor()
         crx.execute("DELETE FROM user WHERE username = %s", (username,))
-        dbx.commit()
-        crx.close()
-        dbx.close()
-        print("DELETED USER")
-    
-        return True
+        if crx.fetchall():
+            print("DELETED USER")
+            dbx.commit()
+            crx.close()
+            dbx.close()
+            return True
+        else:
+            print("COULD NOT FIND USER")
+            crx.close()
+            dbx.close()
+            return False
     except Exception as e:
         print(e)
         return False
