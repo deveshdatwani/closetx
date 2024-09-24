@@ -27,15 +27,15 @@ def get_db_x():
         return None
     
     return cnx
-    
 
 
 def register_user(username, password):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
-            dbx.cursor().execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
+            dbx.cursor().execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password)).fetch()
             dbx.commit()
+            dbx.cursor.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
             print("Duplicate entries")
@@ -44,14 +44,32 @@ def register_user(username, password):
         return True
     else:
         print("Could not connect") 
+        
         return False
 
 
 def login_user(username, password):
-    dbx = get_db_x()
-    user = dbx.execute("SELECT * FROM user WHERE username = ? ", username)
-    dbx.close()        
-    if not user: 
+    try:
+        dbx = get_db_x()
+        crx = dbx.cursor()
+        crx.execute("SELECT * FROM user WHERE username = %s", (username,))
+        user = crx.fetchone()
+        crx.close()
+        dbx.close()    
+
+        print(user[3] == password)
+
+        if not user:
+            print("USER NOT FOUND") 
+            return False
+        # elif check_password_hash(password, user[3]):
+        elif user[3] == password:
+            print("CORRECT PASSWORD")
+            return True
+        else:
+            print("WTF")
+            return False
+
+    except Exception as e:
+        print(e, "redirecting")
         return False
-    elif check_password_hash(user["password"], password):
-        return True
