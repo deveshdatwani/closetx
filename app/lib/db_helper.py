@@ -5,6 +5,11 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 
 
+'''
+SQL queries should not be string formatted. It is susceptible to SQL injections. Use ? instead. To work on when I can -- 09/24/2024
+'''
+
+
 def get_db_x():
     try:
         cnx = mysql.connector.connect(
@@ -18,9 +23,9 @@ def get_db_x():
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Failed to authenicate MYSQL Connector -- something is wrong with your user name or password")
+            print("FAILED TO AUTHENTICATE MYSQL CONNECTOR")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
+            print("DATABASE DOES NOT EXIST")
         else:
             print(err)
         
@@ -33,17 +38,19 @@ def register_user(username, password):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
-            dbx.cursor().execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password)).fetch()
+            crx = dbx.cursor()
+            crx.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
             dbx.commit()
-            dbx.cursor.close()
+            crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
-            print("Duplicate entries")
+            print("DUPLICATE ENTRIES")
+            
             return False
         
         return True
     else:
-        print("Could not connect") 
+        print("COULD NOT CONNECT") 
         
         return False
 
@@ -57,13 +64,12 @@ def login_user(username, password):
         crx.close()
         dbx.close()    
 
-        print(user[3] == password)
-
         if not user:
             return "USER NOT FOUND"
         
         # elif check_password_hash(password, user[3]):
         elif user[3] == password:
+            
             return "CORRECT PASSWORD"
         
         else:
@@ -71,4 +77,20 @@ def login_user(username, password):
 
     except Exception as e:
         print(e, "redirecting")
+        return False
+    
+
+def delete_user(username):
+    try:
+        dbx = get_db_x()
+        crx = dbx.cursor()
+        crx.execute("DELETE FROM user WHERE username = %s", (username,))
+        dbx.commit()
+        crx.close()
+        dbx.close()
+        print("DELETED USER")
+    
+        return True
+    except Exception as e:
+        print(e)
         return False
