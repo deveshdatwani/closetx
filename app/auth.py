@@ -23,18 +23,13 @@ def register():
         try:
             username = request.form['username']
             password = request.form['password']
-        except KeyError:
-            
-            return "422 USERNAME OR PASSWORD NOT SUBMITTED"
-        
+        except KeyError:            
+            return "422 USERNAME OR PASSWORD NOT SUBMITTED"        
         if username and password:
-            if register_user(username, password):
-            
+            if register_user(username, password):            
                 return "200 SUCCESSFULLY REGISTERED USER"
-            else:
-            
+            else:            
                 return "SOMETHING WENT WRONG"
-
     return render_template("index.html")
     
 
@@ -44,26 +39,20 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
         if username and password:
             if login_user(username, password) == "CORRECT PASSWORD":
-            
                 return "LOGIN SUCCESS"
             else: 
-            
                 return "INCORRECT PASSWORD"      
         else: 
-            
             return "USERNAME AND PASSWORD NOT SUBMITTED"
-
     return "GET WELCOME TO CLOSETX"
 
 
 # Logout and clear session 
 @auth.route('/logout')
 def logout():
-    session.clear()
-    
+    session.clear() 
     return redirect(url_for('index'))
 
 
@@ -73,8 +62,7 @@ def delete():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if delete_user(username,):
-            
+        if delete_user(username,):            
             return "USER DELETED SUCCESSFULLY"
         else:
             
@@ -85,7 +73,6 @@ def delete():
 @auth.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
-
     if user_id is None:
         g.user = None
     else:
@@ -98,10 +85,7 @@ def load_logged_in_user():
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if g.user is None:
-            
+        if g.user is None:            
             return redirect(url_for('auth.login'))
-
         return view(**kwargs)
-
     return wrapped_view
