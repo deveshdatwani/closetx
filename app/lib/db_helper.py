@@ -32,6 +32,16 @@ def get_db_x():
     return cnx
 
 
+def get_user(username):
+    dbx = get_db_x()
+    crx = crx = dbx.cursor()
+    crx.execute("SELECT * FROM user WHERE username = %s", (username,))
+    user = crx.fetchall()
+    crx.close()
+    dbx.close()     
+    return user
+
+
 def register_user(username, password):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
@@ -92,3 +102,24 @@ def delete_user(username):
         except Exception as e:
             print(e)
             return False
+        
+
+def get_apparel(userid):
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            print(userid)
+            crx = dbx.cursor()
+            userds = crx.execute("SELECT * FROM apparel WHERE id = %s", (userid[0][0],))
+            apparels = crx.fetchall()
+            print(apparels)
+            crx.close()
+            dbx.close()    
+            if not apparels:
+                return "NO APPARELS FOUND"        
+            # currently only sends file paths of images of apparel
+            else:
+                return apparels
+        except Exception as e:
+            print(e, "REDIRECTERING")
+            return False        
