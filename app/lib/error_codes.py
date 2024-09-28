@@ -1,0 +1,1 @@
+# this module will serve as a config for getting error codes so as to make the main code cleaner looking

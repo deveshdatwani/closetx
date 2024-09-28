@@ -104,22 +104,38 @@ def delete_user(username):
             return False
         
 
-def get_apparel(userid):
+def post_apparel(userid, uri):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
-            print(userid)
+            crx = dbx.cursor()
+            userid = crx.execute("INSERT INTO apparel (id, uri) VALUES (%s, %s)",(userid, uri))
+            print("ADDED APPAREL")
+            dbx.commit()
+            crx.close()
+            dbx.close()
+            return True
+        except Exception as e:
+            print(e, "REDIRECTERING")
+    else:
+        return False
+
+
+def get_apparel(userid):
+    print("GETTING APP")
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
             crx = dbx.cursor()
             userds = crx.execute("SELECT * FROM apparel WHERE id = %s", (userid[0][0],))
             apparels = crx.fetchall()
-            print(apparels)
             crx.close()
             dbx.close()    
             if not apparels:
                 return "NO APPARELS FOUND"        
             # currently only sends file paths of images of apparel
             else:
-                return apparels
+                return "TRUE"
         except Exception as e:
             print(e, "REDIRECTERING")
             return False        

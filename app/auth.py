@@ -9,14 +9,12 @@ auth = Blueprint("auth", __name__)
 @auth.route('/')
 def index():
     if request.method == "POST":
-        
         return "405"
     else:
-        
         return render_template("index.html")
 
 
-# Binds a URL to the app for requesting the register template and also signing up a user
+# register user
 @auth.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST': 
@@ -33,7 +31,7 @@ def register():
     return render_template("index.html")
     
 
-# Registers a login page
+# login user
 @auth.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
@@ -49,14 +47,14 @@ def login():
     return "GET WELCOME TO CLOSETX"
 
 
-# Logout and clear session 
+# logout user
 @auth.route('/logout')
 def logout():
     session.clear() 
     return redirect(url_for('index'))
 
 
-# Delete user account
+# delete user
 @auth.route('/delete', methods=('POST', 'GET'))
 def delete():
     if request.method == 'POST':
@@ -69,7 +67,7 @@ def delete():
             return "SOMETHING WENT WRONG"
 
 
-# Check whether the user has an active session
+# validate user session
 @auth.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
@@ -81,7 +79,7 @@ def load_logged_in_user():
         ).fetchone()
 
 
-# Authenticate user is logged in 
+# validate user login 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
