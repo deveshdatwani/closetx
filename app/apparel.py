@@ -16,20 +16,19 @@ def index():
 
 
 # Binds a URL to the app for requesting the register template and also signing up a user
-@apparel.route('/closet/<userid>', methods=('GET', 'POST'))
-def closet(userid):
-    if request.method == 'GET': 
+@apparel.route('/closet', methods=('GET', 'POST'))
+def closet():
+    uri = "./image-3.png"
+    if request.method == 'POST': 
         try:
-            username = 'hanishadatwani'
-            # susername = request.form['username']
+            username = request.form['username']
         except KeyError:            
-            return "422 USERNAME OR PASSWORD NOT SUBMITTED"        
-        if username:
-            userid = get_user(username)
-            if get_apparel(userid):            
-                return get_apparel(userid)
-            else:            
-                return "SOMETHING WENT WRONG"
+            return "422 USERNAME NOT SUBMITTED"        
+        userid = get_user(username)
+        if post_apparel(userid[0][0], uri):            
+            return "200"
+        else:            
+            return "SOMETHING WENT WRONG"
     else: 
         try:
             username = request.form['username']
