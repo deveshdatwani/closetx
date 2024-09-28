@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from . import auth
+from . import auth, apparel
 import logging  
 
 
@@ -19,5 +19,6 @@ def create_app(config_file=None):
         app.logger.warn("NO CONFIG FILE FOUND") 
 
     app.register_blueprint(auth.auth)
+    app.register_blueprint(apparel.apparel)
     
     return app
