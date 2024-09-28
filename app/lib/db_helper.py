@@ -122,12 +122,11 @@ def post_apparel(userid, uri):
 
 
 def get_apparel(userid):
-    print("GETTING APP")
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            userds = crx.execute("SELECT * FROM apparel WHERE id = %s", (userid[0][0],))
+            userds = crx.execute("SELECT * FROM apparel WHERE id = %s", (userid,))
             apparels = crx.fetchall()
             crx.close()
             dbx.close()    

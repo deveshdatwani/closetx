@@ -32,10 +32,8 @@ def closet():
     else: 
         try:
             username = request.form['username']
-            password = request.form['password']
         except KeyError:
             return "422 USERNAME OR PASSWORD NOT SUBMITTED"
-        if username and password:
-            items = list()
-            return items
+        userid = get_user(username)[0][0]
+        apparel = get_apparel(userid)
     return render_template("index.html")
