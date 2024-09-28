@@ -3,6 +3,9 @@ import mysql.connector
 from mysql.connector import errorcode
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
+from PIL import Image
+from base64 import encodebytes
+import io, os
 
 
 '''
@@ -134,7 +137,17 @@ def get_apparel(userid):
                 return "NO APPARELS FOUND"        
             # currently only sends file paths of images of apparel
             else:
-                return "TRUE"
+                return apparels
         except Exception as e:
             print(e, "REDIRECTERING")
             return False        
+        
+
+def get_images(file_name):
+    BASE_DIR = "./"
+    file_path = os.path.join(BASE_DIR, file_name)
+    pil_img = Image.open(file_path, mode='r') 
+    byte_arr = io.BytesIO()
+    pil_img.save(byte_arr, format='PNG') #
+    encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii') 
+    return encoded_img

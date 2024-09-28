@@ -1,21 +1,12 @@
 import functools
-from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app
+from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app, send_file
 from .lib.db_helper import * 
 
 
 apparel = Blueprint("apparel", __name__)
 
 
-@apparel.route('/')
-def index():
-    if request.method == "POST":
-        
-        return "405"
-    else:        
-        return render_template("index.html")
-
-
-# Binds a URL to the app for requesting the register template and also signing up a user
+# add or get apparel in closet
 @apparel.route('/closet', methods=('GET', 'POST'))
 def closet():
     uri = "./image-3.png"
@@ -34,6 +25,10 @@ def closet():
             username = request.form['username']
         except KeyError:
             return "422 USERNAME OR PASSWORD NOT SUBMITTED"
-        userid = get_user(username)[0][0]
-        apparel = get_apparel(userid)
-    return render_template("index.html")
+        userid = get_user(username)
+        apparel = get_apparel(userid[0][0])
+        file_names = [i[1] for i in apparel] 
+        images = list()
+        for file_name in file_names:
+            images.append(get_images(file_name))
+        return images
