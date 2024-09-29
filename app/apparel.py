@@ -9,24 +9,22 @@ apparel = Blueprint("apparel", __name__)
 # add or get apparel in closet
 @apparel.route('/closet', methods=('GET', 'POST'))
 def closet():
-    uri = "./image-3.png"
     if request.method == 'POST': 
         try:
-            username = request.form['username']
+            userid = request.form['userid']
+            image_file = request.files['image']
         except KeyError:            
-            return "422 USERNAME NOT SUBMITTED"        
-        userid = get_user(username)
-        if post_apparel(userid[0][0], uri):            
-            return "200"
+            return "422 USERID NOT SUBMITTED"        
+        if post_apparel(userid, image_file):            
+            return "200 IMAGE ADDED"
         else:            
             return "SOMETHING WENT WRONG"
     else: 
         try:
-            username = request.form['username']
+            userid = request.form['userid']
         except KeyError:
-            return "422 USERNAME OR PASSWORD NOT SUBMITTED"
-        userid = get_user(username)
-        apparel = get_apparel(userid[0][0])
+            return "422 USERID NOT SUBMITTED"
+        apparel = get_apparel(userid)
         file_names = [i[1] for i in apparel] 
         images = list()
         for file_name in file_names:

@@ -107,12 +107,15 @@ def delete_user(username):
             return False
         
 
-def post_apparel(userid, uri):
+def post_apparel(userid, image_file):
     dbx = get_db_x()
+    UPLOAD_FOLDER = "./closetx-images"
+    image_file_path = (os.path.join(UPLOAD_FOLDER, image_file.filename))
+    image_file.save(image_file_path)
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            userid = crx.execute("INSERT INTO apparel (id, uri) VALUES (%s, %s)",(userid, uri))
+            userid = crx.execute("INSERT INTO apparel (id, uri) VALUES (%s, %s)",(userid, image_file_path))
             print("ADDED APPAREL")
             dbx.commit()
             crx.close()
