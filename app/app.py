@@ -17,6 +17,7 @@ def create_app(config_file=None):
     
     else:
         app.logger.warn("NO CONFIG FILE FOUND") 
+        app.apparel_folder = "/home/deveshdatwani/apparel"
 
     app.register_blueprint(auth.auth)
     app.register_blueprint(apparel.apparel)

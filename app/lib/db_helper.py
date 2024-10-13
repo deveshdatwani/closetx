@@ -107,9 +107,9 @@ def delete_user(username):
             return False
         
 
-def post_apparel(userid, image_file):
+def post_apparel(userid, image_file, upload_folder):
     dbx = get_db_x()
-    UPLOAD_FOLDER = "./closetx-images"
+    UPLOAD_FOLDER = upload_folder
     image_file_path = (os.path.join(UPLOAD_FOLDER, image_file.filename))
     image_file.save(image_file_path)
     if dbx and dbx.is_connected():
@@ -122,7 +122,7 @@ def post_apparel(userid, image_file):
             dbx.close()
             return True
         except Exception as e:
-            print(e, "REDIRECTERING")
+            print(e, "COULD NOT INSERT APPAREL INTO DB -- REDIRECTERING")
     else:
         return False
 
