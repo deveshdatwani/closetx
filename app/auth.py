@@ -1,10 +1,11 @@
 import functools
 from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app
 from .lib.db_helper import * 
+from .lib.error_codes import ResponseString 
 
 
 auth = Blueprint("auth", __name__)
-
+response_string = ResponseString()
 
 # index
 @auth.route('/')
