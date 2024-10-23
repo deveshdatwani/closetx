@@ -6,6 +6,7 @@ from .lib.db_helper import *
 auth = Blueprint("auth", __name__)
 
 
+# index
 @auth.route('/')
 def index():
     if request.method == "POST":
@@ -62,8 +63,7 @@ def delete():
         password = request.form['password']
         if delete_user(username,):            
             return "USER DELETED SUCCESSFULLY"
-        else:
-            
+        else:      
             return "SOMETHING WENT WRONG"
 
 
