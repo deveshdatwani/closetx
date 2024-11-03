@@ -1,4 +1,4 @@
-from flask import session, g
+from flask import session, g, current_app
 import mysql.connector
 from mysql.connector import errorcode
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -16,6 +16,7 @@ DB connector should make repeated attempts to connect to the db and not give up 
 
 def get_db_x():
     try:
+        current_app.logger.info("TRYING TO CONNECT")
         cnx = mysql.connector.connect(
             user='closetx',
             password='password',
@@ -23,14 +24,14 @@ def get_db_x():
             database='closetx'
         )
         g.db = cnx
-        print("MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB")
+        current_app.logger.info("MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB")
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("FAILED TO AUTHENTICATE MYSQL CONNECTOR")
+            current_app.logger.error("FAILED TO AUTHENTICATE MYSQL CONNECTOR")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("DATABASE DOES NOT EXIST")
+            current_app.logger.error("DATABASE DOES NOT EXIST")
         else:
-            print(err)        
+            current_app.logger.error(err)        
         return None
     return cnx
 
@@ -47,6 +48,7 @@ def get_user(username):
 
 def register_user(username, password):
     dbx = get_db_x()
+    print("TRYING TO CONNECT TO DB")
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()

@@ -12,4 +12,4 @@ RUN apt-get install -y default-mysql-client
 
 EXPOSE 5000
 
-CMD ["python3", "-m", "flask", "run", "--host", "0.0.0.0", "-p", "5000", "--debug"]
+CMD ["python3", "-u", "-m", "flask", "run", "--host", "0.0.0.0", "-p", "5000", "--debug"]

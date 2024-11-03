@@ -7,6 +7,7 @@ from .lib.error_codes import ResponseString
 auth = Blueprint("auth", __name__)
 response_string = ResponseString()
 
+
 # index
 @auth.route('/')
 def index():
@@ -19,13 +20,15 @@ def index():
 # register user
 @auth.route('/register', methods=('GET', 'POST'))
 def register():
-    if request.method == 'POST': 
+    if request.method == 'POST':
+        print("POST REQUEST") 
         try:
             username = request.form['username']
             password = request.form['password']
         except KeyError:            
             return "422 USERNAME OR PASSWORD NOT SUBMITTED"        
         if username and password:
+            print("TRYING TO REGISTER USER")
             if register_user(username, password):            
                 return "200 SUCCESSFULLY REGISTERED USER"
             else:            
@@ -39,6 +42,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        current_app.logger.info("username and password found")
         if username and password:
             if login_user(username, password) == "CORRECT PASSWORD":
                 return "LOGIN SUCCESS"

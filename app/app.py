@@ -6,7 +6,9 @@ import logging
 
 def create_app(config_file=None): 
     app = Flask(__name__)
-    app.logger = logging.Logger("INITIALIZING CLOSETX LOGGER")    
+    logging.basicConfig(format='%(asctime)s-%(levelname)s-%(message)s', level=logging.INFO)
+    app.logger = logging.getLogger("closetx-logger")    
+    app.logger.setLevel(logging.INFO)
     if config_file:
         try:
             app.config.from_file(config_file)
@@ -16,7 +18,6 @@ def create_app(config_file=None):
     else:
         app.logger.warn("NO CONFIG FILE FOUND") 
         app.apparel_folder = "/home/deveshdatwani/apparel"
-
     app.register_blueprint(auth.auth)
     app.register_blueprint(apparel.apparel)
     return app
