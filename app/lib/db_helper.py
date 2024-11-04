@@ -18,11 +18,13 @@ def get_db_x():
     try:
         current_app.logger.info("TRYING TO CONNECT")
         cnx = mysql.connector.connect(
-            user='closetx',
+            user='root',
             password='password',
             host='127.0.0.1',
-            database='closetx'
+            database='closetx',
+            port=3000
         )
+        print("------- CONNNECTED -------")
         g.db = cnx
         current_app.logger.info("MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB")
     except mysql.connector.Error as err:
