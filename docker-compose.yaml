@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  closetx-app:
+    image: closetx:v4
+    container_name: closetx-app
+    ports:
+      - "5000:5000"
+    environment:
+      - ENV=prod
+    networks:
+      - closetx
+
+  db:
+    image: mysql:latest
+    container_name: db
+    ports:
+      - "3307:3306"  # Default MySQL port
+    environment:
+      - MYSQL_ROOT_PASSWORD=password  # Set MySQL root password
+    networks:
+      - closetx
+    volumes:
+      - /var/lib/docker/volumes/closetxdb/_data:/var/lib/mysql  # Mount custom volume to MySQL's data directory
+
+networks:
+  closetx:
+    driver: bridge
+
+volumes:
+  closetxdb:  # Define the custom volume
