@@ -20,11 +20,10 @@ def get_db_x():
         cnx = mysql.connector.connect(
             user='root',
             password='password',
-            host='127.0.0.1',
+            host='db',
             database='closetx',
-            port=3000
+            port=3306
         )
-        print("------- CONNNECTED -------")
         g.db = cnx
         current_app.logger.info("MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB")
     except mysql.connector.Error as err:
@@ -75,7 +74,8 @@ def login_user(username, password):
             crx.execute("SELECT * FROM user WHERE username = %s", (username,))
             user = crx.fetchone()
             crx.close()
-            dbx.close()    
+            dbx.close()   
+            print(user) 
             if not user:
                 return "USER NOT FOUND"        
             # elif check_password_hash(password, user[3]): need to check for password hash instead of string, 
@@ -84,7 +84,7 @@ def login_user(username, password):
             else:
                 return None 
         except Exception as e:
-            print(e, "redirecting")
+            print(e, "REDIRECTING")
             return False
     
 
