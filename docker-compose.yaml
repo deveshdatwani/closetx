@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   closetx-app:
-    image: closetx:v4
+    image: closetx:v1
     container_name: closetx-app
     ports:
       - "5000:5000"
@@ -10,6 +10,8 @@ services:
       - ENV=prod
     networks:
       - closetx
+    volumes:
+      - /home/deveshdatwani/apparel:/app/apparel
 
   db:
     image: mysql:latest

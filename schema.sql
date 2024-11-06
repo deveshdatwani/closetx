@@ -9,9 +9,9 @@ CREATE TABLE user (
 );
 
 CREATE TABLE apparel (
-	id INT,
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    user INT,
 	uri VARCHAR(255),
-	PRIMARY KEY (id),
-	FOREIGN KEY (id), REFERENCES user(id)
+	FOREIGN KEY (user) REFERENCES user(id)
 );
 
