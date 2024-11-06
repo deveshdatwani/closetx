@@ -27,7 +27,6 @@ def closet():
         apparel = get_apparel(userid)
         file_names = [i[1] for i in apparel] 
         images = list()
-        print("INSERTING IMAGES IN A LIST")
         for file_name in file_names:
             images.append(get_images(file_name))
         return images

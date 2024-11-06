@@ -119,7 +119,7 @@ def post_apparel(userid, image_file, upload_folder):
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            userid = crx.execute("INSERT INTO apparel (id, uri) VALUES (%s, %s)",(userid, image_file_path))
+            userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, image_file_path))
             print("ADDED APPAREL")
             dbx.commit()
             crx.close()
