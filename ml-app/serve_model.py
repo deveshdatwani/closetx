@@ -12,4 +12,3 @@ response_string = ResponseString()
 @serve_model.route('/')
 def index():
     return "HELLO"
-    
