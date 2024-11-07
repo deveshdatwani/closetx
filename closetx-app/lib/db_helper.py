@@ -142,7 +142,6 @@ def get_apparel(userid):
             dbx.close()    
             if not apparels:
                 return "NO APPARELS FOUND"        
-            # currently only sends file paths of images of apparel
             else:
                 return apparels
         except Exception as e:
