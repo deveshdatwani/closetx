@@ -14,4 +14,3 @@ CREATE TABLE apparel (
 	uri VARCHAR(255),
 	FOREIGN KEY (user) REFERENCES user(id)
 );
-
