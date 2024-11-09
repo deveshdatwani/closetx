@@ -14,11 +14,11 @@ def closet():
             userid = request.form['userid']
             image_file = request.files['image']
         except KeyError:            
-            return "422 USERID NOT SUBMITTED"        
-        if post_apparel(userid, image_file, current_app.apparel_folder):            
+            return "USERID OR IMAGE NOT SUBMITTED"        
+        if post_apparel(userid, image_file):            
             return "200 IMAGE ADDED"
         else:            
-            return "SOMETHING WENT WRONG"
+            return "NO IMAHE ADDED SOMETHING WENT WRONG"
     elif request.method == "GET": 
         try:
             userid = request.form['userid']

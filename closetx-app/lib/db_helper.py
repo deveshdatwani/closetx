@@ -6,6 +6,7 @@ import logging
 from PIL import Image
 from base64 import encodebytes
 import io, os
+import uuid
 
 
 '''
@@ -96,7 +97,6 @@ def delete_user(username):
             user = crx.execute("SELECT * FROM user WHERE username = %s", (username,))
             if crx.fetchall():
                 crx.execute("DELETE FROM user WHERE username = %s", (username,))
-                print("DELETED USER")
                 dbx.commit()
                 crx.close()
                 dbx.close()
@@ -111,16 +111,16 @@ def delete_user(username):
             return False
         
 
-def post_apparel(userid, image_file, upload_folder):
+def post_apparel(userid, image_file):
     dbx = get_db_x()
-    UPLOAD_FOLDER = upload_folder
-    image_file_path = (os.path.join(UPLOAD_FOLDER, image_file.filename))
+    upload_folder = "./"
+    apparel_uuid = str(uuid.uuid4())
+    image_file_path = (os.path.join(upload_folder, apparel_uuid))
     image_file.save(image_file_path)
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, image_file_path))
-            print("ADDED APPAREL")
+            userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
             dbx.commit()
             crx.close()
             dbx.close()
