@@ -20,4 +20,6 @@ def create_app(config_file=None):
         app.apparel_folder = "./apparel"
     app.register_blueprint(auth.auth)
     app.register_blueprint(apparel.apparel)
+    app.access_key = os.environ.get("ACCESS_KEY", default=None)
+    app.secret_key = os.environ.get("SECRET_KEY", default=None)
     return app
