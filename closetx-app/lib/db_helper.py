@@ -117,6 +117,15 @@ def post_apparel(userid, image_file):
     apparel_uuid = str(uuid.uuid4())
     image_file_path = (os.path.join(upload_folder, apparel_uuid))
     image_file.save(image_file_path)
+    import boto3
+    bucket_name = 'closetx'
+    # boto3.setup_default_session(
+    # aws_access_key_id='your_access_key_id',
+    # aws_secret_access_key='your_secret_access_key',
+    # region_name='your_region')
+    s3 = boto3.client('s3')
+    with open(image_file_path, 'rb') as data:
+        s3.upload_fileobj(data, bucket_name, f'{apparel_uuid}')
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
