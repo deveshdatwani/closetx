@@ -14,7 +14,6 @@ def index():
     if request.method == "POST":
         return "405"
     else:
-        return current_app.secret_key
         return render_template("index.html")
 
 
