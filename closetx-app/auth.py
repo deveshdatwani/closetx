@@ -9,10 +9,10 @@ response_string = ResponseString()
 
 
 # index
-@auth.route('/')
+@auth.route('/', methods=('GET', 'POST'))
 def index():
     if request.method == "POST":
-        return "405"
+        return "403 NOT ALLOWED"
     else:
         return render_template("index.html")
 
