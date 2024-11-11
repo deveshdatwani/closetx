@@ -16,17 +16,21 @@ DB connector should make repeated attempts to connect to the db and not give up 
 
 
 def get_db_x():
+    ATTEMPTS = 4
     try:
-        current_app.logger.info("TRYING TO CONNECT")
-        cnx = mysql.connector.connect(
-            user='root',
-            password='password',
-            host='db',
-            database='closetx',
-            port=3306
-        )
-        g.db = cnx
-        current_app.logger.info("MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB")
+        while ATTEMPTS:
+            current_app.logger.info("TRYING TO CONNECT")
+            cnx = mysql.connector.connect(
+                user='root',
+                password='password',
+                host='db',
+                database='closetx',
+                port=3306
+            )
+            g.db = cnx
+            current_app.logger.info(f"MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB AFTER {5-ATTEMPTS} ATTEMPT")
+            ATTEMPTS -= 1
+            if cnx: break
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             current_app.logger.error("FAILED TO AUTHENTICATE MYSQL CONNECTOR")
