@@ -8,35 +8,34 @@ auth = Blueprint("auth", __name__)
 response_string = ResponseString()
 
 
-# index
 @auth.route('/', methods=('GET', 'POST'))
 def index():
     if request.method == "POST":
-        return "403 NOT ALLOWED"
+        data = current_app.error_codes.forbidden
+        return serve_response(data, 403)
     else:
         return render_template("index.html")
 
 
-# register user
 @auth.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
-        print("POST REQUEST") 
         try:
             username = request.form['username']
             password = request.form['password']
-        except KeyError:            
-            return "422 USERNAME OR PASSWORD NOT SUBMITTED"        
+        except KeyError:
+            data = current_app.error_codes.no_username_or_password            
+            return serve_response(data, 422)        
         if username and password:
-            print("TRYING TO REGISTER USER")
-            if register_user(username, password):            
-                return "200 SUCCESSFULLY REGISTERED USER"
+            current_app.logger.info("AUTHENTICATING USER")
+            if register_user(username, password):
+                data = current_app.error_codes.registered_user_successfully            
+                return serve_response(data, 200)
             else:            
-                return "SOMETHING WENT WRONG"
+                return serve_response(current_app.error_codes.something_went_wrong, 403)
     return render_template("index.html")
     
 
-# login user
 @auth.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
@@ -44,23 +43,23 @@ def login():
         password = request.form['password']
         current_app.logger.info("username and password found")
         if username and password:
-            if login_user(username, password) == "CORRECT PASSWORD":
-                return "LOGIN SUCCESS"
+            if login_user(username, password):
+                data = current_app.error_codes.login_success
+                return serve_response(data, 200)
             else: 
-                return "INCORRECT PASSWORD"      
+                data = current_app.error_codes.incorrect_password
+                return serve_response(data, 200)       
         else: 
-            return "USERNAME AND PASSWORD NOT SUBMITTED"
-    return "GET WELCOME TO CLOSETX"
+            return current_app.error_codes.no_username_or_password
+    return redirect('/')
 
 
-# logout user
 @auth.route('/logout')
 def logout():
     session.clear() 
     return redirect(url_for('index'))
 
 
-# delete user
 @auth.route('/delete', methods=('POST', 'GET'))
 def delete():
     if request.method == 'POST':
@@ -72,7 +71,6 @@ def delete():
             return "SOMETHING WENT WRONG"
 
 
-# validate user session
 @auth.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
@@ -84,7 +82,6 @@ def load_logged_in_user():
         ).fetchone()
 
 
-# validate user login 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
