@@ -2,12 +2,12 @@ import os
 from flask import Flask
 from . import auth, apparel
 import logging  
+from .lib.error_codes import ResponseString 
 
 
 def create_app(config_file=None): 
     app = Flask(__name__)
-    logging.basicConfig(format='%(asctime)s-%(levelname)s-%(message)s', level=logging.INFO)
-    app.logger = logging.getLogger("closetx-logger")    
+    app.loggerlogger = logging.getLogger('my_logger')
     app.logger.setLevel(logging.INFO)
     if config_file:
         try:
@@ -22,4 +22,5 @@ def create_app(config_file=None):
     app.register_blueprint(apparel.apparel)
     app.access_key = os.environ.get("ACCESS_KEY", default=None)
     app.secret_key = os.environ.get("SECRET_KEY", default=None)
+    app.error_codes = ResponseString()
     return app

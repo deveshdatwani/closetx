@@ -10,3 +10,4 @@ class ResponseString():
         self.something_went_wrong = "SOMETHING WENT WRONG"
         self.registered_user_successfully = "200 SUCCESSFULLY REGISTERED USER"
         self.hello = "HELLO"
+        self.forbidden = "FORBIDDEN METHOD"

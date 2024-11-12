@@ -1,4 +1,4 @@
-from flask import session, g, current_app
+from flask import session, g, current_app, Response
 import mysql.connector
 from mysql.connector import errorcode
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -14,12 +14,17 @@ SQL queries should not be string formatted. It is susceptible to SQL injections.
 DB connector should make repeated attempts to connect to the db and not give up on a single try
 '''
 
+def serve_response(data: str, status_code: int):
+    response = Response(response=data, status=status_code)
+    return response
+
+
 
 def get_db_x():
     ATTEMPTS = 4
     try:
         while ATTEMPTS:
-            current_app.logger.info("TRYING TO CONNECT")
+            current_app.logger.info("TRYING TO CONNECT TO MYSQL ENGINE")
             cnx = mysql.connector.connect(
                 user='root',
                 password='password',
@@ -54,7 +59,6 @@ def get_user(username):
 
 def register_user(username, password):
     dbx = get_db_x()
-    print("TRYING TO CONNECT TO DB")
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
@@ -63,11 +67,11 @@ def register_user(username, password):
             crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
-            print("DUPLICATE ENTRIES")            
+            current_app.logger.error("DUPLICATE ENTRIES")            
             return False
         return True
     else:
-        print("COULD NOT CONNECT")         
+        current_app.logger.error("COULD NOT CONNECT TO MYSQL")   
         return False
 
 
@@ -80,16 +84,15 @@ def login_user(username, password):
             user = crx.fetchone()
             crx.close()
             dbx.close()   
-            print(user) 
             if not user:
                 return "USER NOT FOUND"        
             # elif check_password_hash(password, user[3]): need to check for password hash instead of string, 
             elif user[3] == password:            
-                return "CORRECT PASSWORD"        
+                return True       
             else:
                 return None 
         except Exception as e:
-            print(e, "REDIRECTING")
+            current_app.logger.error(e, "REDIRECTING")
             return False
     
 
@@ -106,12 +109,12 @@ def delete_user(username):
                 dbx.close()
                 return True
             else:
-                print("COULD NOT FIND USER")
+                current_app.logger.error("COULD NOT FIND USER")
                 crx.close()
                 dbx.close()
                 return False
         except Exception as e:
-            print(e)
+            current_app.logger.error(e)
             return False
         
 
@@ -139,7 +142,7 @@ def post_apparel(userid, image_file):
             dbx.close()
             return True
         except Exception as e:
-            print(e, "COULD NOT INSERT APPAREL INTO DB -- REDIRECTERING")
+            current_app.logger.error(e, "COULD NOT INSERT APPAREL INTO DB -- REDIRECTERING")
     else:
         return False
 
@@ -158,7 +161,7 @@ def get_apparel(userid):
             else:
                 return apparels
         except Exception as e:
-            print(e, "REDIRECTERING")
+            current_app.logger.error(e, "REDIRECTERING")
             return False        
         
 
