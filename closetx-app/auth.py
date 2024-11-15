@@ -1,7 +1,7 @@
 import functools
 from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app
-from .lib.db_helper import * 
-from .lib.error_codes import ResponseString 
+from lib.db_helper import * 
+from lib.error_codes import ResponseString 
 import requests
 
 auth = Blueprint("auth", __name__)
@@ -14,7 +14,7 @@ def index():
         data = current_app.error_codes.forbidden
         return serve_response(data, 403)
     else:
-        return render_template("index.html")
+        return "HELLO"
 
 
 @auth.route('/register', methods=('GET', 'POST'))
@@ -39,18 +39,18 @@ def register():
 @auth.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        current_app.logger.info("username and password found")
-        if username and password:
-            if login_user(username, password):
-                data = current_app.error_codes.login_success
-                return serve_response(data, 200)
-            else: 
-                data = current_app.error_codes.incorrect_password
-                return serve_response(data, 200)       
+        try:
+            username = request.form['username']
+            password = request.form['password']
+        except KeyError:
+            data = current_app.error_codes.no_username_or_password            
+            return serve_response(data, 422)   
+        if login_user(username, password):
+            data = current_app.error_codes.login_success
+            return serve_response(data, 200)
         else: 
-            return current_app.error_codes.no_username_or_password
+            data = current_app.error_codes.incorrect_password
+            return serve_response(data, 200)       
     return redirect('/')
 
 

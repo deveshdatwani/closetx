@@ -14,6 +14,7 @@ SQL queries should not be string formatted. It is susceptible to SQL injections.
 DB connector should make repeated attempts to connect to the db and not give up on a single try
 '''
 
+
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response

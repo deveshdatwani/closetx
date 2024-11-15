@@ -1,6 +1,6 @@
 import functools
 from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app, send_file
-from .lib.db_helper import * 
+from lib.db_helper import * 
 
 
 apparel = Blueprint("apparel", __name__)

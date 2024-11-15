@@ -1,8 +1,8 @@
 import os
 from flask import Flask
-from . import auth, apparel
+import auth, apparel
 import logging  
-from .lib.error_codes import ResponseString 
+from lib.error_codes import ResponseString 
 
 
 def create_app(config_file=None): 
