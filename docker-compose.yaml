@@ -15,7 +15,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
   closetx-app:
-    image: closetx:v1
+    image: closetx:v2
     container_name: closetx-app
     ports:
       - "5000:5000"

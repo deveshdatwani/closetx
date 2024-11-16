@@ -6,7 +6,6 @@ from lib.db_helper import *
 apparel = Blueprint("apparel", __name__)
 
 
-# add or get apparel in closet
 @apparel.route('/closet', methods=('GET', 'POST'))
 def closet():
     if request.method == 'POST': 
@@ -14,11 +13,12 @@ def closet():
             userid = request.form['userid']
             image_file = request.files['image']
         except KeyError:            
-            return "USERID OR IMAGE NOT SUBMITTED"        
-        if post_apparel(userid, image_file):            
-            return "200 IMAGE ADDED"
+            return current_app.error_codes.no_username_or_password      
+        if post_apparel(userid, image_file):   
+            response = serve_response(data="IMAGE ADDED", status_code=200)         
+            return response
         else:            
-            return "NO IMAHE ADDED SOMETHING WENT WRONG"
+            return current_app.error_codes.something_went_wrong
     elif request.method == "GET": 
         try:
             userid = request.form['userid']
