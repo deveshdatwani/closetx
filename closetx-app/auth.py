@@ -14,7 +14,7 @@ def index():
         data = current_app.error_codes.forbidden
         return serve_response(data, 403)
     else:
-        return "HELLO"
+        return render_template('index.html')
 
 
 @auth.route('/register', methods=('GET', 'POST'))
