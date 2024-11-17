@@ -20,7 +20,6 @@ def serve_response(data: str, status_code: int):
     return response
 
 
-
 def get_db_x():
     ATTEMPTS = 4
     try:
