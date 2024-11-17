@@ -13,13 +13,5 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: echo "INSTALLING DEPENDENCIES" && pip3 install -r requirements.txt
-      - name: install tree
-        run: sudo apt install tree
-      - name: list dirs
-        run: tree -L 2
-      - name: Move to test directory
-        run: cd test
-      - name: list pwd
-        run: pwd
       - name: Run tests
-        run: python3 -m pytest -v
+        run: cd test && python3 -m pytest -v
