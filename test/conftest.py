@@ -1,7 +1,8 @@
 import sys
 import pytest 
 sys.path.append('../closetx-app')
-from closetx-app.app import create_app
+print(sys.path)
+from app import create_app
 
 
 @pytest.fixture
