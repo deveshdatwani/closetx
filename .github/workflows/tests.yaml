@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - staging
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: echo "INSTALLING DEPENDENCIES" && pip3 install requirements.txt
+      - name: Move to test directory
+        run: cd test
+      - name: Run tests
+        run: python3 -m pytest -v
