@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: echo "INSTALLING DEPENDENCIES" && pip3 install requirements.txt
+        run: echo "INSTALLING DEPENDENCIES" && pip3 install -r requirements.txt
       - name: Move to test directory
         run: cd test
       - name: Run tests
