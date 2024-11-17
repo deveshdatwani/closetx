@@ -85,7 +85,7 @@ def login_user(username, password):
             crx.close()
             dbx.close()   
             if not user:
-                return "USER NOT FOUND"        
+                return False     
             # elif check_password_hash(password, user[3]): need to check for password hash instead of string, 
             elif user[3] == password:            
                 return True       
