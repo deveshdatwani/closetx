@@ -1,7 +1,6 @@
 import sys
 import pytest 
 sys.path.append('../closetx-app')
-print(sys.path)
 from app import create_app
 
 
