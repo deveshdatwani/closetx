@@ -1,6 +1,10 @@
 import functools
 from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app, send_file
 from lib.db_helper import * 
+from lib.img_utils import *
+import cv2
+import numpy as np
+from PIL import Image
 
 
 apparel = Blueprint("apparel", __name__)
@@ -13,8 +17,9 @@ def closet():
             userid = request.form['userid']
             image_file = request.files['image']
         except KeyError:            
-            return current_app.error_codes.no_username_or_password      
-        if post_apparel(userid, image_file):   
+            return current_app.error_codes.no_username_or_password   
+        image = watershed_segmentation(image_file)
+        if post_apparel(userid, image):   
             response = serve_response(data="IMAGE ADDED", status_code=200)         
             return response
         else:            
