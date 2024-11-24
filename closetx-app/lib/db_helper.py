@@ -132,6 +132,7 @@ def post_apparel(userid, image):
     image_file.save("./temp.png", format="PNG")
     image_file = open("./temp.png", "rb")
     s3.upload_fileobj(image_file, bucket_name, f'{apparel_uuid}.png')
+    image_file.close()
     os.remove("./temp.png")
     if dbx and dbx.is_connected():
         try:
