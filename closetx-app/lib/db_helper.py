@@ -31,8 +31,7 @@ def get_db_x():
                 password='password',
                 host='db',
                 database='closetx',
-                port=3306
-            )
+                port=3306)
             g.db = cnx
             current_app.logger.info(f"MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB AFTER {5-ATTEMPTS} ATTEMPT")
             ATTEMPTS -= 1
@@ -119,18 +118,21 @@ def delete_user(username):
             return False
         
 
-def post_apparel(userid, image_file):
+def post_apparel(userid, image):
     dbx = get_db_x()
-    upload_folder = "./"
     apparel_uuid = str(uuid.uuid4())
-    image_file_path = (os.path.join(upload_folder, apparel_uuid))
     bucket_name = 'closetx'
     boto3.setup_default_session(
-    aws_access_key_id=os.getenv('access_key_id'),
-    aws_secret_access_key=os.getenv('secret_access_key_id'),
-    region_name='us-east-2')
+                                aws_access_key_id=os.getenv('access_key_id'),
+                                aws_secret_access_key=os.getenv('secret_access_key_id'),
+                                region_name='us-east-2'
+                                )
     s3 = boto3.client('s3')
-    s3.upload_fileobj(image_file, bucket_name, f'{apparel_uuid}')
+    image_file = Image.fromarray(image)
+    image_file.save("./temp.png", format="PNG")
+    image_file = open("./temp.png", "rb")
+    s3.upload_fileobj(image_file, bucket_name, f'{apparel_uuid}.png')
+    os.remove("./temp.png")
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
