@@ -16,6 +16,14 @@ DB connector should make repeated attempts to connect to the db and not give up 
 '''
 
 
+def get_s3_boto_client():
+    boto3.setup_default_session(aws_access_key_id=os.getenv('access_key_id'),
+                                aws_secret_access_key=os.getenv('secret_access_key_id'),
+                                region_name='us-east-2')
+    s3 = boto3.client('s3')
+    return s3
+
+
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response
@@ -122,12 +130,7 @@ def post_apparel(userid, image):
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4())
     bucket_name = 'closetx'
-    boto3.setup_default_session(
-                                aws_access_key_id=os.getenv('access_key_id'),
-                                aws_secret_access_key=os.getenv('secret_access_key_id'),
-                                region_name='us-east-2'
-                                )
-    s3 = boto3.client('s3')
+    s3 = get_s3_boto_client()
     image_file = Image.fromarray(image)
     image_file.save("./temp.png", format="PNG")
     image_file = open("./temp.png", "rb")
@@ -148,23 +151,17 @@ def post_apparel(userid, image):
         return False
 
 
-def get_apparel(userid):
-    dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            userds = crx.execute("SELECT * FROM apparel WHERE id = %s", (userid,))
-            apparels = crx.fetchall()
-            crx.close()
-            dbx.close()    
-            if not apparels:
-                return "NO APPARELS FOUND"        
-            else:
-                return apparels
-        except Exception as e:
-            current_app.logger.error(e, "REDIRECTERING")
-            return False        
-        
+def get_apparel(uri):
+    s3 = get_s3_boto_client()
+    with open('file', 'wb') as data:
+        s3.download_fileobj('closetx', uri, data)
+    apparel_image = Image.open('./file')
+    img_io = io.BytesIO()
+    apparel_image.save(img_io, 'PNG')  # Save as PNG
+    img_io.seek(0)
+    os.remove('./file')
+    return img_io    
+    
 
 def get_images(file_name):
     BASE_DIR = "./"
