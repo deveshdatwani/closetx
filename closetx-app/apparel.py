@@ -31,4 +31,9 @@ def get_apparels():
     if not apparel_image: return serve_response(data="NO SUCH APPAREL", status_code=404)
     else: return send_file(apparel_image, mimetype='image/png')
     
-    
+
+@apparel.route('/closet/user/apparel')
+def user_closet():
+    userid = request.form['userid']
+    apparel_ids = get_user_apparels(userid)
+    return apparel_ids
