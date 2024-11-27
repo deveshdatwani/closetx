@@ -16,33 +16,48 @@
             color: #333;
             text-align: center;
             flex-direction: column;
-            font-family: Arial, sans-serif;
-            font-size: 48px;
-            background-color: #f5f5f5; /* slight off-white background */
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* full viewport height */
-            margin: 0;
+        }
+
         h1 {
             font-size: 48px;
             margin: 0;
         }
+
         p {
             margin: 10px 0;
             font-size: 18px;
             color: #666;
         }
+
         .X {
             color: #E5CEC1;
         }
+
         .introduction {
             font-size: 1rem;
             width: 20%;
         }
 
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Spacing between images */
+            margin-bottom: 20px; /* Space below the images */
+        }
+
+        .image-container img {
+            width: 100px; /* Adjust this width to fit proportionately */
+            height: auto; /* Maintain aspect ratio */
+        }
     </style>
 </head>
 <body>
+    <div class="image-container">
+        <img src="assets/dress1.png" alt="Image 1">
+        <img src="assets/jacket1.png" alt="Image 2">
+        <img src="assets/sweater1.png" alt="Image 3">
+        <img src="assets/tshirt1.png" alt="Image 4">
+    </div>
     <h1>
         <div class="centered-text">
             CLOSET<span class="X">X</span>
@@ -54,8 +69,8 @@
     <p></p>
     <p></p>
     <p>
-        <div class="introduction" style="color: #666;">
-        <i>Closetx leverages the power of vision transformers in unsupervised and semi-supervised learning to help you style up your closet most affordably.</i>
+        <div class="introduction" style="color: #666; font-size: 0.7rem;">
+            <i>Closetx leverages the power of vision transformers in unsupervised and semi-supervised learning to help you style up your closet most affordably.</i>
         </div>        
     </p>
     <p></p>
