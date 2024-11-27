@@ -39,7 +39,7 @@ def get_db_x():
                 password='password',
                 host='db',
                 database='closetx',
-                port=3306)
+                port=3307)
             g.db = cnx
             current_app.logger.info(f"MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB AFTER {5-ATTEMPTS} ATTEMPT")
             ATTEMPTS -= 1
@@ -171,3 +171,17 @@ def get_images(file_name):
     pil_img.save(byte_arr, format='PNG') #
     encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii') 
     return encoded_img
+
+
+def get_user_apparels(userid):
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            apparels = crx.execute("SELECT * FROM apparel WHERE userid = %s", (userid))
+            apparel_ids = crx.fetchall()
+            crx.close()
+            dbx.close()
+            return apparel_ids
+        except Exception as e:
+            current_app.logger.error(e)
