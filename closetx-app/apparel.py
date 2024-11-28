@@ -7,7 +7,7 @@ from lib.img_utils import *
 apparel = Blueprint("apparel", __name__)
 
 
-@apparel.route('/closet/add_apparel', methods=['POST'])
+@apparel.route('/closet/add_apparel', methods=['POST',])
 def add_apparel():
     try:
         userid = request.form['userid']
@@ -21,11 +21,12 @@ def add_apparel():
         return current_app.error_codes.something_went_wrong
     
 
-@apparel.route('/closet/get_apparel', methods=['GET'])
+@apparel.route('/closet/get_apparel', methods=['POST',])
 def get_apparels():
     try:
         image_uri = request.form['uri']
-    except KeyError:            
+    except KeyError:    
+        current_app.logger.error("MISSING REQUEST PARAMETERS")        
         return current_app.error_codes.no_username_or_password 
     apparel_image = get_apparel(image_uri)
     if not apparel_image: return serve_response(data="NO SUCH APPAREL", status_code=404)
