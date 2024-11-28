@@ -65,21 +65,21 @@ def get_user(username):
     return user
 
 
-def register_user(username, password):
+def register_user(username, password, emailid):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            crx.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
+            crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, password, emailid))
             dbx.commit()
             crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
-            current_app.logger.error("DUPLICATE ENTRIES")            
+            current_app.logger.error("USER ALREADY EXISTS")            
             return False
         return True
     else:
-        current_app.logger.error("COULD NOT CONNECT TO MYSQL")   
+        current_app.logger.error("COULD NOT CONNECT TO MYSQL SERVER")   
         return False
 
 
