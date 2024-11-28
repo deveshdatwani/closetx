@@ -4,6 +4,7 @@ from lib.db_helper import *
 from lib.error_codes import ResponseString 
 import requests
 
+
 auth = Blueprint("auth", __name__)
 response_string = ResponseString()
 
@@ -17,23 +18,22 @@ def index():
         return render_template('index.html')
 
 
-@auth.route('/register', methods=('GET', 'POST'))
+@auth.route('/register', methods=('POST'))
 def register():
-    if request.method == 'POST':
-        try:
-            username = request.form['username']
-            password = request.form['password']
-        except KeyError:
-            data = current_app.error_codes.no_username_or_password            
-            return serve_response(data, 422)        
-        if username and password:
-            current_app.logger.info("AUTHENTICATING USER")
-            if register_user(username, password):
-                data = current_app.error_codes.registered_user_successfully            
-                return serve_response(data, 200)
-            else:            
-                return serve_response(current_app.error_codes.something_went_wrong, 403)
-    return render_template("index.html")
+    try:
+        username = request.form['username']
+        password = request.form['password']
+        emailid = request.form['emailid']
+    except KeyError:
+        data = current_app.error_codes.no_username_or_password            
+        return serve_response(data, 422)        
+    if username and password and emailid:
+        current_app.logger.info("REGISTERING USER")
+        if register_user(username, password, emailid):
+            data = current_app.error_codes.registered_user_successfully            
+            return serve_response(data, 200)
+        else:            
+            return serve_response(current_app.error_codes.something_went_wrong, 403)
     
 
 @auth.route('/login', methods=('GET', 'POST'))
