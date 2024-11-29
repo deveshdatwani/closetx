@@ -7,6 +7,7 @@ from PIL import Image
 from base64 import encodebytes
 import io, os
 import uuid
+import boto3
 
 
 '''
@@ -15,10 +16,17 @@ DB connector should make repeated attempts to connect to the db and not give up 
 '''
 
 
+def get_s3_boto_client():
+    boto3.setup_default_session(aws_access_key_id=os.getenv('access_key_id'),
+                                aws_secret_access_key=os.getenv('secret_access_key_id'),
+                                region_name='us-east-2')
+    s3 = boto3.client('s3')
+    return s3
+
+
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response
-
 
 
 def get_db_x():
@@ -31,8 +39,7 @@ def get_db_x():
                 password='password',
                 host='db',
                 database='closetx',
-                port=3306
-            )
+                port=3307)
             g.db = cnx
             current_app.logger.info(f"MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB AFTER {5-ATTEMPTS} ATTEMPT")
             ATTEMPTS -= 1
@@ -86,7 +93,7 @@ def login_user(username, password):
             crx.close()
             dbx.close()   
             if not user:
-                return "USER NOT FOUND"        
+                return False     
             # elif check_password_hash(password, user[3]): need to check for password hash instead of string, 
             elif user[3] == password:            
                 return True       
@@ -119,27 +126,23 @@ def delete_user(username):
             return False
         
 
-def post_apparel(userid, image_file):
+def post_apparel(userid, image):
     dbx = get_db_x()
-    upload_folder = "./"
     apparel_uuid = str(uuid.uuid4())
-    image_file_path = (os.path.join(upload_folder, apparel_uuid))
-    image_file.save(image_file_path)
-    import boto3
     bucket_name = 'closetx'
-    # boto3.setup_default_session(
-    # aws_access_key_id='your_access_key_id',
-    # aws_secret_access_key='your_secret_access_key',
-    # region_name='your_region')
-    s3 = boto3.client('s3')
-    with open(image_file_path, 'rb') as data:
-        s3.upload_fileobj(data, bucket_name, f'{apparel_uuid}')
+    s3 = get_s3_boto_client()
+    image_file = Image.fromarray(image)
+    image_file.save("./temp.png", format="PNG")
+    image_file = open("./temp.png", "rb")
+    s3.upload_fileobj(image_file, bucket_name, f'{apparel_uuid}.png')
+    image_file.close()
+    os.remove("./temp.png")
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
             userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
             dbx.commit()
-            crx.close()
+            crx.close() 
             dbx.close()
             return True
         except Exception as e:
@@ -148,23 +151,17 @@ def post_apparel(userid, image_file):
         return False
 
 
-def get_apparel(userid):
-    dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            userds = crx.execute("SELECT * FROM apparel WHERE id = %s", (userid,))
-            apparels = crx.fetchall()
-            crx.close()
-            dbx.close()    
-            if not apparels:
-                return "NO APPARELS FOUND"        
-            else:
-                return apparels
-        except Exception as e:
-            current_app.logger.error(e, "REDIRECTERING")
-            return False        
-        
+def get_apparel(uri):
+    s3 = get_s3_boto_client()
+    with open('file', 'wb') as data:
+        s3.download_fileobj('closetx', uri, data)
+    apparel_image = Image.open('./file')
+    img_io = io.BytesIO()
+    apparel_image.save(img_io, 'PNG')  # Save as PNG
+    img_io.seek(0)
+    os.remove('./file')
+    return img_io    
+    
 
 def get_images(file_name):
     BASE_DIR = "./"
@@ -174,3 +171,17 @@ def get_images(file_name):
     pil_img.save(byte_arr, format='PNG') #
     encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii') 
     return encoded_img
+
+
+def get_user_apparels(userid):
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            apparels = crx.execute("SELECT * FROM apparel WHERE userid = %s", (userid))
+            apparel_ids = crx.fetchall()
+            crx.close()
+            dbx.close()
+            return apparel_ids
+        except Exception as e:
+            current_app.logger.error(e)
