@@ -28,7 +28,7 @@
             border: 0 solid #000;
             background-color: #fff;
             transition: background-color 0.3s ease;
-            box-shadow: 0rem 0rem 1rem 1rem #f0f0f0;
+            /* box-shadow: 0rem 0rem 1rem 1rem #f0f0f0; */
             border-radius: 0.3rem;
 
         }
@@ -44,28 +44,13 @@
 </head>
 <body>
     <div class="container">
-        <label for="image-upload-1" class="button">upload top</label>
-        <input type="file" id="image-upload-1" accept="image/*">
-        
-        <label for="image-upload-2" class="button">upload bottom</label>
-        <input type="file" id="image-upload-2" accept="image/*">
+        <form id="image-form" action="http://localhost:5000/apparel/match" method="POST" enctype="multipart/form-data">
+            <label for="image-upload-1" class="button">upload top</label>
+            <input type="file" id="image-upload-1" name="top" accept="image/*">
+            <label for="image-upload-2" class="button">upload bottom</label>
+            <input type="file" id="image-upload-2" name="bottom" accept="image/*">
+            <button type="submit" class="button">match apparel</button>
+        </form>
     </div>
-
-    <script>
-        // Optional: you can add JavaScript to handle the file uploads
-        document.getElementById('image-upload-1').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                alert('Image 1 uploaded: ' + file.name);
-            }
-        });
-
-        document.getElementById('image-upload-2').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                alert('Image 2 uploaded: ' + file.name);
-            }
-        });
-    </script>
 </body>
 </html>
