@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">  
     <title>ClosetX</title>
     <style>
         body {
@@ -11,31 +14,26 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            font-family: 'IBM Plex Mono', monospace;
+            font-style: normal;
+            background-color: #fff;
+            color: #000;
             text-align: center;
             flex-direction: column;
         }
 
         h1 {
-            font-size: 48px;
+            font-size: 3rem;
             margin: 0;
         }
-
-        p {
-            margin: 10px 0;
-            font-size: 18px;
-            color: #666;
-        }
-
         .X {
-            color: #E5CEC1;
+            color: #000;
         }
 
         .introduction {
-            font-size: 1rem;
-            width: 20%;
+            width: 25%;
+            justify-content: left;
+            text-align: left;
         }
 
         .image-container {
@@ -49,36 +47,41 @@
             width: 100px; /* Adjust this width to fit proportionately */
             height: auto; /* Maintain aspect ratio */
         }
+        .footer {
+            width: 25%;
+            text-align: left;
+        }
+        .beta {
+            text-align: center;
+            justify-content: center;
+            width: 25%;
+        }
+        a{
+            color: blue;
+            text-decoration: none;
+        }
+        a:hover {
+            color: lightblue;
+        }
     </style>
 </head>
 <body>
-    <div class="image-container">
-        <img src="assets/dress1.png" alt="Image 1">
-        <img src="assets/jacket1.png" alt="Image 2">
-        <img src="assets/sweater1.png" alt="Image 3">
-        <img src="assets/tshirt1.png" alt="Image 4">
-    </div>
     <h1>
         <div class="centered-text">
             CLOSET<span class="X">X</span>
         </div>
+        <hr>
     </h1>
-
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p>
-        <div class="introduction" style="color: #666; font-size: 0.7rem;">
-            <i>Closetx leverages the power of vision transformers in unsupervised and semi-supervised learning to help you style up your closet most affordably.</i>
-        </div>        
-    </p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p style="font-size: 0.7rem;"> Under slow development :( as of October 2024 -- <a href="https://github.com/deveshdatwani/closetx/tree/v1">Github</a> </p>
-</body>
+    <br><br><br>
+    <div class="introduction">
+        Closetx leverages the power of vision transformers in unsupervised and semi-supervised learning to help you style up your closet most affordably
+    </div>
+    <div class="beta">
+        <p>Check out <a href="./alpha.html">alpha</a></p>
+    </div>      
+    <br><br><br><br><br> 
+    <div class="footer">
+        <p>Under slow development :( as of October 2024 -- <a href="https://github.com/deveshdatwani/closetx/tree/v1">Github</a> </p>
+    </div>
+    </body>
 </html>
