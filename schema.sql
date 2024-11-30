@@ -12,5 +12,6 @@ CREATE TABLE apparel (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     user INT,
 	uri VARCHAR(255),
-	FOREIGN KEY (user) REFERENCES user(id)
+	FOREIGN KEY (user) REFERENCES user(id),
+    type INT
 );
