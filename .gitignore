@@ -32,6 +32,10 @@ MANIFEST
 *.manifest
 *.spec
 
+# ignore ml models
+*.pth
+*.onnx
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
