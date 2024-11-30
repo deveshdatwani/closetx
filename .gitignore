@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# Datasets 
+dataset/
+
 # C extensions
 *.so
 
@@ -32,7 +36,7 @@ MANIFEST
 *.manifest
 *.spec
 
-#machine learning models
+# Machine learning models
 *.pth
 *.onnx
 
