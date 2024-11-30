@@ -32,7 +32,7 @@ MANIFEST
 *.manifest
 *.spec
 
-# ignore ml models
+#machine learning models
 *.pth
 *.onnx
 
