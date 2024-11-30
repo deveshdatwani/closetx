@@ -154,29 +154,29 @@ def load_seg_model(checkpoint_path, device='cpu'):
     return net
 
 
-def main(args):
-    device = 'cuda:0' if args.cuda else 'cpu'
-    # Create an instance of your model
-    model = load_seg_model(args.checkpoint_path, device=device)
+def main(checkpoint_path, image, device):
+    device = 'cuda:0' if device=='gpu' else 'cpu'
+    model = load_seg_model(checkpoint_path, device=device)
     palette = get_palette(4)
-    img = Image.open(args.image).convert('RGB')
+    img = Image.open(image).convert('RGB')
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-
-    for mask in masks:
-        # for masks
-        # class 0 = top 
-        # class 1 = bottom
-        plt.imshow(mask)
-        plt.show()
-
-    plt.imshow(cloth_seg)
-    plt.show()
+    return masks, cloth_seg
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Help to set arguments for Cloth Segmentation.')
-    parser.add_argument('--image', type=str, help='Path to the input image')
-    parser.add_argument('--cuda', action='store_true', help='Enable CUDA (default: False)')
-    parser.add_argument('--checkpoint_path', type=str, default='model/cloth_segm.pth', help='Path to the checkpoint file')
-    args = parser.parse_args()
-    main(args)
+def segment_apparel(image=None, checkpoint_path=None, device=None):
+    masks, cloth_seg = main(checkpoint_path, image, device)
+    if len(masks) > 1:
+        top, bottom = masks[0], masks[1]
+        return top, bottom
+    else:
+        return None
+
+
+masks = segment_apparel(
+                        checkpoint_path = './model/cloth_segm.pth',
+                        device = ' cpu',
+                        image = '/home/deveshdatwani/cloth-segmentation/input_images/bottom.png'
+                        )
+
+
+if masks: top, bottom = masks 

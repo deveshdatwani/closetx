@@ -19,4 +19,4 @@ jobs:
     needs: test
     steps:
       - name: Confirm test completion
-        run: echo "Tests completed successfully."
+        run: echo "Tests completed successfully"
