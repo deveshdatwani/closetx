@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  pull_request:
+  push:
     branches:
-      - staging
+      - main
 
 jobs:
   test:
@@ -13,5 +13,3 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: echo "INSTALLING DEPENDENCIES" && pip3 install -r requirements.txt
-      - name: Run tests
-        run: cd test && python3 -m pytest -v

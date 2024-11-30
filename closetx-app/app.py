@@ -1,7 +1,7 @@
 import os
-from flask import Flask
-import auth, apparel
 import logging  
+import auth, apparel
+from flask import Flask
 from lib.error_codes import ResponseString 
 
 
