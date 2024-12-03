@@ -19,6 +19,7 @@ services:
     container_name: closetx-app
     ports:
       - "5000:5000"
+    restart: always
     environment:
       - ENV=prod
     networks:
