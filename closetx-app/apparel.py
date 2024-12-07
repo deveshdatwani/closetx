@@ -35,7 +35,10 @@ def get_apparels():
 
 @apparel.route('/closet/user/all_apparel', methods=['POST',])
 def user_closet():
-    userid = request.form['userid']
+    try:
+        userid = request.form['userid']
+    except KeyError:
+        current_app.logger.error("MISSING REQUEST PARAMETERS")
+        return current_app.error_codes.no_username_or_password
     apparel_ids = get_user_apparels(userid)
-    print(apparel_ids)
     return apparel_ids
