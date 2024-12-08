@@ -153,11 +153,15 @@ def post_apparel(userid, image):
 
 def get_apparel(uri):
     s3 = get_s3_boto_client()
-    with open('file', 'wb') as data:
-        s3.download_fileobj('closetx', uri, data)
+    try:
+        with open('file', 'wb') as data:
+            s3.download_fileobj('closetx', uri, data)
+    except Exception as e: 
+        current_app.logger.warning("No resource found for given uri")
+        return False
     apparel_image = Image.open('./file')
     img_io = io.BytesIO()
-    apparel_image.save(img_io, 'PNG')  # Save as PNG
+    apparel_image.save(img_io, 'PNG')
     img_io.seek(0)
     os.remove('./file')
     return img_io    
