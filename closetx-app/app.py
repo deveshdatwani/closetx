@@ -12,12 +12,14 @@ def create_app(config_file=None):
     if config_file:
         try:
             app.config.from_file(config_file)
-            app.logger.info("APPLICATION CONFIGURED SUCCESSFULLY")
+            app.logger.info("Application configured succesfully")
         except Exception as e:
-            app.logger.error(f"CORRUPT CONFIG FILE {e}")
+            app.logger.error(f"Corrupt config file {e}")
     else:
-        app.logger.warning("NO CONFIG FILE FOUND") 
+        app.logger.warning("NO config file found") 
         app.apparel_folder = "./apparel"
+        app.salt = "salt"
+        app.pepper = "pepper"
     app.register_blueprint(auth.auth)
     app.register_blueprint(apparel.apparel)
     app.access_key = os.environ.get("ACCESS_KEY", default=None)

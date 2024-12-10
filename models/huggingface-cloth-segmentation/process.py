@@ -175,11 +175,5 @@ def segment_apparel(image=None, checkpoint_path=None, device=None):
 masks = segment_apparel(
                         checkpoint_path = './model/cloth_segm.pth',
                         device = ' cpu',
-                        image = '/home/deveshdatwani/closetx/models/huggingface-cloth-segmentation/input/white-jacket-man.png'
+                        image = '/home/deveshdatwani/closetx/models/huggingface-cloth-segmentation/input/oldmoney.png'
                         )
-
-
-if masks: top, bottom = masks
-
-plt.imshow(top)
-plt.show()
