@@ -17,9 +17,13 @@ DB connector should make repeated attempts to connect to the db and not give up 
 
 
 def get_s3_boto_client():
-    boto3.setup_default_session(aws_access_key_id=os.getenv('access_key_id'),
-                                aws_secret_access_key=os.getenv('secret_access_key_id'),
-                                region_name='us-east-2')
+    try:
+        boto3.setup_default_session(aws_access_key_id=os.getenv('access_key_id'),
+                                    aws_secret_access_key=os.getenv('secret_access_key_id'),
+                                    region_name='us-east-2')
+    except Exception as e:
+        current_app.logger.error("Cannot not connect to S3")
+        current_app.logger.error(e)
     s3 = boto3.client('s3')
     return s3
 
@@ -30,10 +34,10 @@ def serve_response(data: str, status_code: int):
 
 
 def get_db_x():
-    ATTEMPTS = 4
+    attempts = 4
     try:
-        while ATTEMPTS:
-            current_app.logger.info("Trying to connect to mysql engine")
+        while attempts:
+            current_app.logger.debug("Connecting to mysql sever")
             cnx = mysql.connector.connect(
                 user='root',
                 password='password',
@@ -41,14 +45,14 @@ def get_db_x():
                 database='closetx',
                 port=3306)
             g.db = cnx
-            current_app.logger.info(f"Mysql connector successfully connected after {5-ATTEMPTS} attempts")
-            ATTEMPTS -= 1
+            current_app.logger.info(f"Successfully connected to mysql sever after {5-attempts} attempts")
+            attempts -= 1
             if cnx: break
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            current_app.logger.error("Failed to authenticate mysql connector")
+            current_app.logger.error("Failed to authenticate client on mysql server")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            current_app.logger.error("Database does not exist")
+            current_app.logger.error("Database closetx does not exist")
         else:
             current_app.logger.error(err)        
         return None
@@ -57,7 +61,7 @@ def get_db_x():
 
 def get_user(username):
     dbx = get_db_x()
-    crx = crx = dbx.cursor()
+    crx = dbx.cursor()
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchall()
     crx.close()
@@ -70,16 +74,19 @@ def register_user(username, password, emailid):
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, password, emailid))
+            auth_string = generate_password_hash(password)
+            crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, emailid))
             dbx.commit()
             crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
             current_app.logger.error("This username already exists")            
+            current_app.logger.error("User already exists")            
             return False
         return True
     else:
         current_app.logger.error("Could not connect to mysql engine")   
+        current_app.logger.error("Could not connect to mysql server")   
         return False
 
 
@@ -94,8 +101,7 @@ def login_user(username, password):
             dbx.close()   
             if not user:
                 return False     
-            # elif check_password_hash(password, user[3]): need to check for password hash instead of string, 
-            elif user[3] == password:            
+            elif check_password_hash(password, user[3]):            
                 return True       
             else:
                 return None 
