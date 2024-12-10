@@ -33,22 +33,22 @@ def get_db_x():
     ATTEMPTS = 4
     try:
         while ATTEMPTS:
-            current_app.logger.info("TRYING TO CONNECT TO MYSQL ENGINE")
+            current_app.logger.info("Trying to connect to mysql engine")
             cnx = mysql.connector.connect(
                 user='root',
                 password='password',
-                host='127.0.0.1',
+                host='db',
                 database='closetx',
-                port=3307)
+                port=3306)
             g.db = cnx
-            current_app.logger.info(f"MYSQL CONNECTOR SUCCESSFULLY CONNECTED TO DB AFTER {5-ATTEMPTS} ATTEMPT")
+            current_app.logger.info(f"Mysql connector successfully connected after {5-ATTEMPTS} attempts")
             ATTEMPTS -= 1
             if cnx: break
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            current_app.logger.error("FAILED TO AUTHENTICATE MYSQL CONNECTOR")
+            current_app.logger.error("Failed to authenticate mysql connector")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            current_app.logger.error("DATABASE DOES NOT EXIST")
+            current_app.logger.error("Database does not exist")
         else:
             current_app.logger.error(err)        
         return None
@@ -75,11 +75,11 @@ def register_user(username, password, emailid):
             crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
-            current_app.logger.error("USER ALREADY EXISTS")            
+            current_app.logger.error("This username already exists")            
             return False
         return True
     else:
-        current_app.logger.error("COULD NOT CONNECT TO MYSQL SERVER")   
+        current_app.logger.error("Could not connect to mysql engine")   
         return False
 
 
@@ -100,7 +100,7 @@ def login_user(username, password):
             else:
                 return None 
         except Exception as e:
-            current_app.logger.error(e, "REDIRECTING")
+            current_app.logger.error(e)
             return False
     
 
@@ -117,7 +117,7 @@ def delete_user(username):
                 dbx.close()
                 return True
             else:
-                current_app.logger.error("COULD NOT FIND USER")
+                current_app.logger.error("Could not find user")
                 crx.close()
                 dbx.close()
                 return False
@@ -146,7 +146,7 @@ def post_apparel(userid, image):
             dbx.close()
             return True
         except Exception as e:
-            current_app.logger.error(e, "COULD NOT INSERT APPAREL INTO DB -- REDIRECTERING")
+            current_app.logger.error(e, "Could not insert apparel into closet")
     else:
         return False
 

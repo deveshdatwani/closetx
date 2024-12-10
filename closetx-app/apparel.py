@@ -7,7 +7,7 @@ from lib.img_utils import *
 apparel = Blueprint("apparel", __name__)
 
 
-@apparel.route('/closet/user/add_apparel', methods=['POST',])
+@apparel.route('/closet/user/apparel', methods=['POST',])
 def add_apparel():
     try:
         userid = request.form['userid']
@@ -22,7 +22,7 @@ def add_apparel():
         return serve_response(data="Something went wrong", status_code=404)
     
 
-@apparel.route('/closet/user/get_apparel', methods=['POST',])
+@apparel.route('/closet/user/apparel', methods=['GET',])
 def get_use_apparel():
     try:
         image_uri = request.form['uri']
@@ -34,7 +34,7 @@ def get_use_apparel():
     else: return send_file(apparel_image, mimetype='image/png')
     
 
-@apparel.route('/closet/user/all_apparel', methods=['POST',])
+@apparel.route('/closet/user/closet', methods=['GET',])
 def get_user_closet():
     try:
         userid = request.form['userid']
