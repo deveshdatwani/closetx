@@ -5,7 +5,7 @@ from flask import Flask
 from lib.error_codes import ResponseString 
 
 
-def create_app(config_file=None): 
+def create_app(config_file="./config.py"): 
     app = Flask(__name__)
     app.loggerlogger = logging.getLogger('my_logger')
     app.logger.setLevel(logging.INFO)
