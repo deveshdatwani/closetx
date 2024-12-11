@@ -42,4 +42,5 @@ def get_user_closet():
         current_app.logger.error("Missing request parameters") 
         return serve_response(data="Missing reques parameters", status_code=403)
     apparel_ids = get_user_apparels(userid)
-    return serve_response(data=apparel_ids, status_code=200)
+    data = jsonify({"apparels" : apparel_ids})
+    return data
