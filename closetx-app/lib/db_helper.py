@@ -42,9 +42,9 @@ def get_db_x():
             cnx = mysql.connector.connect(
                 user='root',
                 password='password',
-                host='db',
+                host='127.0.0.1',
                 database='closetx',
-                port=3306)
+                port=3307)
             g.db = cnx
             current_app.logger.info(f"Successfully connected to mysql sever after {5-attempts} attempts")
             attempts -= 1
@@ -70,18 +70,18 @@ def get_user(username):
     return user
 
 
-def register_user(username, password, emailid):
+def register_user(username, password, email):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
             auth_string = generate_password_hash(password)
-            crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, emailid))
+            crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
             dbx.commit()
             crx.close()
             dbx.close()
         except mysql.connector.errors.IntegrityError:
-            current_app.logger.error("This username already exists")            
+            current_app.logger.error("This username already exists or email")            
             current_app.logger.error("User already exists")            
             return False
         return True
@@ -92,6 +92,7 @@ def register_user(username, password, emailid):
 
 
 def login_user(username, password):
+    print(f' login password is {password}')
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
@@ -99,10 +100,12 @@ def login_user(username, password):
             crx.execute("SELECT * FROM user WHERE username = %s", (username,))
             user = crx.fetchone()
             crx.close()
-            dbx.close()   
+            dbx.close()  
+            print(user)
+            print(password, user[3])
             if not user:
-                return False     
-            elif check_password_hash(password, user[3]):            
+                return False
+            elif check_password_hash(user[3], password):
                 return True       
             else:
                 return None 
