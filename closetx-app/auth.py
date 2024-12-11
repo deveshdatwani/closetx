@@ -23,14 +23,14 @@ def register():
     try:
         username = request.form['username']
         password = request.form['password']
-        emailid = request.form['emailid']
+        email = request.form['email']
     except KeyError:
         current_app.logger.error("Missing request parameters")
         data = "Missing request parameters"           
         return serve_response(data, 422)        
-    if username and password and emailid:
+    if username and password and email:
         current_app.logger.info("Registering user")
-        if register_user(username, password, emailid):
+        if register_user(username, password, email):
             data = "User registered successfully" 
             return serve_response(data, 200)
         else:
