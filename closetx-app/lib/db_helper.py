@@ -1,13 +1,12 @@
-from flask import session, g, current_app, Response
-import mysql.connector
-from mysql.connector import errorcode
-from werkzeug.security import check_password_hash, generate_password_hash
-import logging
-from PIL import Image
-from base64 import encodebytes
-import io, os
 import uuid
 import boto3
+import io, os
+from PIL import Image
+import mysql.connector
+from base64 import encodebytes
+from mysql.connector import errorcode
+from flask import g, current_app, Response, jsonify
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 '''
@@ -18,12 +17,14 @@ DB connector should make repeated attempts to connect to the db and not give up 
 
 def get_s3_boto_client():
     try:
-        boto3.setup_default_session(aws_access_key_id=os.getenv('access_key_id'),
-                                    aws_secret_access_key=os.getenv('secret_access_key_id'),
+        boto3.setup_default_session(aws_access_key_id=os.getenv('aws_access_key_id'),
+                                    aws_secret_access_key=os.getenv('aws_secret_access_key_id'),
                                     region_name='us-east-2')
+        current_app.logger.debug("S3 client connected")
     except Exception as e:
         current_app.logger.error("Cannot not connect to S3")
         current_app.logger.error(e)
+        return None
     s3 = boto3.client('s3')
     return s3
 
@@ -159,12 +160,15 @@ def post_apparel(userid, image):
 
 def get_apparel(uri):
     s3 = get_s3_boto_client()
-    try:
-        with open('file', 'wb') as data:
-            s3.download_fileobj('closetx', uri, data)
-    except Exception as e: 
-        current_app.logger.warning("No resource found for given uri")
-        return False
+    if s3:
+        try:
+            with open('file', 'wb') as data:
+                s3.download_fileobj('closetx', uri, data)
+        except Exception as e:
+            current_app.logger.error(e) 
+            current_app.logger.warning("No resource found for given uri")
+            data = "No apparel found"
+            return serve_response(data=data, status_code=403)
     apparel_image = Image.open('./file')
     img_io = io.BytesIO()
     apparel_image.save(img_io, 'PNG')
@@ -188,7 +192,7 @@ def get_user_apparels(userid):
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            crx.execute("SELECT * FROM apparel WHERE user = %s", (userid,))
+            crx.execute("SELECT uri FROM apparel WHERE user = %s", (userid,))
             apparel_ids = crx.fetchall()
             crx.close()
             dbx.close()
