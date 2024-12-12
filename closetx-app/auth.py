@@ -47,9 +47,10 @@ def login():
         current_app.logger.error("Missing request parameters")
         data = "Missing request parameters"             
         return serve_response(data, 422)   
-    if login_user(username, password):
-        data = "Login success"
-        return serve_response(data, 200)
+    user = login_user(username, password)
+    if user:
+        data = {"message":"Login success", "details": user[:3]}
+        return jsonify(data)
     else: 
         data = "Incorrect password"
         return serve_response(data, 201)       
