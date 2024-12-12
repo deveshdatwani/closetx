@@ -5,7 +5,7 @@ from PIL import Image
 import mysql.connector
 from base64 import encodebytes
 from mysql.connector import errorcode
-from flask import g, current_app, Response, jsonify
+from flask import g, current_app, Response, send_file
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -92,7 +92,6 @@ def register_user(username, password, email):
 
 
 def login_user(username, password):
-    print(f' login password is {password}')
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
@@ -101,12 +100,11 @@ def login_user(username, password):
             user = crx.fetchone()
             crx.close()
             dbx.close()  
-            print(user)
-            print(password, user[3])
             if not user:
                 return False
             elif check_password_hash(user[3], password):
-                return True       
+                current_app.logger.info("User password matched")
+                return user      
             else:
                 return None 
         except Exception as e:
@@ -139,14 +137,8 @@ def delete_user(username):
 def post_apparel(userid, image):
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4())
-    bucket_name = 'closetx'
-    s3 = get_s3_boto_client()
-    image_file = Image.fromarray(image)
-    image_file.save("./temp.png", format="PNG")
-    image_file = open("./temp.png", "rb")
-    s3.upload_fileobj(image_file, bucket_name, f'{apparel_uuid}.png')
-    image_file.close()
-    os.remove("./temp.png")
+    uri_path = os.path.join("./", f'{apparel_uuid}.png')
+    image.save(uri_path)
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
@@ -162,22 +154,15 @@ def post_apparel(userid, image):
 
 
 def get_apparel(uri):
-    s3 = get_s3_boto_client()
-    if s3:
-        try:
-            with open('file', 'wb') as data:
-                s3.download_fileobj('closetx', uri, data)
-        except Exception as e:
-            current_app.logger.error(e) 
-            current_app.logger.warning("No resource found for given uri")
-            data = "No apparel found"
-            return serve_response(data=data, status_code=403)
-    apparel_image = Image.open('./file')
-    img_io = io.BytesIO()
-    apparel_image.save(img_io, 'PNG')
-    img_io.seek(0)
-    os.remove('./file')
-    return img_io    
+    try:
+        uri_path = os.path.join("./", uri)
+        image_file = io.BytesIO(Image.open(uri_path))
+    except Exception as e:
+        current_app.logger.error(e) 
+        current_app.logger.warning("No resource found for given uri")
+        data = "No apparel found"
+        return serve_response(data=data, status_code=403)
+    return send_file(io.BytesIO(image_file), mimetype='image/png')
     
 
 def get_images(file_name):
