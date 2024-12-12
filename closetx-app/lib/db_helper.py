@@ -136,9 +136,11 @@ def delete_user(username):
 
 def post_apparel(userid, image):
     dbx = get_db_x()
-    apparel_uuid = str(uuid.uuid4())
-    uri_path = os.path.join("./", f'{apparel_uuid}.png')
-    image.save(uri_path)
+    apparel_uuid = str(uuid.uuid4())+".png"
+    s3_client = get_s3_boto_client()
+    image.save('./file.png')
+    s3_client.upload_file('./file.png', 'closetx', apparel_uuid)
+    os.remove('./file.png')
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
@@ -154,15 +156,22 @@ def post_apparel(userid, image):
 
 
 def get_apparel(uri):
-    try:
-        uri_path = os.path.join("./", uri)
-        image_file = io.BytesIO(Image.open(uri_path))
-    except Exception as e:
-        current_app.logger.error(e) 
-        current_app.logger.warning("No resource found for given uri")
-        data = "No apparel found"
-        return serve_response(data=data, status_code=403)
-    return send_file(io.BytesIO(image_file), mimetype='image/png')
+    s3 = get_s3_boto_client()
+    if s3:
+        try:
+            with open('file', 'wb') as data:
+                s3.download_fileobj('closetx', uri, data)
+        except Exception as e:
+            current_app.logger.error(e) 
+            current_app.logger.warning("No resource found for given uri")
+            data = "No apparel found"
+            return serve_response(data=data, status_code=403)
+    apparel_image = Image.open('./file')
+    img_io = io.BytesIO()
+    apparel_image.save(img_io, 'PNG')
+    img_io.seek(0)
+    os.remove('./file')
+    return img_io 
     
 
 def get_images(file_name):

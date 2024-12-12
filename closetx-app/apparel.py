@@ -1,5 +1,5 @@
 import functools
-from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app, send_file
+from flask import Blueprint, g, request, session, current_app, send_file, jsonify
 from lib.db_helper import * 
 from lib.img_utils import *
 
@@ -29,7 +29,6 @@ def get_use_apparel():
         current_app.logger.error("Missing request parameters")        
         return serve_response(data="Missing reques parameters", status_code=403)
     apparel_image = get_apparel(image_uri)
-    return apparel_image
     if not apparel_image: return serve_response(data="No apparel found", status_code=404)
     else: return send_file(apparel_image, mimetype='image/png')
     
