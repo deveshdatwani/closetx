@@ -35,16 +35,19 @@ def serve_response(data: str, status_code: int):
 
 
 def get_db_x():
-    attempts = 4
+    attempts = 5
+    password = os.getenv('DB_PASSWORD', 'password')
+    db_host = os.getenv('DB_HOST', '127.0.0.1')
+    db_port = os.getenv('DB_PORT', '3306')
     try:
         while attempts:
             current_app.logger.debug("Connecting to mysql sever")
             cnx = mysql.connector.connect(
-                user='root',
+                user='closetx',
                 password='password',
-                host='127.0.0.1',
+                host=db_host,
                 database='closetx',
-                port=3307)
+                port=db_port)
             g.db = cnx
             current_app.logger.info(f"Successfully connected to mysql sever after {5-attempts} attempts")
             attempts -= 1
@@ -104,9 +107,9 @@ def login_user(username, password):
                 return False
             elif check_password_hash(user[3], password):
                 current_app.logger.info("User password matched")
-                return user      
+                return user   
             else:
-                return None 
+                return "Incorrect password" 
         except Exception as e:
             current_app.logger.error(e)
             return False
@@ -117,18 +120,11 @@ def delete_user(username):
     if dbx and dbx.is_connected():
         try:
             crx = dbx.cursor()
-            user = crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-            if crx.fetchall():
-                crx.execute("DELETE FROM user WHERE username = %s", (username,))
-                dbx.commit()
-                crx.close()
-                dbx.close()
-                return True
-            else:
-                current_app.logger.error("Could not find user")
-                crx.close()
-                dbx.close()
-                return False
+            crx.execute("DELETE FROM user WHERE username = %s", (username,))
+            dbx.commit()
+            crx.close()
+            dbx.close()
+            return True
         except Exception as e:
             current_app.logger.error(e)
             return False
@@ -196,3 +192,19 @@ def get_user_apparels(userid):
             return apparel_ids
         except Exception as e:
             current_app.logger.error(e)
+
+
+def delete_apparel(userid, uri):
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            crx.execute("DELETE FROM apparel WHERE uri = %s", (uri,))
+            dbx.commit()
+            crx.close() 
+            dbx.close()
+        except Exception as e:
+            current_app.logger.error("Could not delete apparel")
+            current_app.logger.error(e)
+            return False
+        return True

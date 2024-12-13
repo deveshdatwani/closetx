@@ -43,3 +43,17 @@ def get_user_closet():
     apparel_ids = get_user_apparels(userid)
     data = jsonify({"apparels" : apparel_ids})
     return data
+
+
+@apparel.route('/closet', methods=['DELETE',])
+def remove_apparel():
+    try:
+        userid = request.form['userid']
+        uri = request.form['uri']
+    except KeyError:
+        current_app.logger.error("Missing request parameters")              
+        return serve_response(data="Missing request parameters", status_code=403)
+    response = delete_apparel(userid, uri)
+    if response: data = "Apparel deleted successfully"
+    else: data = "Something went wrong"
+    return serve_response(data=data, status_code=203)

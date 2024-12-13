@@ -51,9 +51,12 @@ def login():
     if user:
         data = {"message":"Login success", "details": user[:3]}
         return jsonify(data)
-    else: 
-        data = "Incorrect password"
-        return serve_response(data, 201)       
+    elif user == "Incorrect password": 
+        data = user
+        return serve_response(data, 201)
+    else:
+        data = "Something went wrong"
+        return serve_response(data, status_code=504)       
 
 
 @auth.route('/logout', methods=['DELETE',])
