@@ -43,8 +43,8 @@ def get_db_x():
         while attempts:
             current_app.logger.debug("Connecting to mysql sever")
             cnx = mysql.connector.connect(
-                user='closetx',
-                password='password',
+                user='root',
+                password=password,
                 host=db_host,
                 database='closetx',
                 port=db_port)
