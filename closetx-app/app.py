@@ -3,6 +3,7 @@ import logging
 import auth, apparel
 from flask import Flask
 from lib.error_codes import ResponseString 
+from prometheus_flask_exporter import PrometheusMetrics
 
 
 def create_app(config_file=None): 
@@ -25,4 +26,5 @@ def create_app(config_file=None):
     app.access_key = os.environ.get("ACCESS_KEY", default=None)
     app.secret_key = os.environ.get("SECRET_KEY", default=None)
     app.error_codes = ResponseString()
+    metrics = PrometheusMetrics(app)
     return app
