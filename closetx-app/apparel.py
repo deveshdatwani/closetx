@@ -1,10 +1,28 @@
 import functools
-from flask import Blueprint, g, request, session, current_app, send_file, jsonify
+import jwt
 from lib.db_helper import * 
 from lib.img_utils import *
+from flask import Blueprint, g, request, session, current_app, send_file, jsonify, url_for, redirect
 
 
 apparel = Blueprint("apparel", __name__)
+
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        token = request.headers["JWT-header"]
+        try:
+            decoded = jwt.decode(token, key="closetx_secret")
+        except jwt.InvalidTokenError:
+            current_app.logger.warning("Not authorized to the resource. Log in first")
+            return redirect(url_for('auth.index'))
+        except jwt.InvalidSignatureError:
+            current_app.logger.warning("Inoccrect signature key")
+            return redirect(url_for('auth.index'))
+        else:
+            return view()
+    return wrapped_view
 
 
 @apparel.route('/closet', methods=['POST',])
@@ -34,6 +52,7 @@ def get_use_apparel():
     
 
 @apparel.route('/closet', methods=['GET',])
+@login_required
 def get_user_closet():
     try:
         userid = request.form['userid']
@@ -41,6 +60,7 @@ def get_user_closet():
         current_app.logger.error("Missing request parameters") 
         return serve_response(data="Missing reques parameters", status_code=403)
     apparel_ids = get_user_apparels(userid)
+    print(apparel_ids)
     data = jsonify({"apparels" : apparel_ids})
     return data
 

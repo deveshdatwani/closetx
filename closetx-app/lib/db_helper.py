@@ -5,7 +5,7 @@ from PIL import Image
 import mysql.connector
 from base64 import encodebytes
 from mysql.connector import errorcode
-from flask import g, current_app, Response, send_file
+from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -43,12 +43,11 @@ def get_db_x():
         while attempts:
             current_app.logger.debug("Connecting to mysql sever")
             cnx = mysql.connector.connect(
-                user='root',
+                user='closetx',
                 password=password,
                 host=db_host,
                 database='closetx',
                 port=db_port)
-            g.db = cnx
             current_app.logger.info(f"Successfully connected to mysql sever after {5-attempts} attempts")
             attempts -= 1
             if cnx: break
@@ -77,6 +76,7 @@ def register_user(username, password, email):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
+            current_app.logger.info("Matching password for user")
             crx = dbx.cursor()
             auth_string = generate_password_hash(password)
             crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
@@ -89,8 +89,7 @@ def register_user(username, password, email):
             return False
         return True
     else:
-        current_app.logger.error("Could not connect to mysql engine")   
-        current_app.logger.error("Could not connect to mysql server")   
+        current_app.logger.error("Could not connect to mysql engine")    
         return False
 
 
@@ -104,6 +103,7 @@ def login_user(username, password):
             crx.close()
             dbx.close()  
             if not user:
+                current_app.logger.error("Could not find user with given username")
                 return False
             elif check_password_hash(user[3], password):
                 current_app.logger.info("User password matched")
@@ -113,6 +113,9 @@ def login_user(username, password):
         except Exception as e:
             current_app.logger.error(e)
             return False
+    else:
+        current_app.logger.info("DB connector not connected")
+        return "Cannot establish stable connection to mysql engine"
     
 
 def delete_user(username):

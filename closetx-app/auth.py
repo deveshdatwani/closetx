@@ -1,4 +1,4 @@
-import requests
+import jwt
 import functools
 from lib.db_helper import * 
 from lib.error_codes import ResponseString 
@@ -11,11 +11,7 @@ response_string = ResponseString()
 
 @auth.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == "POST":
-        data = "Forbidden"
-        return serve_response(data, 403)
-    else:
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 @auth.route('/register', methods=['POST',])
@@ -26,16 +22,12 @@ def register():
         email = request.form['email']
     except KeyError:
         current_app.logger.error("Missing request parameters")
-        data = "Missing request parameters"           
-        return serve_response(data, 422)        
-    if username and password and email:
-        current_app.logger.info("Registering user")
-        if register_user(username, password, email):
-            data = "User registered successfully" 
-            return serve_response(data, 200)
-        else:
-            data = "Something went wrong"            
-            return serve_response(data, 403)
+        return serve_response(data="Missing request parameters" , status_code=422)        
+    current_app.logger.info("Registering user")
+    if register_user(username, password, email):
+        return serve_response(data="User registered successfully" , status_code=200)
+    else:            
+        return serve_response(data="Something went wrong", status_code=403)
     
 
 @auth.route('/login', methods=['POST',])
@@ -49,14 +41,14 @@ def login():
         return serve_response(data, 422)   
     user = login_user(username, password)
     if user:
-        data = {"message":"Login success", "details": user[:3]}
-        return jsonify(data)
+        data = jsonify({"message":"Login success", "user_details": user[:3]})
+        data.headers["JWT-header"] = jwt.encode(payload={"user":user[:3]}, key="closetx_secret", algorithm='HS256')
+        return data
     elif user == "Incorrect password": 
         data = user
         return serve_response(data, 201)
-    else:
-        data = "Something went wrong"
-        return serve_response(data, status_code=504)       
+    elif not user:
+        return serve_response(data="Could not find user with given username", status_code=503)       
 
 
 @auth.route('/logout', methods=['DELETE',])
@@ -85,12 +77,3 @@ def load_logged_in_user():
         g.user = get_db_x().execute(
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
-
-
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:            
-            return redirect(url_for('auth.login'))
-        return view(**kwargs)
-    return wrapped_view
