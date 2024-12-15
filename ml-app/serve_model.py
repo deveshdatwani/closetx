@@ -1,26 +1,23 @@
 import io
+import torch
 import functools
-from PIL import Image
+import numpy as np
 from .lib.db_helper import *
-from matplotlib import pyplot as plt 
-from .lib.error_codes import ResponseString 
-from flask import Blueprint, g, flash, redirect, render_template, request, session, url_for, current_app
+from matplotlib import pyplot as plt  
+from flask import Blueprint, g, request, session, current_app
 
 
 serve_model = Blueprint("serve_model", __name__)
-response_string = ResponseString()
 
 
-# register user
 @serve_model.route('/')
 def index():
-    return "HELLO"
+    return "Invalid URL"
 
 
-@serve_model.route('/apparel/match', methods=['POST'])
+@serve_model.route('/apparel/match', methods=['GET'])
 def match_apparel():
-    top = request.files['top']
-    bottom = request.files['bottom']
-    top = Image.open(io.BytesIO(top.read()))
-    bottom = Image.open(io.BytesIO(bottom.read()))
-    return "received images"
+    top = torch.rand(1, 3, 576, 576, dtype=torch.float32)
+    bottom = torch.rand(1, 3, 576, 576, dtype=torch.float32)
+    output = inference(current_app.matcher, top, bottom)
+    return f"received images. output size {output}"

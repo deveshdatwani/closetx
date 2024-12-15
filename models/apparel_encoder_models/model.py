@@ -7,7 +7,8 @@ from torchvision.models import efficientnet_b0
 class EfficientNet(nn.Module):
     def __init__(self, output_dim=256):
         super(EfficientNet, self).__init__()
-        self.efficient_net = efficientnet_b0(pretrained=True)
+        # input 576x576x3
+        self.efficient_net = efficientnet_b0(weights=None)
         self.efficient_net.features[0] = nn.Conv2d(3, 32, kernel_size=3, stride=2, padding=1, bias=False)
         self.res_block = nn.Sequential(
             nn.Conv2d(1280, 1280, kernel_size=3, padding=1),
