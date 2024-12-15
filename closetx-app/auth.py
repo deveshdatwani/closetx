@@ -11,52 +11,37 @@ response_string = ResponseString()
 
 @auth.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == "POST":
-        data = "Forbidden"
-        return serve_response(data, 403)
-    else:
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 @auth.route('/register', methods=['POST',])
 def register():
-    try:
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
-    except KeyError:
-        current_app.logger.error("Missing request parameters")
-        data = "Missing request parameters"           
-        return serve_response(data, 422)        
+    username = request.form['username']
+    password = request.form['password']
+    email = request.form['email']     
     if username and password and email:
-        current_app.logger.info("Registering user")
+        current_app.logger.info("Registering user to app")
         if register_user(username, password, email):
             data = "User registered successfully" 
             return serve_response(data, 200)
         else:
             data = "Something went wrong"            
             return serve_response(data, 403)
+    else:
+        return serve_response(data="Something went wrong", status_code=400)
     
 
 @auth.route('/login', methods=['POST',])
 def login():
-    try:
-        username = request.form['username']
-        password = request.form['password']
-    except KeyError:
-        current_app.logger.error("Missing request parameters")
-        data = "Missing request parameters"             
-        return serve_response(data, 422)   
+    username = request.form['username']
+    password = request.form['password'] 
     user = login_user(username, password)
     if user:
         data = {"message":"Login success", "details": user[:3]}
         return jsonify(data)
     elif user == "Incorrect password": 
         data = user
-        return serve_response(data, 201)
-    else:
-        data = "Something went wrong"
-        return serve_response(data, status_code=504)       
+        return serve_response(data, 200)       
 
 
 @auth.route('/logout', methods=['DELETE',])
@@ -74,23 +59,3 @@ def delete():
     else:
         data = "Something went wrong"      
         return serve_response(data=data, status_code=500)
-
-
-@auth.before_app_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = get_db_x().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
-        ).fetchone()
-
-
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:            
-            return redirect(url_for('auth.login'))
-        return view(**kwargs)
-    return wrapped_view
