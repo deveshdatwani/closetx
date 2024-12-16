@@ -3,6 +3,7 @@ import sys
 import torch
 import logging  
 from flask import Flask
+from pathlib import Path
 from . import serve_model
 
 
@@ -21,7 +22,7 @@ def create_app(config_file=None):
         app.logger.warning("No config file found") 
         app.access_key = os.environ.get("ACCESS_KEY", default=None)
         app.secret_key = os.environ.get("SECRET_KEY", default=None)
-    sys.path.append("/home/deveshdatwani/closetx/models")
+    sys.path.append(Path.home() / "closetx/models")
     from models.apparel_encoder_models.model import EfficientNet
     app.matcher = EfficientNet()
     app.register_blueprint(serve_model.serve_model)
