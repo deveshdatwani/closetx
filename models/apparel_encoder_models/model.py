@@ -18,15 +18,24 @@ class EfficientNet(nn.Module):
         )
         self.final_relu = nn.ReLU()
         self.fc = nn.Linear(1280, output_dim)
+        self.output_layer = nn.Linear(output_dim*2, 1)
 
-    def forward(self, x):
+    def forward(self, x, y):
         x = self.efficient_net.features(x)
         residual = x
         x = self.res_block(x)
         x = self.final_relu(x + residual)
         x = torch.mean(x, dim=(2, 3))
         x = self.fc(x)
-        return x 
+        y = self.efficient_net.features(y)
+        residual = y
+        y = self.res_block(y)
+        y = self.final_relu(y + residual)
+        y = torch.mean(y, dim=(2, 3))
+        y = self.fc(y)
+        score_dimension = torch.concat((x, y), dim=1)
+        score = self.output_layer(score_dimension)
+        return score
     
 
 class VisionTransformer(nn.Module):
