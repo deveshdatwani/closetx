@@ -3,8 +3,7 @@ import cv2
 import torch
 import functools
 import numpy as np
-from .lib.db_helper import *
-from matplotlib import pyplot as plt  
+from .lib.db_helper import *  
 from flask import Blueprint, g, request, redirect, current_app
 
 
