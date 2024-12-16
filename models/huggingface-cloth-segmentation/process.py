@@ -172,8 +172,10 @@ def segment_apparel(image=None, checkpoint_path=None, device=None):
         return None
 
 
-masks = segment_apparel(
+top, bottom = segment_apparel(
                         checkpoint_path = './model/cloth_segm.pth',
                         device = ' cpu',
-                        image = '/home/deveshdatwani/closetx/models/huggingface-cloth-segmentation/input/oldmoney.png'
+                        image = '/home/deveshdatwani/closetx/models/dataset/v2/pinterest_1092193347127709629.jpg'
                         )
+plt.imshow(bottom)
+plt.show()

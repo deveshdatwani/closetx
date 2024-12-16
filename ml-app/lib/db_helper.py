@@ -1,10 +1,11 @@
 import io, os
-import logging
+import torch
 from PIL import Image
 from time import time
 import mysql.connector
 from mysql.connector import errorcode
 from flask import session, g, current_app
+import torchvision.transforms as transforms
 
 
 '''
@@ -29,9 +30,14 @@ def get_db_x():
 
 
 def inference(model, top, bottom):
+    transform = transforms.ToTensor()
+    top = transform(top)
+    bottom = transform(bottom)
+    top = top.unsqueeze(0)
+    bottom = bottom.unsqueeze(0)
     start = time()
-    output_bottom = model(bottom)
-    output_top  = model(top)
+    score = model(bottom, top)
     end = time()
-    total_time_taken = end - start 
-    return "Work in progress!!!"
+    total_time_taken = (end - start)
+    print(f"Inference time {total_time_taken}") 
+    return score
