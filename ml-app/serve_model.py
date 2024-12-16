@@ -1,23 +1,33 @@
 import io
+import cv2
 import torch
 import functools
 import numpy as np
 from .lib.db_helper import *
 from matplotlib import pyplot as plt  
-from flask import Blueprint, g, request, session, current_app
+from flask import Blueprint, g, request, redirect, current_app
 
 
 serve_model = Blueprint("serve_model", __name__)
 
 
-@serve_model.route('/')
+@serve_model.route('/', methods=['GET',])
 def index():
     return "Invalid URL"
 
 
-@serve_model.route('/apparel/match', methods=['GET'])
+@serve_model.route('/apparel/match', methods=['GET', 'POST'])
 def match_apparel():
-    top = torch.rand(1, 3, 576, 576, dtype=torch.float32)
-    bottom = torch.rand(1, 3, 576, 576, dtype=torch.float32)
+    top = request.files['top']
+    top = Image.open(top)
+    top = np.array(top)
+    top = cv2.resize(top,(576, 576))
+    top = cv2.cvtColor(np.array(top), cv2.COLOR_BGR2RGB)
+    bottom = request.files['bottom']
+    bottom = Image.open(bottom)
+    bottom = np.array(bottom)
+    bottom = cv2.resize(bottom,(576, 576))
+    bottom = cv2.cvtColor(np.array(bottom), cv2.COLOR_BGR2RGB)
     output = inference(current_app.matcher, top, bottom)
-    return f"received images. output size {output}"
+    return f"score {output.item()}"
+    return redirect("http://localhost:5500/alpha.html")
