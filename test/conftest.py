@@ -1,11 +1,13 @@
+import os
 import sys
 import pytest 
-sys.path.append('../closetx-app')
-from app import create_app
+sys.path.append(os.path.expanduser("~")+'/closetx')
+import importlib  
+foobar = importlib.import_module("closetx-app.app")
 
 
 @pytest.fixture
 def client():
-    app = create_app()
+    app = app.create_app()
     with app.test_client() as client:
         yield client

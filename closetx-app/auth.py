@@ -1,5 +1,4 @@
 import jwt
-import functools
 from lib.db_helper import * 
 from lib.error_codes import ResponseString 
 from flask import Blueprint, g, redirect, render_template, request, session, url_for, current_app, jsonify
