@@ -17,8 +17,8 @@ DB connector should make repeated attempts to connect to the db and not give up 
 
 def get_s3_boto_client():
     try:
-        boto3.setup_default_session(aws_access_key_id=os.getenv('aws_access_key_id'),
-                                    aws_secret_access_key=os.getenv('aws_secret_access_key_id'),
+        boto3.setup_default_session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+                                    aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
                                     region_name='us-east-2')
         current_app.logger.debug("S3 client connected")
     except Exception as e:
