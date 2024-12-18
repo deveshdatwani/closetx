@@ -1,13 +1,26 @@
-import os
-import sys
-import pytest 
-sys.path.append(os.path.expanduser("~")+'/closetx')
-import importlib  
-foobar = importlib.import_module("closetx-app.app")
+import pytest
+import importlib
+from closetx_app.app import create_app
+
+@pytest.fixture()
+def app():
+    app = create_app()
+    app.config.update({
+        "TESTING": True,
+    })
+
+    # other setup can go here
+
+    yield app
+
+    # clean up / reset resources here
 
 
-@pytest.fixture
-def client():
-    app = app.create_app()
-    with app.test_client() as client:
-        yield client
+@pytest.fixture()
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture()
+def runner(app):
+    return app.test_cli_runner()

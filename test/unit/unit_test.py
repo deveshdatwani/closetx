@@ -1,9 +1,9 @@
 import sys
 import pytest 
-sys.path.append('../../closetx-app')
-from app import create_app 
+import importlib
 
 
 def test_home(client):
     response = client.get('/')
     assert response.status_code == 200
+    assert b"hacked" in response.data
