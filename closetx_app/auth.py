@@ -1,11 +1,9 @@
 import jwt
-from lib.db_helper import * 
-from lib.error_codes import ResponseString 
+from .lib.db_helper import *  
 from flask import Blueprint, g, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
 auth = Blueprint("auth", __name__)
-response_string = ResponseString()
 
 
 @auth.route('/', methods=['GET', 'POST'])

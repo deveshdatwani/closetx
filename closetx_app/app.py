@@ -1,8 +1,7 @@
 import os
 import logging  
-import auth, apparel
+from . import auth, apparel
 from flask import Flask
-from lib.error_codes import ResponseString 
 
 def create_app(config_file=None): 
     app = Flask(__name__)
