@@ -54,8 +54,10 @@ def get_db_x():
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             current_app.logger.error("Failed to authenticate client on mysql server")
+            return None
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             current_app.logger.error("Database closetx does not exist")
+            return None
         else:
             current_app.logger.error(err)        
         return None

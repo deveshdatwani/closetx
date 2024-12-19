@@ -38,6 +38,7 @@ def login():
         return serve_response(data, 422)   
     user = login_user(username, password)
     if user:
+        return user
         data = jsonify({"message":"Login success", "user_details": user[:3]})
         data.headers["JWT-header"] = jwt.encode(payload={"user":user[:3]}, key="closetx_secret", algorithm='HS256')
         return data
