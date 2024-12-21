@@ -1,5 +1,5 @@
 on:
-  pull-request:
+  pull_request:
     branches:
       - staging
 
@@ -10,7 +10,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Run pytest
-        run: python3 -m pytest 
+        run: python3 -m pytest -v
 
   # build_images:
   #   runs-on: ubuntu-latest
