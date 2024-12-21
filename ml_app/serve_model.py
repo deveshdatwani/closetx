@@ -3,20 +3,19 @@ import cv2
 import torch
 import functools
 import numpy as np
-from .lib.db_helper import *
-from matplotlib import pyplot as plt  
+from .lib.db_helper import *  
 from flask import Blueprint, g, request, redirect, current_app
 
 
 serve_model = Blueprint("serve_model", __name__)
 
 
-@serve_model.route('/', methods=['GET',])
+@serve_model.route('/model', methods=['GET',])
 def index():
-    return "Invalid URL"
+    return "Welcome to closetx engine"
 
 
-@serve_model.route('/apparel/match', methods=['GET', 'POST'])
+@serve_model.route('/model/apparel/match', methods=['GET', 'POST'])
 def match_apparel():
     top = request.files['top']
     top = Image.open(top)

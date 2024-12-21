@@ -1,7 +1,7 @@
 import functools
 import jwt
-from lib.db_helper import * 
-from lib.img_utils import *
+from .lib.db_helper import * 
+from .lib.img_utils import *
 from flask import Blueprint, g, request, session, current_app, send_file, jsonify, url_for, redirect
 
 
@@ -52,7 +52,6 @@ def get_use_apparel():
     
 
 @apparel.route('/closet', methods=['GET',])
-@login_required
 def get_user_closet():
     try:
         userid = request.form['userid']
