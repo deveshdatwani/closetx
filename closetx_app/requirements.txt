@@ -3,4 +3,4 @@ pyjwt
 boto3
 mysql-connector-python
 pillow
-opencv-python
+opencv-python-headless
