@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: white;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 0 solid #000;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+            /* box-shadow: 0rem 0rem 1rem 1rem #f0f0f0; */
+            border-radius: 0.3rem;
+
+        }
+
+        .button:hover {
+            background-color: #f0f0f0;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="image-form" action="http://69.132.88.170:8080/apparel/match" method="POST" enctype="multipart/form-data">
+            <label for="image-upload-1" class="button">upload top</label>
+            <input type="file" id="image-upload-1" name="top" accept="image/*">
+            <label for="image-upload-2" class="button">upload bottom</label>
+            <input type="file" id="image-upload-2" name="bottom" accept="image/*">
+            <button type="submit" class="button">match apparel</button>
+        </form>
+    </div>
+</body>
+</html>

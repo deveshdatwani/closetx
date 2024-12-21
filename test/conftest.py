@@ -1,12 +1,18 @@
-import sys
-import pytest 
-sys.path.append('../closetx-app')
-print(sys.path)
-from app import create_app
+import pytest
+from closetx_app.app import create_app
 
 
-@pytest.fixture
-def client():
+@pytest.fixture()
+def app():
     app = create_app()
-    with app.test_client() as client:
-        yield client
+    yield app
+
+
+@pytest.fixture()
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture()
+def runner(app):
+    return app.test_cli_runner()

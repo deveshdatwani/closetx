@@ -15,10 +15,11 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
   closetx-app:
-    image: closetx:v2
+    image: closetx:v1
     container_name: closetx-app
     ports:
       - "5000:5000"
+    restart: always
     environment:
       - ENV=prod
     networks:
