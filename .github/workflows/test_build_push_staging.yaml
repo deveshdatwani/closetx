@@ -1,5 +1,5 @@
 on:
-  pull-request:
+  pull_request:
     branches:
       - staging
 
@@ -9,8 +9,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Install pytest
+        run: pip3 install -r requirements.txt
       - name: Run pytest
-        run: python3 -m pytest 
+        run: python3 -m pytest -v
 
   # build_images:
   #   runs-on: ubuntu-latest
