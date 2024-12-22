@@ -5,7 +5,7 @@ from .lib.img_utils import *
 from flask import Blueprint, g, request, session, current_app, send_file, jsonify, url_for, redirect
 
 
-apparel = Blueprint("apparel", __name__)
+apparel = Blueprint("apparel", __name__, url_prefix="/app")
 
 
 def login_required(view):
