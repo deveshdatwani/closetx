@@ -78,7 +78,6 @@ def register_user(username, password, email):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
-            current_app.logger.info("Matching password for user")
             crx = dbx.cursor()
             auth_string = generate_password_hash(password)
             crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
@@ -99,6 +98,7 @@ def login_user(username, password):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
+            current_app.logger.info("Matching password for user")
             crx = dbx.cursor()
             crx.execute("SELECT * FROM user WHERE username = %s", (username,))
             user = crx.fetchone()

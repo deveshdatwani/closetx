@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Image Highlighter</title>
-    <style>
-        body {
-            width: 200px;
-            font-family: Arial, sans-serif;
-        }
-        button {
-            padding: 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
+  <title>Login</title>
+  <script src="script.js" defer></script>
 </head>
 <body>
-    <h3>Image Highlighter</h3>
-    <button id="highlightButton">Highlight Images</button>
-
-    <!-- External JavaScript file -->
-    <script src="popup.js"></script>
+  <form>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button id="login-button" type="submit">Submit</button>
+  </form>
 </body>
 </html>

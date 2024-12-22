@@ -33,17 +33,15 @@ def login():
         username = request.form['username']
         password = request.form['password']
     except KeyError:
-        current_app.logger.error("Missing request parameters")
-        data = "Missing request parameters"             
-        return serve_response(data, 422)   
+        current_app.logger.error("Missing request parameters")             
+        return serve_response(data="Missing request parameters" , status_code=422)   
     user = login_user(username, password)
     if user:
         data = jsonify({"message":"Login success", "user_details": user[:3]})
         data.headers["JWT-header"] = jwt.encode(payload={"user":user[:3]}, key="closetx_secret", algorithm='HS256')
         return data
     elif user == "Incorrect password": 
-        data = user
-        return serve_response(data, 201)
+        return serve_response(data=user, status_code=201)
     elif not user:
         return serve_response(data="Could not find user with given username", status_code=503)       
 
@@ -57,9 +55,8 @@ def logout():
 @auth.route('/delete', methods=['DELETE',])
 def delete():
     username = request.form['username']
-    if delete_user(username): 
-        data = "User deleted"           
-        return serve_response(data, status_code=200)
+    if delete_user(username):     
+        return serve_response(data="User deleted", status_code=200)
     else:
         data = "Something went wrong"      
         return serve_response(data=data, status_code=500)
