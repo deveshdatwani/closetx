@@ -1,11 +1,11 @@
-import io, os
+import os
+import cv2
 import torch
+import numpy as np
 from PIL import Image
 from time import time
 import mysql.connector
-from mysql.connector import errorcode
-from flask import session, g, current_app
-import torchvision.transforms as transforms
+from flask import current_app
 
 
 '''
@@ -30,9 +30,16 @@ def get_db_x():
 
 
 def inference(model, top, bottom):
-    transform = transforms.ToTensor()
-    top = transform(top)
-    bottom = transform(bottom)
+    top = Image.open(top)
+    top = np.array(top, np.float32)
+    top = cv2.resize(top,(576, 576))
+    top = cv2.cvtColor(top, cv2.COLOR_BGR2RGB)
+    bottom = Image.open(bottom)
+    bottom = np.array(bottom, np.float32)
+    bottom = cv2.resize(bottom,(576, 576))
+    bottom = cv2.cvtColor(bottom, cv2.COLOR_BGR2RGB)
+    top = torch.permute(torch.from_numpy(top), (2, 0, 1))
+    bottom = torch.permute(torch.from_numpy(bottom), (2, 0, 1))
     top = top.unsqueeze(0)
     bottom = bottom.unsqueeze(0)
     start = time()
