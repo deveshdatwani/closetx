@@ -1,6 +1,6 @@
-opencv-python
 torch
-torchvision
 flask
 pillow
 mysql-connector
+opencv-python-headless
+torchvision
