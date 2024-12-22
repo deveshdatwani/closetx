@@ -4,7 +4,7 @@ import importlib
 
 
 def test_home(client):
-    response = client.get('/')
+    response = client.get('/app/')
     assert response.status_code == 200
     assert b"Closetx" in response.data
 
