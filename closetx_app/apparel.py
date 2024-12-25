@@ -25,6 +25,18 @@ def login_required(view):
     return wrapped_view
 
 
+@apparel.route('/closet/apparel', methods=['GET',])
+def get_use_apparel():
+    try:
+        image_uri = request.form['uri']
+    except KeyError:    
+        current_app.logger.error("Missing request parameters")        
+        return serve_response(data="Missing reques parameters", status_code=403)
+    apparel_image = get_apparel(image_uri)
+    if not apparel_image: return serve_response(data="No apparel found", status_code=404)
+    else: return send_file(apparel_image, mimetype='image/png')
+
+
 @apparel.route('/closet', methods=['POST',])
 def add_apparel():
     try:
@@ -39,18 +51,6 @@ def add_apparel():
         return serve_response(data="Something went wrong", status_code=404)
     
 
-@apparel.route('/closet/apparel', methods=['GET',])
-def get_use_apparel():
-    try:
-        image_uri = request.form['uri']
-    except KeyError:    
-        current_app.logger.error("Missing request parameters")        
-        return serve_response(data="Missing reques parameters", status_code=403)
-    apparel_image = get_apparel(image_uri)
-    if not apparel_image: return serve_response(data="No apparel found", status_code=404)
-    else: return send_file(apparel_image, mimetype='image/png')
-    
-
 @apparel.route('/closet', methods=['GET',])
 def get_user_closet():
     try:
@@ -59,7 +59,6 @@ def get_user_closet():
         current_app.logger.error("Missing request parameters") 
         return serve_response(data="Missing reques parameters", status_code=403)
     apparel_ids = get_user_apparels(userid)
-    print(apparel_ids)
     data = jsonify({"apparels" : apparel_ids})
     return data
 
@@ -74,5 +73,4 @@ def remove_apparel():
         return serve_response(data="Missing request parameters", status_code=403)
     response = delete_apparel(userid, uri)
     if response: data = "Apparel deleted successfully"
-    else: data = "Something went wrong"
-    return serve_response(data=data, status_code=203)
+    else: return serve_response(data="Something went wrong", status_code=203)
