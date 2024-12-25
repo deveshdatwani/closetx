@@ -154,28 +154,26 @@ def load_seg_model(checkpoint_path, device='cpu'):
     return net
 
 
-def main(checkpoint_path, image, device):
-    device = 'cuda:0' if device=='gpu' else 'cpu'
+def get_model(checkpoint_path='./model/cloth_segm.pth', device='cpu'):
     model = load_seg_model(checkpoint_path, device=device)
+    return model
+
+
+def main(image, device, model):
+    device = 'cuda:0' if device=='gpu' else 'cpu'
     palette = get_palette(4)
     img = Image.open(image).convert('RGB')
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    return masks, cloth_seg
+    return masks, cloth_seg, img
 
 
-def segment_apparel(image=None, checkpoint_path=None, device=None):
-    masks, cloth_seg = main(checkpoint_path, image, device)
+def segment_apparel(image=None, device=None, model=None):
+    masks, cloth_seg, img = main(image, device, model)
     if len(masks) > 1:
         top, bottom = masks[0], masks[1]
+        top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(top, np.uint8))
+        bottom = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(bottom, np.uint8))
+        top, bottom = Image.fromarray(top), Image.fromarray(bottom)
         return top, bottom
     else:
         return None
-
-
-top, bottom = segment_apparel(
-                        checkpoint_path = './model/cloth_segm.pth',
-                        device = ' cpu',
-                        image = '/home/deveshdatwani/closetx/models/dataset/v2/pinterest_1092193347127709629.jpg'
-                        )
-plt.imshow(bottom)
-plt.show()
