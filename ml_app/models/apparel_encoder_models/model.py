@@ -19,6 +19,7 @@ class EfficientNet(nn.Module):
         self.final_relu = nn.ReLU()
         self.fc = nn.Linear(1280, output_dim)
         self.output_layer = nn.Linear(output_dim*2, 1)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x, y):
         x = self.efficient_net.features(x)
@@ -35,7 +36,7 @@ class EfficientNet(nn.Module):
         y = self.fc(y)
         score_dimension = torch.concat((x, y), dim=1)
         score = self.output_layer(score_dimension)
-        return score
+        return self.sigmoid(score)
     
 
 class VisionTransformer(nn.Module):
