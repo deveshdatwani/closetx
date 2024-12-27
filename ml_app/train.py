@@ -5,7 +5,7 @@ import torch.nn as nn
 from dataloader import *
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from models.apparel_encoder_models. model import EfficientNet
+from models.encoder.model import EfficientNet, VisionTransformer
 
 
 def train_model(model, dataloader, criterion, optimizer, num_epochs, device, checkpoint_path):
@@ -24,11 +24,12 @@ def train_model(model, dataloader, criterion, optimizer, num_epochs, device, che
         model.train()
         running_loss = 0.0
         for top_images, bottom_images, targets in dataloader:
-            targets = targets.view(2, 1)
+            targets = targets.view(1, 1)
             targets = targets.to(torch.float32)
             top_images, bottom_images, targets = top_images.to(device), bottom_images.to(device), targets.to(device)
             optimizer.zero_grad()
             outputs = model(top_images, bottom_images)
+            print(f"--- {outputs} -- {targets}")
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
