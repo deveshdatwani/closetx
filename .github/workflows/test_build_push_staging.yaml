@@ -7,16 +7,30 @@ jobs:
   unit_test:
     runs-on: ubuntu-latest
     environment: runner_repository
+    services:
+      mysql:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: hello
+          MYSQL_DATABASE: closetxdb
+          MYSQL_USER: closetx
+          MYSQL_PASSWORD: hello
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Access secrets
         run: |
           echo "My secret is ${{ secrets.AWS_SECRET_KEY }}"
-      # - name: Install pytest
-      #   run: pip3 install -r requirements.txt
+      - name: Install pytest
+        run: pip3 install -r requirements.txt
       # - name: Run pytest
+      #   env: 
+      #     AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      #     AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       #   run: python3 -m pytest -v
+        
 
   # build_images:
   #   runs-on: ubuntu-latest
