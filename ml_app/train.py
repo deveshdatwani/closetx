@@ -5,7 +5,7 @@ import torch.nn as nn
 from dataloader import *
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from models.encoder.model import EfficientNet, VisionTransformer
+from models.encoder.resnets import vgg_16
 
 
 def train_model(model, dataloader, criterion, optimizer, num_epochs, device, checkpoint_path):
@@ -62,7 +62,7 @@ def main():
                         help='Device to use for training (e.g., "cpu" or "cuda")')
     parser.add_argument('--checkpoint', type=str, default='./checkpoint.pth', help='Path to save the model checkpoint')
     args = parser.parse_args()
-    model = EfficientNet()
+    model = vgg_16()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
     custom_dataset = CustomDataset(data_path="/home/deveshdatwani/closetx/ml_app/models/dataset",
                                 raw_path="/home/deveshdatwani/closetx/ml_app/models/dataset", 
