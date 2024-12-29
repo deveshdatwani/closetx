@@ -92,7 +92,6 @@ def apply_transform(img):
 
 
 def generate_mask(input_image, net, palette, device = 'cpu'):
-    #img = Image.open(input_image).convert('RGB')
     img = input_image
     img_size = img.size
     img = img.resize((768, 768), Image.BICUBIC)
@@ -102,7 +101,6 @@ def generate_mask(input_image, net, palette, device = 'cpu'):
     cloth_seg_out_dir = os.path.join(opt.output,'cloth_seg')
     os.makedirs(alpha_out_dir, exist_ok=True)
     os.makedirs(cloth_seg_out_dir, exist_ok=True)
-
     with torch.no_grad():
         output_tensor = net(image_tensor.to(device))
         output_tensor = F.log_softmax(output_tensor[0], dim=1)
@@ -110,29 +108,20 @@ def generate_mask(input_image, net, palette, device = 'cpu'):
         output_tensor = torch.squeeze(output_tensor, dim=0)
         output_arr = output_tensor.cpu().numpy()
     classes_to_save = []
-    
-    # Check which classes are present in the image
-    for cls in range(1, 4):  # Exclude background class (0)
+    for cls in range(1, 4):
         if np.any(output_arr == cls):
             classes_to_save.append(cls)
-
     alpha_masks = []
-    # Save alpha masks
     for cls in classes_to_save:
         alpha_mask = (output_arr == cls).astype(np.uint8) * 255
-        alpha_mask = alpha_mask[0]  # Selecting the first channel to make it 2D
+        alpha_mask = alpha_mask[0] 
         alpha_mask_img = Image.fromarray(alpha_mask, mode='L')
         alpha_mask_img = alpha_mask_img.resize(img_size, Image.BICUBIC)
         alpha_masks.append(alpha_mask_img)
-        # alpha_mask_img.save(os.path.join(alpha_out_dir, f'{cls}.png'))
-    # Save final cloth segmentations
     cloth_seg = Image.fromarray(output_arr[0].astype(np.uint8), mode='P')
     cloth_seg.putpalette(palette)
     cloth_seg = cloth_seg.resize(img_size, Image.BICUBIC)
-    # cloth_seg.save(os.path.join(cloth_seg_out_dir, 'final_seg.png'))
-    
     return alpha_masks, cloth_seg
-
 
 
 def check_or_download_model(file_path):
@@ -154,28 +143,26 @@ def load_seg_model(checkpoint_path, device='cpu'):
     return net
 
 
-def main(checkpoint_path, image, device):
-    device = 'cuda:0' if device=='gpu' else 'cpu'
+def get_model(checkpoint_path='./model/cloth_segm.pth', device='cpu'):
     model = load_seg_model(checkpoint_path, device=device)
+    return model
+
+
+def main(image, device, model):
+    device = 'cuda:0' if device=='gpu' else 'cpu'
     palette = get_palette(4)
     img = Image.open(image).convert('RGB')
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    return masks, cloth_seg
+    return masks, cloth_seg, img
 
 
-def segment_apparel(image=None, checkpoint_path=None, device=None):
-    masks, cloth_seg = main(checkpoint_path, image, device)
+def segment_apparel(image=None, device=None, model=None):
+    masks, cloth_seg, img = main(image, device, model)
     if len(masks) > 1:
         top, bottom = masks[0], masks[1]
+        top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(top, np.uint8))
+        bottom = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(bottom, np.uint8))
+        top, bottom = Image.fromarray(top), Image.fromarray(bottom)
         return top, bottom
     else:
         return None
-
-
-top, bottom = segment_apparel(
-                        checkpoint_path = './model/cloth_segm.pth',
-                        device = ' cpu',
-                        image = '/home/deveshdatwani/closetx/models/dataset/v2/pinterest_1092193347127709629.jpg'
-                        )
-plt.imshow(bottom)
-plt.show()

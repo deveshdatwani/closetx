@@ -42,9 +42,8 @@ def inference(model, top, bottom):
     bottom = torch.permute(torch.from_numpy(bottom), (2, 0, 1))
     top = top.unsqueeze(0)
     bottom = bottom.unsqueeze(0)
-    start = time()
+    start_time = time()
     score = model(bottom, top)
-    end = time()
-    total_time_taken = (end - start)
-    print(f"Inference time {total_time_taken}") 
+    end_time = time()
+    current_app.logger.info(f"Inferenced {top.shape[0]} batches in {end_time - start_time} seconds")
     return score
