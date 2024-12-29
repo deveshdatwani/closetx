@@ -74,3 +74,15 @@ def remove_apparel():
     response = delete_apparel(userid, uri)
     if response: data = "Apparel deleted successfully"
     else: return serve_response(data="Something went wrong", status_code=203)
+
+
+@apparel.route('/delete/all', methods=['DELETE',])
+def remove_closet():
+    try:
+        userid = request.form['userid']
+    except KeyError:
+        current_app.logger.error("Missing request parameters")              
+        return serve_response(data="Missing request parameters", status_code=403)
+    response = delete_closet(userid)
+    if response: data = "Closet deleted successfully"
+    else: return serve_response(data="Something went wrong", status_code=203)
