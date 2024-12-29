@@ -3,19 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
-  <title>Login</title>
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+  <title>Image Widget</title>
 </head>
 <body>
-  <form>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br>
-    <button id="login-button" type="submit">Submit</button>
-  </form>
+  <div id="widget-panel">
+    <h3>Image Fetcher</h3>
+    <div id="image-container">
+      <!-- Images will be dynamically rendered here -->
+    </div>
+  </div>
+  <script src="widget.js"></script>
 </body>
 </html>

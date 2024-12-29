@@ -1,24 +1,16 @@
 {
-    "manifest_version": 3,
-    "name": "Image Highlighter",
-    "description": "Highlights all images on the webpage",
-    "version": "1.0",
-    "permissions": [
-      "activeTab"
-    ],
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
-      }
-    ],
-    "content_security_policy": {
-      "extension_pages": "script-src 'self'; object-src 'self';"  
-      }
-} 
+  "manifest_version": 3,
+  "name": "Image Fetcher and Highlighter",
+  "version": "1.0",
+  "description": "A Chrome extension to fetch and display API images and highlight webpage images.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+    "web_accessible_resources": [
+        ]
+}

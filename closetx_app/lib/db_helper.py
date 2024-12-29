@@ -36,7 +36,7 @@ def serve_response(data: str, status_code: int):
 
 def get_db_x():
     attempts = 5
-    password = os.getenv('DB_PASSWORD', 'password')
+    password = os.getenv('DB_PASSWORD', 'hello')
     db_host = os.getenv('DB_HOST', '127.0.0.1')
     db_port = os.getenv('DB_PORT', '3306')
     try:
