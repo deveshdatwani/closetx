@@ -213,3 +213,18 @@ def delete_apparel(userid, uri):
             current_app.logger.error(e)
             return False
         return True
+    
+def delete_closet(userid):
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            crx.execute("DELETE FROM apparel WHERE user = %s", (userid,))
+            dbx.commit()
+            crx.close() 
+            dbx.close()
+        except Exception as e:
+            current_app.logger.error("Could not delete closet")
+            current_app.logger.error(e)
+            return False
+        return True
