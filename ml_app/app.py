@@ -11,9 +11,9 @@ def create_app(config_file=None):
     logging.basicConfig(format='%(asctime)s-%(levelname)s-%(message)s', level=logging.INFO)
     app.logger = logging.getLogger("mlapp-logger")    
     app.logger.setLevel(logging.INFO) 
-    from models.apparel_encoder_models.model import EfficientNet
-    app.register_blueprint(serve_model.serve_model)
-    app.match_engine = EfficientNet()
+    # from models.apparel_encoder_models.model import EfficientNet
+    # app.register_blueprint(serve_model.serve_model)
+    # app.match_engine = EfficientNet()
     if config_file:
         try:
             app.config.from_file(config_file)

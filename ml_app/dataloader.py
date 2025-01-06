@@ -11,9 +11,10 @@ class CustomDataset(Dataset):
         self.raw_path = raw_path
         self.top_path = top_path
         self.bottom_path = bottom_path
-        self.transform = transforms.Compose([  transforms.Resize((26, 26)), 
-                                                transforms.ToTensor(), 
-                                                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        self.transform = transforms.Compose([   
+                                            transforms.Resize((276, 276)), 
+                                            transforms.ToTensor(), 
+                                            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                             ])
         self.counter = 1
 

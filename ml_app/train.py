@@ -8,9 +8,14 @@ from torch.utils.data import DataLoader
 from models.encoder.resnets import vgg_16
 
 
-def train_model(model, dataloader, criterion, optimizer, num_epochs, device, checkpoint_path):
+def train_model(model, dataloader, criterion, optimizer, device, checkpoint_path, epochs):
     model.to(device)
     history = {'train_loss': []}
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
+    if checkpoint["epoch"]:
+        num_epoch = checkpoint["epoch"]
+    else:
+        num_epoch = epochs
     if checkpoint_path and os.path.isfile(checkpoint_path):
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -20,7 +25,7 @@ def train_model(model, dataloader, criterion, optimizer, num_epochs, device, che
         print(f"Resuming training from epoch {start_epoch}")
     else:
         start_epoch = 0
-    for epoch in range(start_epoch, num_epochs):
+    for epoch in range(start_epoch, num_epoch):
         model.train()
         running_loss = 0.0
         for top_images, bottom_images, targets in dataloader:
@@ -37,7 +42,7 @@ def train_model(model, dataloader, criterion, optimizer, num_epochs, device, che
             print(f"Current loss {loss.item()}")
         epoch_loss = running_loss / len(dataloader.dataset)
         history['train_loss'].append(epoch_loss)
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {epoch_loss:.4f}')
+        print(f'Epoch [{epoch + 1}/{num_epoch}], Loss: {epoch_loss:.4f}')
         save_checkpoint(model, optimizer, epoch, history, checkpoint_path)
     return model, history
 
@@ -70,7 +75,7 @@ def main():
                                 bottom_path="/home/deveshdatwani/closetx/ml_app/models/dataset/positive/bottom")
     dataloader = DataLoader(custom_dataset, batch_size=args.batch_size, shuffle=True)
     criterion = nn.BCELoss()
-    trained_model, training_history = train_model(model, dataloader, criterion, optimizer, args.epochs, args.device, args.checkpoint)
+    trained_model, training_history = train_model(model, dataloader, criterion, optimizer, args.device, args.checkpoint, args.epochs)
 
 
 if __name__ == '__main__':

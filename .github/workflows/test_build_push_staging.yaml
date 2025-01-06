@@ -25,6 +25,10 @@ jobs:
           echo "My secret is ${{ secrets.AWS_SECRET_KEY }}"
       - name: Install pytest
         run: pip3 install -r requirements.txt
+      # - name: Run SQL Script
+      # run: |
+      #   mysql -h 127.0.0.1 -u closetx -p hello closetx < schema.sql
+
       # - name: Run pytest
       #   env: 
       #     AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
