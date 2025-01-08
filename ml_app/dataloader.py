@@ -6,11 +6,8 @@ from torch.utils.data import Dataset, DataLoader
 
 
 class CustomDataset(Dataset):
-    def __init__(self, data_path, raw_path, top_path, bottom_path):
-        self.data_path = data_path
-        self.raw_path = raw_path
-        self.top_path = top_path
-        self.bottom_path = bottom_path
+    def __init__(self):
+        self.top_path = "/home/deveshdatwani/closetx/ml_app/models/dataset/positive/top"
         self.transform = transforms.Compose([   
                                             transforms.Resize((276, 276)), 
                                             transforms.ToTensor(), 
@@ -22,24 +19,15 @@ class CustomDataset(Dataset):
         return len(os.listdir(self.top_path))
 
     def __getitem__(self, idx):
-        if self.counter % 2:
-            idx = 2
-            top_path = os.path.join(self.top_path, os.listdir(self.top_path)[idx])
-            bottom_path = os.path.join(self.bottom_path, os.listdir(self.bottom_path)[idx])
-            top_image = self.transform(Image.open(top_path))
-            bottom_image = self.transform(Image.open(bottom_path))
-            targets = 1
-            self.counter += 1
-        else:
-            top_path = os.path.join(self.top_path, os.listdir(self.top_path)[idx])          
-            idx = 30
-            idx_rand = random.choice(list(range(82)))
-            idx_rand = 31
-            while idx_rand == idx:
-                idx_rand = random.choice(list(range(82)))
-            bottom_path = os.path.join(self.bottom_path, os.listdir(self.bottom_path)[idx_rand])
-            top_image = self.transform(Image.open(top_path))
-            bottom_image = self.transform(Image.open(bottom_path))
-            targets = 0
-            self.counter += 1
-        return top_image, bottom_image, targets
+        top_base_url = "/home/deveshdatwani/closetx/ml_app/models/dataset/positive/top"
+        bottom_base_url = "/home/deveshdatwani/closetx/ml_app/models/dataset/positive/bottom"
+        top_path = os.path.join(bottom_base_url, os.listdir(top_base_url)[idx])
+        bottom_path = os.path.join(top_base_url, os.listdir(bottom_base_url)[idx])
+        top_image = self.transform(Image.open(top_path))
+        bottom_image = self.transform(Image.open(bottom_path))
+        idx_rand = random.randint(0, len(os.listdir(bottom_base_url)))
+        while idx_rand == idx:
+            idx_rand = random.randint(0, len(os.listdir(bottom_base_url)))
+        wrong_bottom_path = os.path.join(bottom_base_url, os.listdir(bottom_base_url)[idx_rand])
+        wrong_bottom_image = self.transform(Image.open(wrong_bottom_path))
+        return top_image, bottom_image, wrong_bottom_image
