@@ -24,3 +24,15 @@ class TypeSpecificModel(nn.Module):
     def forward(self, x):
         x = self.backbone(x)
         return x
+    
+
+class FullModel(nn.Module):
+    def __init__(self):
+        super(FullModel, self).__init__()
+        self.model_1 = TypeProjectModel()
+        self.model_2 = TypeSpecificModel()
+
+    def forward(self, x):
+        x = self.model_2(x)
+        x = self.model_1(x)
+        return x
