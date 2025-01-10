@@ -11,9 +11,6 @@ def create_app(config_file=None):
     logging.basicConfig(format='%(asctime)s-%(levelname)s-%(message)s', level=logging.INFO)
     app.logger = logging.getLogger("mlapp-logger")    
     app.logger.setLevel(logging.INFO) 
-    # from models.apparel_encoder_models.model import EfficientNet
-    # app.register_blueprint(serve_model.serve_model)
-    # app.match_engine = EfficientNet()
     if config_file:
         try:
             app.config.from_file(config_file)
@@ -24,4 +21,5 @@ def create_app(config_file=None):
         app.logger.warning("No config file found") 
         app.config["access_key"] = os.environ.get("AWS_ACCESS_KEY", default=None)
         app.config["secret_key"] = os.environ.get("AWS_SECRET_KEY", default=None)
+    app.register_blueprint(serve_model.serve_model)
     return app
