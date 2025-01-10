@@ -156,13 +156,21 @@ def main(image, device, model):
     return masks, cloth_seg, img
 
 
-def segment_apparel(image=None, device=None, model=None):
+def segment_apparel(image="/home/deveshdatwani/jacket.png", device=None, model=None):
+    model = load_seg_model("/home/deveshdatwani/closetx/ml_app/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
     masks, cloth_seg, img = main(image, device, model)
     if len(masks) > 1:
         top, bottom = masks[0], masks[1]
         top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(top, np.uint8))
         bottom = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(bottom, np.uint8))
         top, bottom = Image.fromarray(top), Image.fromarray(bottom)
+        plt.imshow(top)
+        plt.show()
         return top, bottom
     else:
-        return None
+        top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
+        plt.imshow(top)
+        plt.show()
+    
+
+segment_apparel()
