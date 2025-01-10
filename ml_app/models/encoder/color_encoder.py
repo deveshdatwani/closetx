@@ -43,9 +43,13 @@ palette_rgb = {
     darkblue: [pink, red, yellow, grey, white, black],
     purple: [orange, grey, green, white, black],
     brown: [beige, white, black],
-    grey: [pink, red, darkblue, purple]
+    grey: [pink, red, darkblue, purple],
+    white: [black],
+    black: [white]
 }
 
+
+palette_rbg_list = list(palette_rgb.keys())
 
 def rgb_to_ycc(r, g, b):
     y = .299*r + .587*g + .114*b
@@ -91,7 +95,7 @@ def rgb_to_lab(color):
     return lab_color
 
 
-def match_color(color_to_match, colors):
+def match_color(color_to_match=None, colors=palette_rgb):
     best_match = float('inf')
     best_match_key = 0
     color_to_match = rgb_to_lab(color_to_match)
@@ -103,4 +107,4 @@ def match_color(color_to_match, colors):
         if delta_after < best_match:
             best_match = delta_after
             best_match_key = idx
-    return best_match_key, best_match
+    return best_match_key
