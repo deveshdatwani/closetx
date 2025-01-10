@@ -19,7 +19,5 @@ def match():
     top_image = request.files["top"]
     bottom_image = request.files["bottom"]
     top_color, bottom_color = get_outfit_colors(top_image, bottom_image)
-    if bottom_color in palette[top_color]: 
-        return "Match 100%"
-    else:
-        return "Match 0%"
+    match = get_match(top_color, bottom_color)
+    return str(match)
