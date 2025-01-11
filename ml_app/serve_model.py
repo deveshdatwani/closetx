@@ -1,10 +1,10 @@
 import os
 from PIL import Image
 from io import BytesIO
-from models.encoder.utils import *
+from ml_app.utils import *
 from flask import Blueprint, request, current_app
-from models.encoder.utils import get_median_pixel
-from models.encoder.color_encoder import palette_rbg_list as palette
+from ml_app.utils import get_median_pixel
+from .models.encoder.color_encoder import palette_rbg_list as palette
 
 serve_model = Blueprint("serve_model", __name__, url_prefix="/model")
 
@@ -21,3 +21,12 @@ def match():
     top_color, bottom_color = get_outfit_colors(top_image, bottom_image)
     match = get_match(top_color, bottom_color)
     return str(match)
+
+
+@serve_model.route("/match/raw", methods=['POST',])
+def match_raw():
+    apparel = request.files["apparel"]
+    apparel = Image.open(BytesIO(apparel.read())).convert("RGB")
+    seg_apparel_img = seg_apparel(apparel, current_app.segmentation_model)
+    raw_match(seg_apparel_img)
+    return "Done"
