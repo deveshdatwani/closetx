@@ -21,9 +21,11 @@ def get_median_pixel(img: np.array) -> tuple:
     return median_r, median_g, median_b
 
 
-def get_outfit_colors(top_image, bottom_image):
-    top_image = Image.open(BytesIO(top_image.read()))
-    bottom_image = Image.open(BytesIO(bottom_image.read()))
+def get_outfit_colors(top_image, bottom_image, model):
+    top_image = Image.open(BytesIO(top_image.read())).convert('RGB')
+    bottom_image = Image.open(BytesIO(bottom_image.read())).convert('RGB')
+    top_image = seg_apparel(top_image, model, apparel_type=0)
+    bottom_image = seg_apparel(bottom_image, model, apparel_type=1)
     top_rgb = get_median_pixel(top_image)
     bottom_rgb = get_median_pixel(bottom_image)
     top_color = match_color(top_rgb)
@@ -39,14 +41,16 @@ def get_match(top_color, bottom_color):
     else: return 0
 
 
-def seg_apparel(img, model, device='cpu'):
+def seg_apparel(img, model, device='cpu', apparel_type=1):
     palette = get_palette(4)
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    if len(masks) == 1:
+    print(len(masks))
+    if apparel_type == 1:
         apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
+        return apparel
     else:
-        return "None"
-    return apparel
+        apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
+        return apparel
 
 
 def raw_match(img, closetx=None):
