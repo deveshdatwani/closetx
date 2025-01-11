@@ -1,53 +1,14 @@
-import math
-import colorsys
+import numpy 
+def patch_asscalar(a):
+    return a.item()
+
 import numpy as np
-from skimage.color import rgb2lab
-from collections import defaultdict
 from colorspacious import cspace_convert
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
-import numpy
-
-
-def patch_asscalar(a):
-    return a.item()
-
+from .color_config import *
 setattr(numpy, "asscalar", patch_asscalar)
-
-
-pink = (243,198,189) #0 
-red = (209,66,71) #1 
-orange = (241,89,42) #2 
-beige = (245,239,221) #3 
-yellow = (251,214,76) #4 
-green = (1,120,72) #5 
-lightblue = (200,223,236) #6 
-darkblue = (26,72,113) #7 
-purple = (115,71,90) #8
-brown = (88,57,39) #9
-grey = (174,182,189) #10
-white = (0,0,0) #11
-black = (255,255,255) #12
-dark_beige = (217,185,155) #13
-
-
-palette_rgb = {
-    pink: [lightblue, darkblue, grey, white, black],
-    red: [lightblue, darkblue, grey, white, black],
-    orange: [green, lightblue, darkblue, white, black],
-    beige: [darkblue, purple, brown, white, black],
-    yellow: [green, darkblue, white, black],
-    green: [orange, purple, white, black],
-    lightblue: [pink, red, orange, white, black],
-    darkblue: [pink, red, yellow, grey, white, black],
-    purple: [orange, grey, green, white, black],
-    brown: [beige, white, black],
-    grey: [pink, red, darkblue, purple],
-    white: [black],
-    black: [white]
-}
-
 
 palette_rbg_list = list(palette_rgb.keys())
 
@@ -102,9 +63,12 @@ def match_color(color_to_match=None, colors=palette_rgb):
     for idx, color in enumerate(colors):
         color = rgb_to_lab(color)
         adjusted_ = match_lightness(color, color_to_match)
-        delta_before = delta_e_cie2000(color, color_to_match)
         delta_after = delta_e_cie2000(color, adjusted_)
         if delta_after < best_match:
             best_match = delta_after
             best_match_key = idx
     return best_match_key
+
+
+def apprel_seg(model, img, type):
+    masks = model(img)

@@ -5,12 +5,15 @@ import torch
 import argparse
 import numpy as np
 from PIL import Image
-from options import opt
-from network import U2NET
+from .options import opt
+from .network import U2NET
 import torch.nn.functional as F
 from collections import OrderedDict
 from matplotlib import pyplot as plt
 import torchvision.transforms as transforms
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def load_checkpoint(model, checkpoint_path):
@@ -91,6 +94,7 @@ def apply_transform(img):
     return transform_rgb(img)
 
 
+
 def generate_mask(input_image, net, palette, device = 'cpu'):
     img = input_image
     img_size = img.size
@@ -156,21 +160,27 @@ def main(image, device, model):
     return masks, cloth_seg, img
 
 
-def segment_apparel(image="/home/deveshdatwani/jacket.png", device=None, model=None):
-    model = load_seg_model("/home/deveshdatwani/closetx/ml_app/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
-    masks, cloth_seg, img = main(image, device, model)
-    if len(masks) > 1:
-        top, bottom = masks[0], masks[1]
-        top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(top, np.uint8))
-        bottom = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(bottom, np.uint8))
-        top, bottom = Image.fromarray(top), Image.fromarray(bottom)
-        plt.imshow(top)
-        plt.show()
-        return top, bottom
-    else:
-        top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
-        plt.imshow(top)
-        plt.show()
-    
+# def segment_apparel(image="/home/deveshdatwani/jacket.png", device=None, model=None):
+#     model = load_seg_model("/home/deveshdatwani/closetx/ml_app/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
+#     masks, cloth_seg, img = main(image, device, model)
+#     if len(masks) > 1:
+#         top, bottom = masks[0], masks[1]
+#         top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(top, np.uint8))
+#         bottom = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(bottom, np.uint8))
+#         top, bottom = Image.fromarray(top), Image.fromarray(bottom)
+#         return top, bottom
+#     else:
+#         top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
 
-segment_apparel()
+
+# def seg_apparel(img, model, device='cpu'):
+#     palette = get_palette(4)
+#     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
+#     if len(masks) == 1:
+#         apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
+#     return apparel
+
+
+def make_model():
+    model = load_seg_model("/home/deveshdatwani/closetx/ml_app/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
+    return model
