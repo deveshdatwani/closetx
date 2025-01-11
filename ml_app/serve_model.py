@@ -18,7 +18,7 @@ def index():
 def match():
     top_image = request.files["top"]
     bottom_image = request.files["bottom"]
-    top_color, bottom_color = get_outfit_colors(top_image, bottom_image)
+    top_color, bottom_color = get_outfit_colors(top_image, bottom_image, current_app.segmentation_model)
     match = get_match(top_color, bottom_color)
     return str(match)
 
