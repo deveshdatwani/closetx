@@ -1,0 +1,5 @@
+1. client sends request to flask with image
+2. flask saves image and sends hash_value of saved image name to celery
+3. clerery worker consumes the task and process the request
+4. celery then returns the new_saved name for the request to flask
+5. flask returns the the image by opening the newly saved image 
