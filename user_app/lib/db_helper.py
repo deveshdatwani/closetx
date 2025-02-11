@@ -15,53 +15,46 @@ DB connector should make repeated attempts to connect to the db and not give up 
 '''
 
 
-def get_s3_boto_client():
-    try:
-        boto3.setup_default_session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
-                                    aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
-                                    region_name='us-east-2')
-        current_app.logger.debug("S3 client connected")
-    except Exception as e:
-        current_app.logger.error("Cannot not connect to S3")
-        current_app.logger.error(e)
-        return None
-    s3 = boto3.client('s3')
-    return s3
-
-
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response
 
 
+def get_s3_boto_client():
+    boto3.setup_default_session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+                                aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
+                                region_name='us-east-2')
+    current_app.logger.debug("S3 client connected")
+    s3 = boto3.client('s3')
+    return s3
+
+
 def get_db_x():
-    attempts = 5
     password = os.getenv('DB_PASSWORD', 'hello')
     db_host = os.getenv('DB_HOST', '127.0.0.1')
     db_port = os.getenv('DB_PORT', '3306')
-    try:
-        while attempts:
-            current_app.logger.debug("Connecting to mysql sever")
-            cnx = mysql.connector.connect(
-                user='closetx',
-                password=password,
-                host=db_host,
-                database='closetx',
-                port=db_port)
-            current_app.logger.info(f"Successfully connected to mysql sever after {5-attempts} attempts")
-            attempts -= 1
-            if cnx: break
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            current_app.logger.error("Failed to authenticate client on mysql server")
-            return None
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            current_app.logger.error("Database closetx does not exist")
-            return None
-        else:
-            current_app.logger.error(err)        
-        return None
+    database = 'closetx'
+    user = 'closetx'
+    current_app.logger.info("Connecting to mysql sever")
+    cnx = mysql.connector.connect(
+        user=user,
+        password=password,
+        host=db_host,
+        database=database,
+        port=db_port)
+    current_app.logger.info(f"Successfully connected to mysql")
     return cnx
+
+
+def register_user(username: str, password: str, email: str) -> bool:
+    dbx = get_db_x()
+    crx = dbx.cursor()
+    auth_string = generate_password_hash(password)
+    crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
+    dbx.commit()
+    crx.close()
+    dbx.close()
+    return True
 
 
 def get_user(username):
@@ -74,66 +67,27 @@ def get_user(username):
     return user
 
 
-def register_user(username, password, email):
-    dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            auth_string = generate_password_hash(password)
-            crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
-            dbx.commit()
-            crx.close()
-            dbx.close()
-        except mysql.connector.errors.IntegrityError:
-            current_app.logger.error("This username already exists or email")            
-            current_app.logger.error("User already exists")            
-            return False
-        return True
-    else:
-        current_app.logger.error("Could not connect to mysql engine")    
-        return False
-
-
 def login_user(username, password):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            current_app.logger.info("Matching password for user")
-            crx = dbx.cursor()
-            crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-            user = crx.fetchone()
-            crx.close()
-            dbx.close()  
-            if not user:
-                current_app.logger.error("Could not find user with given username")
-                return False
-            elif check_password_hash(user[3], password):
-                current_app.logger.info("User password matched")
-                return user   
-            else:
-                return "Incorrect password" 
-        except Exception as e:
-            current_app.logger.error(e)
-            return False
-    else:
-        current_app.logger.info("DB connector not connected")
-        return "Cannot establish stable connection to mysql engine"
-    
+    current_app.logger.info("Matching password for user")
+    crx = dbx.cursor()
+    crx.execute("SELECT * FROM user WHERE username = %s", (username,))
+    user = crx.fetchone()
+    crx.close()
+    dbx.close()  
+    return user    
+
 
 def delete_user(username):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            crx.execute("DELETE FROM user WHERE username = %s", (username,))
-            dbx.commit()
-            crx.close()
-            dbx.close()
-            return True
-        except Exception as e:
-            current_app.logger.error(e)
-            return False
-        
+    crx = dbx.cursor()
+    crx.execute("DELETE FROM user WHERE username = %s", (username,))
+    dbx.commit()
+    crx.close()
+    dbx.close()
+    return True
+
+# --------------------------------------- #        
 
 def post_apparel(userid, image):
     dbx = get_db_x()
