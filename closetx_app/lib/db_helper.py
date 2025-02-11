@@ -36,7 +36,7 @@ def serve_response(data: str, status_code: int):
 
 def get_db_x():
     attempts = 5
-    password = os.getenv('DB_PASSWORD', 'password')
+    password = os.getenv('DB_PASSWORD', 'hello')
     db_host = os.getenv('DB_HOST', '127.0.0.1')
     db_port = os.getenv('DB_PORT', '3306')
     try:
@@ -78,7 +78,6 @@ def register_user(username, password, email):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
-            current_app.logger.info("Matching password for user")
             crx = dbx.cursor()
             auth_string = generate_password_hash(password)
             crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
@@ -99,6 +98,7 @@ def login_user(username, password):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
         try:
+            current_app.logger.info("Matching password for user")
             crx = dbx.cursor()
             crx.execute("SELECT * FROM user WHERE username = %s", (username,))
             user = crx.fetchone()
@@ -210,6 +210,21 @@ def delete_apparel(userid, uri):
             dbx.close()
         except Exception as e:
             current_app.logger.error("Could not delete apparel")
+            current_app.logger.error(e)
+            return False
+        return True
+    
+def delete_closet(userid):
+    dbx = get_db_x()
+    if dbx and dbx.is_connected():
+        try:
+            crx = dbx.cursor()
+            crx.execute("DELETE FROM apparel WHERE user = %s", (userid,))
+            dbx.commit()
+            crx.close() 
+            dbx.close()
+        except Exception as e:
+            current_app.logger.error("Could not delete closet")
             current_app.logger.error(e)
             return False
         return True
