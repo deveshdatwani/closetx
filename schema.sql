@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS apparel;
+DROP TABLE IF EXISTS user;
+DROP USER IF EXISTS closetx;
 
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -15,3 +16,7 @@ CREATE TABLE apparel (
 	FOREIGN KEY (user) REFERENCES user(id),
     type INT
 );
+
+CREATE USER 'closetx'@'%' IDENTIFIED BY 'hello';
+GRANT ALL PRIVILEGES ON *.* TO 'closetx'@'%';
+FLUSH PRIVILEGES;

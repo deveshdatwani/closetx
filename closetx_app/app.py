@@ -3,6 +3,7 @@ import logging
 from . import auth, apparel
 from flask import Flask
 
+
 def create_app(config_file=None): 
     app = Flask(__name__)
     app.loggerlogger = logging.getLogger('my_logger')
