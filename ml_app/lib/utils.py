@@ -2,10 +2,10 @@ import logging
 import numpy as np
 from PIL import Image
 from io import BytesIO
-from .models.encoder.color_encoder import palette_rgb as palette
-from .models.encoder.color_encoder import match_color
-from .models.encoder.color_encoder import palette_rbg_list as p_list
-from .models.huggingface_cloth_segmentation.process import *
+from ..models.encoder.color_encoder import palette_rgb as palette
+from ..models.encoder.color_encoder import match_color
+from ..models.encoder.color_encoder import palette_rbg_list as p_list
+from ..models.huggingface_cloth_segmentation.process import *
 
 logger = logging.getLogger(__name__)
 
