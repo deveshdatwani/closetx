@@ -163,6 +163,7 @@ def delete_apparel(userid, uri):
             return False
         return True
     
+    
 def delete_closet(userid):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
