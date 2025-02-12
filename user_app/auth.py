@@ -3,7 +3,7 @@ from .lib.db_helper import *
 from flask import Blueprint, g, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
-auth = Blueprint("auth", __name__, url_prefix="/app")
+auth = Blueprint("auth", __name__, url_prefix="/user_app")
 
 
 @auth.route('/', methods=['GET', 'POST'])
@@ -25,8 +25,8 @@ def register():
 def login():
     username = request.form['username']
     password = request.form['password']
+    current_app.logger.info("Logging in user")
     user = login_user(username, password)
-    current_app.logger.info("User logged in")
     return jsonify(user)
     
 
@@ -39,7 +39,8 @@ def logout():
 @auth.route('/delete', methods=['DELETE',])
 def delete():
     username = request.form['username']
-    delete_user(username)     
+    current_app.logger.info('Deleting user')    
+    delete_user(username) 
     return serve_response(data="User deleted", status_code=200)
 
 
@@ -47,6 +48,7 @@ def delete():
 def user():
     username = request.form['username']
     user = get_user(username)
+    current_app.logger.info('Getting user')
     return jsonify(user)
     
 
