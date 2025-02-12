@@ -9,12 +9,6 @@ from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-'''
-SQL queries should not be string formatted. It is susceptible to SQL injections. Use ? instead. To work on when I can -- 09/24/2024
-DB connector should make repeated attempts to connect to the db and not give up on a single try
-'''
-
-
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response
@@ -24,7 +18,7 @@ def get_s3_boto_client():
     boto3.setup_default_session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
                                 aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
                                 region_name='us-east-2')
-    current_app.logger.debug("S3 client connected")
+    current_app.logger.info("S3 client connected")
     s3 = boto3.client('s3')
     return s3
 
@@ -57,16 +51,6 @@ def register_user(username: str, password: str, email: str) -> bool:
     return True
 
 
-def get_user(username):
-    dbx = get_db_x()
-    crx = dbx.cursor()
-    crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-    user = crx.fetchall()
-    crx.close()
-    dbx.close()     
-    return user
-
-
 def login_user(username, password):
     dbx = get_db_x()
     current_app.logger.info("Matching password for user")
@@ -75,7 +59,18 @@ def login_user(username, password):
     user = crx.fetchone()
     crx.close()
     dbx.close()  
-    return user    
+    if check_password_hash(user[3], password): return user
+    else: return None
+
+
+def get_user(username):
+    dbx = get_db_x()
+    crx = dbx.cursor()
+    crx.execute("SELECT * FROM user WHERE username = %s", (username,))
+    user = crx.fetchall()
+    crx.close()
+    dbx.close()     
+    return user
 
 
 def delete_user(username):
