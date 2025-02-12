@@ -82,70 +82,47 @@ def delete_user(username):
     dbx.close()
     return True
 
-# --------------------------------------- #        
 
 def post_apparel(userid, image):
     dbx = get_db_x()
-    apparel_uuid = str(uuid.uuid4())+".png"
+    apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
     image.save('./file.png')
     s3_client.upload_file('./file.png', 'closetx', apparel_uuid)
     os.remove('./file.png')
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
-            dbx.commit()
-            crx.close() 
-            dbx.close()
-            return True
-        except Exception as e:
-            current_app.logger.error(e, "Could not insert apparel into closet")
-    else:
-        return False
-
+    crx = dbx.cursor()
+    userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
+    dbx.commit()
+    crx.close() 
+    dbx.close()
+    current_app.logger.info("Inserted image into s3")
+    current_app.logger.info("Apparel URI inserted into DB")
+    return True
+        
 
 def get_apparel(uri):
     s3 = get_s3_boto_client()
-    if s3:
-        try:
-            with open('file', 'wb') as data:
-                s3.download_fileobj('closetx', uri, data)
-        except Exception as e:
-            current_app.logger.error(e) 
-            current_app.logger.warning("No resource found for given uri")
-            data = "No apparel found"
-            return serve_response(data=data, status_code=403)
+    with open('file', 'wb') as data:
+        s3.download_fileobj('closetx', uri, data)
     apparel_image = Image.open('./file')
     img_io = io.BytesIO()
     apparel_image.save(img_io, 'PNG')
     img_io.seek(0)
     os.remove('./file')
     return img_io 
-    
-
-def get_images(file_name):
-    BASE_DIR = "./"
-    file_path = os.path.join(BASE_DIR, file_name)
-    pil_img = Image.open(file_path, mode='r') 
-    byte_arr = io.BytesIO()
-    pil_img.save(byte_arr, format='PNG') #
-    encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii') 
-    return encoded_img
 
 
 def get_user_apparels(userid):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            crx.execute("SELECT uri FROM apparel WHERE user = %s", (userid,))
-            apparel_ids = crx.fetchall()
-            crx.close()
-            dbx.close()
-            return apparel_ids
-        except Exception as e:
-            current_app.logger.error(e)
+    crx = dbx.cursor()
+    crx.execute("SELECT uri FROM apparel WHERE user = %s", (userid,))
+    apparel_ids = crx.fetchall()
+    crx.close()
+    dbx.close()
+    return apparel_ids
+
+
+# --------- #
 
 
 def delete_apparel(userid, uri):
@@ -163,7 +140,7 @@ def delete_apparel(userid, uri):
             return False
         return True
     
-    
+
 def delete_closet(userid):
     dbx = get_db_x()
     if dbx and dbx.is_connected():
