@@ -15,8 +15,8 @@ def serve_response(data: str, status_code: int):
 
 
 def get_s3_boto_client():
-    boto3.setup_default_session(aws_access_key_id=os.getenv(''),
-                                aws_secret_access_key=os.getenv(''),
+    boto3.setup_default_session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+                                aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
                                 region_name='us-east-2')
     current_app.logger.info("S3 client connected")
     s3 = boto3.client('s3')
