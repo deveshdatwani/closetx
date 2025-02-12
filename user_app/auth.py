@@ -26,7 +26,7 @@ def login():
     username = request.form['username']
     password = request.form['password']
     user = login_user(username, password)
-    current_app.logger.info("Logging in user")
+    current_app.logger.info("User logged in")
     return jsonify(user)
     
 
@@ -41,6 +41,13 @@ def delete():
     username = request.form['username']
     delete_user(username)     
     return serve_response(data="User deleted", status_code=200)
+
+
+@auth.route('/user', methods=['GET',])
+def user():
+    username = request.form['username']
+    user = get_user(username)
+    return jsonify(user)
     
 
 @auth.before_app_request
