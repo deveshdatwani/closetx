@@ -1,17 +1,23 @@
 import os
 from PIL import Image
 from io import BytesIO
-from ml_app.utils import *
+from ml_app.lib.utils import *
 from flask import Blueprint, request, current_app
-from ml_app.utils import get_median_pixel
+from ml_app.lib.utils import get_median_pixel
 from .models.encoder.color_encoder import palette_rbg_list as palette
 
-serve_model = Blueprint("serve_model", __name__, url_prefix="/model")
+
+serve_model = Blueprint("serve_model", __name__, url_prefix="/ml_app")
 
 
 @serve_model.route("/")
 def index():
-    return "Closetx says, Hi"
+    return "Closetx model says Hi"
+
+
+@serve_model.route("/segment")
+def segment_apparel():
+    image = request.form['image']
 
 
 @serve_model.route("/match", methods=['POST',])
