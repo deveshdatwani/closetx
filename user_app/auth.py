@@ -32,6 +32,7 @@ def login():
 
 @auth.route('/logout', methods=['DELETE',])
 def logout():
+    userid = request.form['userid']
     session.clear() 
     return redirect(url_for('index'))
 
