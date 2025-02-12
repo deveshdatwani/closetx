@@ -23,9 +23,6 @@ def add_apparel():
     return serve_response(data="Apparel added", status_code=201)
 
 
-#-----
-    
-
 @apparel.route('/closet', methods=['GET',])
 def get_user_closet():
     userid = request.form['userid']
@@ -37,24 +34,16 @@ def get_user_closet():
 
 @apparel.route('/closet', methods=['DELETE',])
 def remove_apparel():
-    try:
-        userid = request.form['userid']
-        uri = request.form['uri']
-    except KeyError:
-        current_app.logger.error("Missing request parameters")              
-        return serve_response(data="Missing request parameters", status_code=403)
-    response = delete_apparel(userid, uri)
-    if response: data = "Apparel deleted successfully"
-    else: return serve_response(data="Something went wrong", status_code=203)
+    userid = request.form['userid']
+    uri = request.form['uri']
+    current_app.logger.info("Deleting apaprel")
+    delete_apparel(userid, uri)
+    return serve_response(data="delete successfull", status_code=201)
 
 
 @apparel.route('/delete/all', methods=['DELETE',])
 def remove_closet():
-    try:
-        userid = request.form['userid']
-    except KeyError:
-        current_app.logger.error("Missing request parameters")              
-        return serve_response(data="Missing request parameters", status_code=403)
-    response = delete_closet(userid)
-    if response: data = "Closet deleted successfully"
-    else: return serve_response(data="Something went wrong", status_code=203)
+    userid = request.form['userid']
+    current_app.logger.info("Deleting user closet")
+    delete_closet(userid)
+    return serve_response(data="Closet deleted")
