@@ -11,6 +11,7 @@ from .models.encoder.color_encoder import palette_rbg_list as palette
 serve_model = Blueprint("serve_model", __name__, url_prefix="/model")
 
 
+
 @serve_model.route("/")
 def index():
     return "Closetx model says, Hi"
@@ -30,9 +31,7 @@ def get_color():
     palette_color = get_palette_color((r,g,b))
     return palette_color
 
-
 # -------------- #
-
 
 @serve_model.route("/match", methods=['POST',])
 def match_apparels():
