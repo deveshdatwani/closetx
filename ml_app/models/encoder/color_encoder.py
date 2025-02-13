@@ -56,7 +56,7 @@ def rgb_to_lab(color):
     return lab_color
 
 
-def match_color(color_to_match=None, colors=palette_rgb):
+def get_palette_color(color_to_match=None, colors=palette_rgb):
     best_match = float('inf')
     best_match_key = 0
     color_to_match = rgb_to_lab(color_to_match)
@@ -67,7 +67,7 @@ def match_color(color_to_match=None, colors=palette_rgb):
         if delta_after < best_match:
             best_match = delta_after
             best_match_key = idx
-    return best_match_key
+    return palette_names[best_match_key]
 
 
 def apprel_seg(model, img, type):

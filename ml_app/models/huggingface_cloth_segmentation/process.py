@@ -18,7 +18,6 @@ warnings.filterwarnings('ignore')
 
 def load_checkpoint(model, checkpoint_path):
     if not os.path.exists(checkpoint_path):
-        print("----No checkpoints at given path----")
         return
     model_state_dict = torch.load(checkpoint_path, map_location=torch.device("cpu"))
     new_state_dict = OrderedDict()
@@ -27,17 +26,10 @@ def load_checkpoint(model, checkpoint_path):
         new_state_dict[name] = v
 
     model.load_state_dict(new_state_dict)
-    print("----checkpoints loaded from path: {}----".format(checkpoint_path))
     return model
 
 
 def get_palette(num_cls):
-    """ Returns the color map for visualizing the segmentation mask.
-    Args:
-        num_cls: Number of classes
-    Returns:
-        The color map
-    """
     n = num_cls
     palette = [0] * (n * 3)
     for j in range(0, n):
@@ -56,12 +48,6 @@ def get_palette(num_cls):
 
 
 class Normalize_image(object):
-    """Normalize given tensor into given mean and standard dev
-
-    Args:
-        mean (float): Desired mean to substract from tensors
-        std (float): Desired std to divide from tensors
-    """
     def __init__(self, mean, std):
         assert isinstance(mean, (float))
         if isinstance(mean, float):
@@ -94,11 +80,11 @@ def apply_transform(img):
     return transform_rgb(img)
 
 
-
 def generate_mask(input_image, net, palette, device = 'cpu'):
     img = input_image
     img_size = img.size
     img = img.resize((768, 768), Image.BICUBIC)
+    img = np.array(img)[:,:,:3]
     image_tensor = apply_transform(img)
     image_tensor = torch.unsqueeze(image_tensor, 0)
     alpha_out_dir = os.path.join(opt.output,'alpha')
@@ -158,27 +144,6 @@ def main(image, device, model):
     img = Image.open(image).convert('RGB')
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
     return masks, cloth_seg, img
-
-
-# def segment_apparel(image="/home/deveshdatwani/jacket.png", device=None, model=None):
-#     model = load_seg_model("/home/deveshdatwani/closetx/ml_app/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
-#     masks, cloth_seg, img = main(image, device, model)
-#     if len(masks) > 1:
-#         top, bottom = masks[0], masks[1]
-#         top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(top, np.uint8))
-#         bottom = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(bottom, np.uint8))
-#         top, bottom = Image.fromarray(top), Image.fromarray(bottom)
-#         return top, bottom
-#     else:
-#         top = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
-
-
-# def seg_apparel(img, model, device='cpu'):
-#     palette = get_palette(4)
-#     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-#     if len(masks) == 1:
-#         apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
-#     return apparel
 
 
 def make_model():
