@@ -65,3 +65,7 @@ def return_segmented_image(segmented_image):
     pil_image.save(img_io, format="PNG")
     img_io.seek(0)
     return img_io
+
+def match_apparel_color(r1,g1,b1,r2,g2,b2):
+    match_result = "False"
+    return match_result 
