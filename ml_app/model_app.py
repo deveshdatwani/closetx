@@ -8,7 +8,7 @@ from .models.encoder.color_encoder import get_palette_color
 from .models.encoder.color_encoder import palette_rbg_list as palette, match_apparel_color
 
 
-serve_model = Blueprint("serve_model", __name__, url_prefix="/model")
+serve_model = Blueprint("model_app", __name__, url_prefix="/model")
 
 
 @serve_model.route("/")
@@ -37,6 +37,7 @@ def match_color():
     r2, g2, b2 = int(request.form['r2']), int(request.form['g2']), int(request.form['b2'])
     match_result = match_apparel_color(r1,g1,b1,r2,g2,b2)
     return match_result
+
 # -------------- #
 
 @serve_model.route("/match", methods=['POST',])
