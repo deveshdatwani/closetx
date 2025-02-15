@@ -72,3 +72,10 @@ def get_palette_color(color_to_match=None, colors=palette_rgb):
 
 def apprel_seg(model, img, type):
     masks = model(img)
+
+
+def match_apparel_color(r1,g1,b1,r2,g2,b2):
+    match_result = "False"
+    color_1 = get_palette_color(r1,g1,b1)
+    color_2 = get_palette_color(r2,g2,b2)
+    return match_result 

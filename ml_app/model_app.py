@@ -5,7 +5,7 @@ from io import BytesIO
 from ml_app.lib.utils import *
 from flask import Blueprint, request, current_app, send_file
 from .models.encoder.color_encoder import get_palette_color
-from .models.encoder.color_encoder import palette_rbg_list as palette
+from .models.encoder.color_encoder import palette_rbg_list as palette, match_apparel_color
 
 
 serve_model = Blueprint("serve_model", __name__, url_prefix="/model")
@@ -31,6 +31,13 @@ def get_color():
     palette_color = get_palette_color((r,g,b))
     return palette_color
 
+
+@serve_model.route("/match-color")
+def match_color():
+    r1, g1, b1 = int(request.form['r1']), int(request.form['g1']), int(request.form['b1'])
+    r2, g2, b2 = int(request.form['r2']), int(request.form['g2']), int(request.form['b2'])
+    match_result = match_apparel_color(r1,g1,b1,r2,g2,b2)
+    return match_result
 # -------------- #
 
 @serve_model.route("/match", methods=['POST',])
@@ -40,12 +47,3 @@ def match_apparels():
     top_color, bottom_color = get_outfit_colors(top_image, bottom_image, current_app.segmentation_model)
     match = get_palette_color(top_color, bottom_color)
     return str(match)
-
-
-@serve_model.route("/match/raw", methods=['POST',])
-def match_raw():
-    apparel = request.files["apparel"]
-    apparel = Image.open(BytesIO(apparel.read())).convert("RGB")
-    seg_apparel_img = seg_apparel(apparel, current_app.segmentation_model)
-    raw_match(seg_apparel_img)
-    return "Done"
