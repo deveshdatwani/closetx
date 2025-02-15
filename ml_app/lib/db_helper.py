@@ -8,12 +8,6 @@ import mysql.connector
 from flask import current_app
 
 
-'''
-SQL queries should not be string formatted. It is susceptible to SQL injections. Use ? instead. To work on when I can -- 09/24/2024
-DB connector should make repeated attempts to connect to the db and not give up on a single try
-'''
-
-
 def get_db_x():
     password = os.getenv('DB_PASSWORD', 'password')
     db_host = os.getenv('DB_HOST', '127.0.0.1')

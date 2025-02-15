@@ -24,26 +24,24 @@ def segment():
     return send_file(img_io, mimetype="image/png")
 
 
-@serve_model.route("/color", methods=['POST',])
+@serve_model.route("/get-color", methods=['POST',])
 def get_color():
     r, g, b = int(request.form['r']), int(request.form['g']), int(request.form['b'])
     palette_color = get_palette_color((r,g,b))
     return palette_color
 
 
-@serve_model.route("/match-color")
+@serve_model.route("/match", methods=['POST',])
 def match_color():
     r1, g1, b1 = int(request.form['r1']), int(request.form['g1']), int(request.form['b1'])
     r2, g2, b2 = int(request.form['r2']), int(request.form['g2']), int(request.form['b2'])
     match_result = match_apparel_color(r1,g1,b1,r2,g2,b2)
-    return match_result
+    return str(match_result)
 
-# -------------- #
-
-@serve_model.route("/match", methods=['POST',])
-def match_apparels():
-    top_image = request.files["top"]
-    bottom_image = request.files["bottom"]
-    top_color, bottom_color = get_outfit_colors(top_image, bottom_image, current_app.segmentation_model)
-    match = get_palette_color(top_color, bottom_color)
-    return str(match)
+# @serve_model.route("/match", methods=['POST',])
+# def match_apparels():
+#     top_image = request.files["top"]
+#     bottom_image = request.files["bottom"]
+#     top_color, bottom_color = get_outfit_colors(top_image, bottom_image, current_app.segmentation_model)
+#     match = get_palette_color(top_color, bottom_color)
+#     return str(match)
