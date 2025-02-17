@@ -38,6 +38,15 @@ def match_color():
     match_result = match_apparel_color(r1,g1,b1,r2,g2,b2)
     return str(match_result)
 
+
+@serve_model.route("/get-color-from-apparel", methods=['POST',])
+def get_color_from_apparel():
+    image = request.files['image']
+    segmented_image = seg_apparel(image, current_app.segmentation_model)
+    median_r, median_g, median_b = get_median_pixel(segmented_image)
+    color = get_palette_color((median_r, median_g, median_b))
+    return color
+
 # @serve_model.route("/match", methods=['POST',])
 # def match_apparels():
 #     top_image = request.files["top"]
