@@ -1,7 +1,3 @@
-import os
-import io
-from PIL import Image
-from io import BytesIO
 from ml_app.lib.utils import *
 from flask import Blueprint, request, current_app, send_file
 from .models.encoder.color_encoder import get_palette_color
@@ -46,6 +42,7 @@ def get_color_from_apparel():
     median_r, median_g, median_b = get_median_pixel(segmented_image)
     color = get_palette_color((median_r, median_g, median_b))
     return color
+
 
 # @serve_model.route("/match", methods=['POST',])
 # def match_apparels():
