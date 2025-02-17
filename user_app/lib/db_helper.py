@@ -25,7 +25,7 @@ def get_s3_boto_client():
 
 def get_db_x():
     password = os.getenv('DB_PASSWORD', 'hello')
-    db_host = os.getenv('DB_HOST', '127.0.0.1')
+    db_host = os.getenv('DB_HOST', '172.17.0.1')
     db_port = os.getenv('DB_PORT', '3306')
     database = 'closetx'
     user = 'closetx'
