@@ -8,6 +8,7 @@ from ..models.encoder.color_encoder import get_palette_color as match_color
 from ..models.encoder.color_encoder import palette_rbg_list as p_list
 from ..models.huggingface_cloth_segmentation.process import *
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -65,6 +66,7 @@ def return_segmented_image(segmented_image):
     pil_image.save(img_io, format="PNG")
     img_io.seek(0)
     return img_io
+
 
 def match_apparel_color(r1,g1,b1,r2,g2,b2):
     match_result = "False"
