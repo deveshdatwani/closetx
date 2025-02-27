@@ -1,4 +1,4 @@
-from ml_app.lib.utils import *
+from .lib.utils import *
 from flask import Blueprint, request, current_app, send_file
 from .models.encoder.color_encoder import get_palette_color
 from .models.encoder.color_encoder import palette_rbg_list as palette, match_apparel_color
