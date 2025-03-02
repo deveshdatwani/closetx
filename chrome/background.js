@@ -1,4 +1,12 @@
-chrome.runtime.onInstalled.addListener(() => {
-    console.log('Image Highlighter Extension Installed');
+chrome.action.onClicked.addListener((tab) => {
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    function: highlightImages
   });
-  
+});
+
+function highlightImages() {
+  document.querySelectorAll('img').forEach(img => {
+    img.style.border = "5px solid blue";
+  });
+}

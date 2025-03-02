@@ -3,7 +3,7 @@ import sys
 import torch
 import logging  
 from flask import Flask
-from . import serve_model
+from . import model_app
 from models.huggingface_cloth_segmentation.process import make_model
 
 
@@ -23,5 +23,5 @@ def create_app(config_file=None):
         app.logger.warning("No config file found") 
         app.config["access_key"] = os.environ.get("AWS_ACCESS_KEY", default=None)
         app.config["secret_key"] = os.environ.get("AWS_SECRET_KEY", default=None)
-    app.register_blueprint(serve_model.serve_model)
+    app.register_blueprint(model_app.serve_model)
     return app
