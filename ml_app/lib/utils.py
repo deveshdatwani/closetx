@@ -1,11 +1,13 @@
+import io
 import logging
 import numpy as np
 from PIL import Image
 from io import BytesIO
-from .models.encoder.color_encoder import palette_rgb as palette
-from .models.encoder.color_encoder import match_color
-from .models.encoder.color_encoder import palette_rbg_list as p_list
-from .models.huggingface_cloth_segmentation.process import *
+from ..models.encoder.color_encoder import palette_rgb as palette
+from ..models.encoder.color_encoder import get_palette_color as match_color
+from ..models.encoder.color_encoder import palette_rbg_list as p_list
+from ..models.huggingface_cloth_segmentation.process import *
+
 
 logger = logging.getLogger(__name__)
 
@@ -42,15 +44,11 @@ def get_match(top_color, bottom_color):
 
 
 def seg_apparel(img, model, device='cpu', apparel_type=1):
+    img = Image.open(img)
     palette = get_palette(4)
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    print(len(masks))
-    if apparel_type == 1:
-        apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
-        return apparel
-    else:
-        apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
-        return apparel
+    apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
+    return apparel
 
 
 def raw_match(img, closetx=None):
@@ -60,3 +58,16 @@ def raw_match(img, closetx=None):
     for closet in closetx:
         closet = match_color(closet)
         print(get_match(closet, color))    
+
+
+def return_segmented_image(segmented_image):
+    pil_image = Image.fromarray(segmented_image.astype(np.uint8))
+    img_io  = io.BytesIO()
+    pil_image.save(img_io, format="PNG")
+    img_io.seek(0)
+    return img_io
+
+
+def match_apparel_color(r1,g1,b1,r2,g2,b2):
+    match_result = "False"
+    return match_result 

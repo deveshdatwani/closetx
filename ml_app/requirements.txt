@@ -4,3 +4,7 @@ pillow
 mysql-connector
 opencv-python-headless
 torchvision
+colorspacious
+colormath
+gdown
+gradio
