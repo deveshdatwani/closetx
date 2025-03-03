@@ -1,5 +1,6 @@
 import functools
 import jwt
+import json
 from .lib.db_helper import * 
 from flask import Blueprint, g, request, session, current_app, send_file, jsonify, url_for, redirect
 
@@ -27,8 +28,9 @@ def add_apparel():
 def add_session_apparel():
     apparel_img = request.files['image']
     apparel_id = request.form['apparel_id']
-    colors = rgb_from_img(apparel_img)
-    return serve_response(data=colors, status_code=200)
+    colors = dict(rgb_from_img(apparel_img).json())
+    colors["apparel_id"] = apparel_id
+    return jsonify(colors)
 
 
 #-----
