@@ -136,6 +136,17 @@ def rgb_from_img(image):
     return json_response
 
 
+def match_all(img, global_dict):
+    response = {}    
+    img_colors = requests.post("http://127.0.0.1:5001/model/get-color-from-apparel", files={"image":img}).json()
+    img_colors = img_colors["r"], img_colors["g"], img_colors["b"] 
+    for closet_apparel in global_dict:
+        closet_color = global_dict[closet_apparel]["r"], global_dict[closet_apparel]["g"], global_dict[closet_apparel]["b"]
+        payload = {"r1":img_colors[0], "g1":img_colors[1], "b1":img_colors[2], "r2":closet_color[0], "g2":closet_color[1], "b2":closet_color[2]}
+        match_score = requests.post("http://127.0.0.1:5001/model/match", data=payload)
+        response[closet_apparel] = int(match_score.content)
+    return response
+
 # --------- #
 
 

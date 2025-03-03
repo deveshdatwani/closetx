@@ -44,6 +44,13 @@ def get_cached_apparel():
     return send_file(img, mimetype='image/png')
 
 
+@apparel.route('/match-with-all-cache', methods=['POST', 'GET'])
+def match_with_all_cache():
+    img = request.files['image']
+    response = match_all(img, current_app.config['global_dict'])
+    return jsonify(response)
+
+
 #-----
     
 
