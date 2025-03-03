@@ -23,6 +23,14 @@ def add_apparel():
     return serve_response(data="Apparel added", status_code=201)
 
 
+@apparel.route('/add-apparel', methods=['POST'])
+def add_session_apparel():
+    apparel_img = request.files['image']
+    apparel_id = request.form['apparel_id']
+    colors = rgb_from_img(apparel_img)
+    return serve_response(data=colors, status_code=200)
+
+
 #-----
     
 
