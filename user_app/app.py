@@ -2,7 +2,10 @@ import os
 import logging  
 from . import auth, apparel
 from flask import Flask
+from .lib.config import config_cache_folder
 
+
+# experimental version for alpha MVP
 
 def create_app(config_file=None): 
     app = Flask(__name__)
@@ -11,6 +14,9 @@ def create_app(config_file=None):
     app.config["secret"] = "closetx_secret"
     app.register_blueprint(auth.auth)
     app.register_blueprint(apparel.apparel)
+    app.config["CACHE_DIR"] = "cache/"
+    config_cache_folder(app.config["CACHE_DIR"])
+    app.logger.info("Cleared and created cache directory")
     if config_file:
         try:
             app.config.from_file(config_file)
