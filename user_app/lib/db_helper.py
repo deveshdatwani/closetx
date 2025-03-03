@@ -1,6 +1,7 @@
 import uuid
 import boto3
 import io, os
+import requests
 from PIL import Image
 import mysql.connector
 from base64 import encodebytes
@@ -155,3 +156,8 @@ def delete_closet(userid):
             current_app.logger.error(e)
             return False
         return True
+
+
+def rgb_from_img(image):
+    json_response = requests.post("http://127.0.0.1:5001/model/get-color-from-apparel", files={"image":image})
+    return json_response
