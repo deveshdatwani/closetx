@@ -17,6 +17,7 @@ def create_app(config_file=None):
     app.config["CACHE_DIR"] = "cache/"
     config_cache_folder(app.config["CACHE_DIR"])
     app.logger.info("Cleared and created cache directory")
+    app.config['global_dict'] = {}
     if config_file:
         try:
             app.config.from_file(config_file)

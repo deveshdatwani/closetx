@@ -32,6 +32,7 @@ def add_session_apparel():
     img = Image.open(apparel_img)
     img.save(os.path.join(current_app.config['CACHE_DIR'], apparel_id + '.png'), 'png')
     colors["apparel_id"] = apparel_id
+    current_app.config['global_dict'][apparel_id] = colors
     return jsonify(colors)
 
 
@@ -39,6 +40,7 @@ def add_session_apparel():
 def get_cached_apparel():
     img_id = request.form['apparel_id']
     img = cached_apparel(str(img_id))
+    print(current_app.config['global_dict'])
     return send_file(img, mimetype='image/png')
 
 
