@@ -123,6 +123,19 @@ def get_user_apparels(userid):
     return apparel_ids
 
 
+def cached_apparel(img_path:str):
+    apparel_image = Image.open(os.path.join(current_app.config['CACHE_DIR'], img_path + '.png'))
+    img_io = io.BytesIO()
+    apparel_image.save(img_io, 'PNG')
+    img_io.seek(0)
+    return img_io
+
+
+def rgb_from_img(image):
+    json_response = requests.post("http://127.0.0.1:5001/model/get-color-from-apparel", files={"image":image})
+    return json_response
+
+
 # --------- #
 
 
@@ -156,8 +169,3 @@ def delete_closet(userid):
             current_app.logger.error(e)
             return False
         return True
-
-
-def rgb_from_img(image):
-    json_response = requests.post("http://127.0.0.1:5001/model/get-color-from-apparel", files={"image":image})
-    return json_response
