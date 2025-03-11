@@ -88,7 +88,7 @@ def post_apparel(userid, image):
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
     image.save('./file.png')
-    s3_client.upload_file('./file.png', 'closetx', apparel_uuid)
+    s3_client.upload_file('./file.png', 'closetx-images', apparel_uuid)
     os.remove('./file.png')
     crx = dbx.cursor()
     userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
@@ -103,7 +103,7 @@ def post_apparel(userid, image):
 def get_apparel(uri):
     s3 = get_s3_boto_client()
     with open('file', 'wb') as data:
-        s3.download_fileobj('closetx', uri, data)
+        s3.download_fileobj('closetx-images', uri, data)
     apparel_image = Image.open('./file')
     img_io = io.BytesIO()
     apparel_image.save(img_io, 'PNG')
