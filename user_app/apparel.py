@@ -8,7 +8,7 @@ from flask import Blueprint, g, request, session, current_app, send_file, jsonif
 apparel = Blueprint("apparel", __name__, url_prefix="/closet")
 
 
-@apparel.route('/get-apparel', methods=['GET',])
+@apparel.route('/apparel', methods=['GET',])
 def get_apparel_image():
     image_uri = request.form['uri']  
     current_app.logger.info("Getting apparel")
@@ -16,7 +16,7 @@ def get_apparel_image():
     return send_file(apparel_image, mimetype='image/png')
 
 
-@apparel.route('/post-apparel', methods=['POST',])
+@apparel.route('/apparel', methods=['POST',])
 def add_apparel():
     userid = request.form['userid']
     image_file = request.files['image']
@@ -24,7 +24,7 @@ def add_apparel():
     return serve_response(data="Apparel added", status_code=201)
 
 
-@apparel.route('/get-closet', methods=['GET',])
+@apparel.route('/closet', methods=['GET',])
 def get_user_closet():
     userid = request.form['userid']
     current_app.logger.info("Getting closet apparels")
@@ -33,7 +33,7 @@ def get_user_closet():
     return data
 
 
-@apparel.route('/delete-apparel', methods=['DELETE',])
+@apparel.route('/apparel', methods=['DELETE',])
 def remove_apparel():
     userid = request.form['userid']
     uri = request.form['uri']
@@ -41,7 +41,7 @@ def remove_apparel():
     return serve_response(data="Deleted apparel", status_code=203)
 
 
-@apparel.route('/delete-closet', methods=['DELETE',])
+@apparel.route('/closet', methods=['DELETE',])
 def remove_closet():
     userid = request.form['userid']
     response = delete_closet(userid)
