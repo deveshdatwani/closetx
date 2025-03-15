@@ -3,7 +3,7 @@ from .lib.db_helper import *
 from flask import Blueprint, g, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
-auth = Blueprint("auth", __name__, url_prefix="/user_app")
+auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @auth.route('/', methods=['GET', 'POST'])
