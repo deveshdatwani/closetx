@@ -1,6 +1,5 @@
-import jwt
 from .lib.db_helper import *  
-from flask import Blueprint, g, redirect, render_template, request, session, url_for, current_app, jsonify
+from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -51,14 +50,3 @@ def user():
     user = get_user(username)
     current_app.logger.info('Getting user')
     return jsonify(user)
-    
-
-@auth.before_app_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = get_db_x().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
-        ).fetchone()

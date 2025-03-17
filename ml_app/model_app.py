@@ -13,7 +13,7 @@ def index():
     return "Closetx model says, Hi"
 
 
-@serve_model.route("/segment", methods=['POST'])
+@serve_model.route("/segment", methods=['POST',])
 def segment():
     image = request.files['image']
     segmented_image = seg_apparel(image, current_app.segmentation_model)
@@ -21,7 +21,7 @@ def segment():
     return send_file(img_io, mimetype="image/png")
 
 
-@serve_model.route("/get-color", methods=['POST',])
+@serve_model.route("/color", methods=['POST',])
 def get_color():
     r, g, b = int(request.form['r']), int(request.form['g']), int(request.form['b'])
     palette_color = get_palette_color((r,g,b))
@@ -45,12 +45,3 @@ def get_color_from_apparel():
     color_rgb = palette_numbers[palette_names.index(color)]
     json_response = jsonify({"color":color, "r":color_rgb[0], "g":color_rgb[1], "b":color_rgb[2]})
     return json_response
-
-
-# @serve_model.route("/match", methods=['POST',])
-# def match_apparels():
-#     top_image = request.files["top"]
-#     bottom_image = request.files["bottom"]
-#     top_color, bottom_color = get_outfit_colors(top_image, bottom_image, current_app.segmentation_model)
-#     match = get_palette_color(top_color, bottom_color)
-#     return str(match)
