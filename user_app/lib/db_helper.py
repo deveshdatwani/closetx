@@ -123,39 +123,24 @@ def get_user_apparels(userid):
     return apparel_ids
 
 
-# --------- #
-
-
 def delete_apparel(userid, uri):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            crx.execute("DELETE FROM apparel WHERE uri = %s", (uri,))
-            dbx.commit()
-            crx.close() 
-            dbx.close()
-        except Exception as e:
-            current_app.logger.error("Could not delete apparel")
-            current_app.logger.error(e)
-            return False
-        return True
+    crx = dbx.cursor()  
+    crx.execute("DELETE FROM apparel WHERE uri = %s", (uri,))
+    dbx.commit()
+    crx.close() 
+    dbx.close()
+    return True
     
 
 def delete_closet(userid):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            crx.execute("DELETE FROM apparel WHERE user = %s", (userid,))
-            dbx.commit()
-            crx.close() 
-            dbx.close()
-        except Exception as e:
-            current_app.logger.error("Could not delete closet")
-            current_app.logger.error(e)
-            return False
-        return True
+    crx = dbx.cursor()
+    crx.execute("DELETE FROM apparel WHERE user = %s", (userid,))
+    dbx.commit()
+    crx.close() 
+    dbx.close()
+    return True
 
 
 def rgb_from_img(image):
