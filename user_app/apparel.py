@@ -1,8 +1,5 @@
-import functools
-import jwt
-import json
 from .lib.db_helper import * 
-from flask import Blueprint, g, request, session, current_app, send_file, jsonify, url_for, redirect
+from flask import Blueprint, request, current_app, send_file, jsonify
 
 
 apparel = Blueprint("apparel", __name__, url_prefix="/closet")
