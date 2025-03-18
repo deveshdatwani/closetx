@@ -8,3 +8,4 @@ colorspacious
 colormath
 gdown
 gradio
+requests

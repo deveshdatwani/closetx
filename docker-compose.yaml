@@ -22,6 +22,8 @@ services:
     restart: always
     environment:
       - ENV=prod
+      - DB_HOST=db
+      - DB_PASSWORD=hello 
     networks:
       - closetx
     volumes:
