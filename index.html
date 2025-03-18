@@ -18,13 +18,52 @@
             font-size: 3.5rem;
         }
         .animated-text {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-top: 20px;
+        }
+        .fade-in {
+            padding-top: 5rem;
+            font-size: 0.8rem;
+            opacity: 0;
+            animation: fadeIn 2s;
+            animation-delay: 2s;
+            animation-fill-mode: forwards;
+            }
+            @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        a {
+            text-decoration: none;
+            color: #0077b6;
+        }
+        .fade-in-2 {
+            font-size: 0.8rem;
+            opacity: 0;
+            animation: fadeIn 5s;
+            animation-delay: 2s;
+            animation-fill-mode: forwards;
+            }
+            @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        a {
+            text-decoration: none;
+            color: #0077b6;
         }
     </style>
 </head>
 <body>
-    <h1>CLOSETX</h1>
+    <h1>closetx</h1>
     <div class="animated-text" id="autocomplete-text"></div>
     <script>
         const text = "Your personalized fashion AI agent";
@@ -38,5 +77,11 @@
         }
         typeEffect();
     </script>
+    <div class="fade-in">
+        <a href=""><p>How it works</p></a>
+    </div>
+    <div class="fade-in-2">
+        <a href="https://github.com/deveshdatwani/closetx"><p>Github</p></a>
+    </div>
 </body>
 </html>
