@@ -3,86 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">  
     <title>ClosetX</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            background-color: white;
             font-family: 'IBM Plex Mono', monospace;
-            font-style: normal;
-            background-color: #fff;
-            color: #000;
             text-align: center;
-            flex-direction: column;
-        }
-
-        h1 {
-            font-size: 3rem;
             margin: 0;
+            padding: 50px 20px;
         }
-        .X {
-            color: #000;
+        h1 {
+            padding-top: 20rem;
+            font-size: 3.5rem;
         }
-
-        .introduction {
-            width: 25%;
-            justify-content: left;
-            text-align: center;
-        }
-
-        .image-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px; /* Spacing between images */
-            margin-bottom: 20px; /* Space below the images */
-        }
-
-        .image-container img {
-            width: 100px; /* Adjust this width to fit proportionately */
-            height: auto; /* Maintain aspect ratio */
-        }
-        .footer {
-            width: 35%;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        .beta {
-            text-align: center;
-            justify-content: center;
-            width: 25%;
-        }
-        a{
-            color: blue;
-            text-decoration: none;
-        }
-        a:hover {
-            color: lightblue;
+        .animated-text {
+            font-size: 1.2rem;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>
-        <div class="centered-text">
-            CLOSET<span class="X">X</span>
-        </div>
-        <hr>
-    </h1>
-    <br><br><br>
-    <div class="introduction">
-        Closetx leverages the power of vision transformers in unsupervised and semi-supervised learning to help you style up your closet most affordably
-    </div>
-    <div class="beta">
-        <p>Check out <a href="./alpha.html">alpha</a></p>
-    </div>      
-    <br><br><br><br><br> 
-    <div class="footer">
-        <p>Under development as of March 2025 -- <a href="https://github.com/deveshdatwani/closetx/tree/v1">Github</a> </p>
-    </div>
-    </body>
+    <h1>CLOSETX</h1>
+    <div class="animated-text" id="autocomplete-text"></div>
+    <script>
+        const text = "Your personalized fashion AI agent";
+        let index = 0;
+        function typeEffect() {
+            if (index <= text.length) {
+                document.getElementById("autocomplete-text").innerText = text.slice(0, index);
+                index++;
+                setTimeout(typeEffect, 50);
+            }
+        }
+        typeEffect();
+    </script>
+</body>
 </html>
