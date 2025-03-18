@@ -9,7 +9,6 @@ from .options import opt
 from .network import U2NET
 import torch.nn.functional as F
 from collections import OrderedDict
-from matplotlib import pyplot as plt
 import torchvision.transforms as transforms
 
 import warnings
