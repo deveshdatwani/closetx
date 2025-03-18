@@ -1,5 +1,5 @@
 from .lib.utils import *
-from flask import Blueprint, request, current_app, send_file
+from flask import Blueprint, request, current_app, send_file, jsonify
 from .models.encoder.color_encoder import get_palette_color
 from .models.encoder.color_encoder import palette_rbg_list as palette, match_apparel_color
 
@@ -41,13 +41,4 @@ def get_color_from_apparel():
     segmented_image = seg_apparel(image, current_app.segmentation_model)
     median_r, median_g, median_b = get_median_pixel(segmented_image)
     color = get_palette_color((median_r, median_g, median_b))
-    return color
-
-
-# @serve_model.route("/match", methods=['POST',])
-# def match_apparels():
-#     top_image = request.files["top"]
-#     bottom_image = request.files["bottom"]
-#     top_color, bottom_color = get_outfit_colors(top_image, bottom_image, current_app.segmentation_model)
-#     match = get_palette_color(top_color, bottom_color)
-#     return str(match)
+    return jsonify({"color":color, "r":median_r, "g":median_g, "b":median_b})
