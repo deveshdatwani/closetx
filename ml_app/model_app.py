@@ -42,3 +42,10 @@ def get_color_from_apparel():
     median_r, median_g, median_b = get_median_pixel(segmented_image)
     color = get_palette_color((median_r, median_g, median_b))
     return jsonify({"color":color, "r":median_r, "g":median_g, "b":median_b})
+
+
+@serve_model.route("/classify", methods=['POST',])
+def classify_apparel():
+    image = request.files['image']
+    label = classify_from_image(image, current_app.segmentation_model)
+    return label

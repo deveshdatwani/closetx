@@ -9,6 +9,7 @@ from .options import opt
 from .network import U2NET
 import torch.nn.functional as F
 from collections import OrderedDict
+from matplotlib import pyplot as plt
 import torchvision.transforms as transforms
 
 import warnings
@@ -142,6 +143,7 @@ def main(image, device, model):
     palette = get_palette(4)
     img = Image.open(image).convert('RGB')
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
+    print(type(masks))
     return masks, cloth_seg, img
 
 
