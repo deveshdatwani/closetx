@@ -26,6 +26,8 @@ def login():
     password = request.form['password']
     current_app.logger.info("Logging in user")
     user = login_user(username, password)
+    print(user)
+    print(type(user))
     return jsonify(user)
     
 

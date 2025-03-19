@@ -55,12 +55,12 @@ def register_user(username: str, password: str, email: str) -> bool:
 def login_user(username, password):
     dbx = get_db_x()
     current_app.logger.info("Matching password for user")
-    crx = dbx.cursor()
+    crx = dbx.cursor(dictionary=True)
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchone()
     crx.close()
     dbx.close()  
-    if check_password_hash(user[3], password): return user
+    if check_password_hash(user["password"], password): return user
     else: return None
 
 
