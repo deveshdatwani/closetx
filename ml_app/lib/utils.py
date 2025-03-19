@@ -7,6 +7,7 @@ from ..models.encoder.color_encoder import palette_rgb as palette
 from ..models.encoder.color_encoder import get_palette_color as match_color
 from ..models.encoder.color_encoder import palette_rbg_list as p_list
 from ..models.huggingface_cloth_segmentation.process import *
+from matplotlib import pyplot as plt
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,9 @@ def seg_apparel(img, model, device='cpu', apparel_type=1):
     img = Image.open(img)
     palette = get_palette(4)
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(masks[0], np.uint8))
+    cloth_seg_top = np.asarray(cloth_seg) == 1
+    cloth_seg_bottom = np.asarray(cloth_seg) == 2
+    apparel = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(cloth_seg, np.uint8))
     return apparel
 
 
@@ -71,3 +74,14 @@ def return_segmented_image(segmented_image):
 def match_apparel_color(r1,g1,b1,r2,g2,b2):
     match_result = "False"
     return match_result 
+
+
+def classify_from_image(img, model, device='cpu'):
+    img = Image.open(img)
+    palette = get_palette(4)
+    masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
+    cloth_seg_top = np.asarray(cloth_seg) == 1
+    cloth_seg_bottom = np.asarray(cloth_seg) == 2
+    if cloth_seg_top.any() and cloth_seg_bottom.any(): return "top and bottom"
+    if cloth_seg_top.any(): return "top"
+    if cloth_seg_bottom.any(): return "bottom"
