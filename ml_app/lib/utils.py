@@ -3,6 +3,7 @@ import logging
 import numpy as np
 from PIL import Image
 from io import BytesIO
+from matplotlib import pyplot as plt
 from ..models.encoder.color_encoder import palette_rgb as palette
 from ..models.encoder.color_encoder import get_palette_color as match_color
 from ..models.encoder.color_encoder import palette_rbg_list as p_list
@@ -43,7 +44,7 @@ def get_match(top_color, bottom_color):
     else: return 0
 
 
-def seg_apparel(img, model, device='cpu', apparel_type=1):
+def seg_apparel(img, model, device='cpu'):
     img = Image.open(img)
     palette = get_palette(4)
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
@@ -68,6 +69,17 @@ def return_segmented_image(segmented_image):
     return img_io
 
 
-def match_apparel_color(r1,g1,b1,r2,g2,b2):
-    match_result = "False"
-    return match_result 
+def prod_test_match(image, model, device='cpu'):
+    img = Image.open(image)
+    palette = get_palette(4)
+    masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
+    apparel_top_mask = np.asarray(cloth_seg) == 1
+    apparel_bottom_mask = np.asarray(cloth_seg) == 2
+    apparel_top_color = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(apparel_top_mask, np.uint8))
+    apparel_bottom_color = cv2.bitwise_and(np.array(img), np.array(img), mask=np.array(apparel_bottom_mask, np.uint8))
+    r, g, b = get_median_pixel(apparel_top_color)
+    color = match_color(color_to_match=(r,g,b))
+    print(color)
+    plt.imshow(apparel_top_color)
+    plt.show()
+    return True

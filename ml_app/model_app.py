@@ -45,3 +45,10 @@ def get_color_from_apparel():
     color_rgb = palette_numbers[palette_names.index(color)]
     json_response = jsonify({"color":color, "r":color_rgb[0], "g":color_rgb[1], "b":color_rgb[2]})
     return json_response
+
+
+@serve_model.route("/prod-test", methods=['POST'])
+def prod_match():
+    image = request.files['image']
+    _ = prod_test_match(image, current_app.segmentation_model)
+    return "Success", 200
