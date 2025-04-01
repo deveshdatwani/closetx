@@ -7,10 +7,16 @@ from colorspacious import cspace_convert
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
-from .color_config import *
+from palette import*
 setattr(numpy, "asscalar", patch_asscalar)
 
+palette_rgb = {}
+palette_numbers = {}
+palette_names = {}
+
+
 palette_rbg_list = list(palette_rgb.keys())
+
 
 def rgb_to_ycc(r, g, b):
     y = .299*r + .587*g + .114*b
