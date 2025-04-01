@@ -1,8 +1,4 @@
-<div style="text-align: center;">
-  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 48px;">
-    closetx
-  </span>
-</div>
+![image](https://github.com/deveshdatwani/closetx/blob/main/assets/ClosetX.jpg)
 
 Style up most affordably
 
