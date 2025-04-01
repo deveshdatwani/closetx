@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 24px;">
+  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 48px;">
     closetx
   </span>
 </div>
