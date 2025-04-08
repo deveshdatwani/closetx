@@ -70,3 +70,13 @@ def return_segmented_image(segmented_image):
 def match_apparel_color(r1,g1,b1,r2,g2,b2):
     match_result = "False"
     return match_result 
+
+def classify_from_image(img, model, device='cpu'):
+    img = Image.open(img)
+    palette = get_palette(4)
+    masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
+    cloth_seg_top = np.asarray(cloth_seg) == 1
+    cloth_seg_bottom = np.asarray(cloth_seg) == 2
+    if cloth_seg_top.any() and cloth_seg_bottom.any(): return "top and bottom"
+    if cloth_seg_top.any(): return "top"
+    if cloth_seg_bottom.any(): return "bottom"

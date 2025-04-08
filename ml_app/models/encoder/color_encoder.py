@@ -66,7 +66,7 @@ def get_palette_color(color_to_match=None, colors=palette_rgb, get_idx=False):
         if delta_after < best_match:
             best_match = delta_after
             best_match_key = idx
-            best_match_color = color
+            best_match_color = palette_rgb[idx]
     if get_idx:
         return best_match_key
     return palette_names[best_match_color]
