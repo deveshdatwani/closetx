@@ -7,12 +7,8 @@ from colorspacious import cspace_convert
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
-from palette import*
+from .palette import *
 setattr(numpy, "asscalar", patch_asscalar)
-
-
-
-palette_rbg_list = list(palette_rgb.keys())
 
 
 def rgb_to_ycc(r, g, b):
@@ -70,18 +66,19 @@ def get_palette_color(color_to_match=None, colors=palette_rgb, get_idx=False):
         if delta_after < best_match:
             best_match = delta_after
             best_match_key = idx
+            best_match_color = color
     if get_idx:
         return best_match_key
-    return palette_names[best_match_key]
+    return palette_names[best_match_color]
 
 
 def apprel_seg(model, img, type):
     masks = model(img)
 
 
-def match_apparel_color(r1,g1,b1,r2,g2,b2):
-    color_1 = get_palette_color((r1,g1,b1), get_idx=True)
-    color_2 = get_palette_color((r2,g2,b2), get_idx=True)  
-    if palette_numbers[color_1] in palette_rgb[palette_numbers[color_2]]: 
+def match_apparel_color(r1, g1, b1, r2, g2, b2):
+    color_1 = get_palette_color((r1,g1,b1))
+    color_2 = get_palette_color((r2,g2,b2))  
+    if palette_match[palette_names[color_1]] in palette_match[palette_names[color_2]]: 
         return 100
     else: return 0
