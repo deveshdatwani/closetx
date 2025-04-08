@@ -1,6 +1,6 @@
 from .lib.utils import *
 from flask import Blueprint, request, current_app, send_file, jsonify
-from .models.encoder.color_encoder import get_palette_color
+from .models.encoder.color_encoder import *
 # from .models.encoder.color_encoder import 
 
 
@@ -23,8 +23,8 @@ def segment():
 @serve_model.route("/get-color", methods=['POST',])
 def get_color():
     r, g, b = int(request.form['r']), int(request.form['g']), int(request.form['b'])
-    palette_color = get_palette_color((r,g,b))
-    return palette_color
+    palette_color = match_colors(match_color=(r,g,b))
+    return palette_names[palette_color]
 
 
 @serve_model.route("/match", methods=['POST',])
@@ -42,7 +42,7 @@ def get_color_from_apparel():
     plt.imshow(segmented_image)
     plt.show()
     median_r, median_g, median_b = get_median_pixel(segmented_image)
-    color = get_palette_color((median_r, median_g, median_b))
+    color = match_colors(match_color=(median_r, median_g, median_b))
     return jsonify({"color":color, "r":median_r, "g":median_g, "b":median_b})
 
 
