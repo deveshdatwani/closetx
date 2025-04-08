@@ -8,8 +8,7 @@ from base64 import encodebytes
 from mysql.connector import errorcode
 from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
-import psycopg2
-from psycopg2 import sql
+from mysql import connector
 
 
 
@@ -30,18 +29,18 @@ def get_s3_boto_client():
 def get_db_x():
     password = os.getenv('DB_PASSWORD', 'password')
     db_host = os.getenv('DB_HOST', 'localhost')
-    db_port = os.getenv('DB_PORT', '5432')
+    db_port = os.getenv('DB_PORT', '3306')
     database = 'closetx'
     user = 'closetx'
-    current_app.logger.info("Connecting to postgres sever")
-    conn = psycopg2.connect(
-        dbname=database,   
+    current_app.logger.info("Connecting to mysql sever")
+    conn = mysql.connector.connect(
+        database=database,   
         user=user,  
         password=password,  
         host=db_host,
-       port=db_port
+        port=db_port
     )
-    current_app.logger.info(f"Successfully connected to postgres")
+    current_app.logger.info(f"Successfully connected to mysql")
     return conn
 
 
@@ -49,7 +48,7 @@ def register_user(username: str, password: str, email: str) -> bool:
     dbx = get_db_x()
     crx = dbx.cursor()
     auth_string = generate_password_hash(password)
-    crx.execute("""INSERT INTO "user" (username, password, email) VALUES (%s, %s, %s)""", (username, auth_string, email))
+    crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
     dbx.commit()
     crx.close()
     dbx.close()
