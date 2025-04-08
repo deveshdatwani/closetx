@@ -10,9 +10,6 @@ from colormath.color_diff import delta_e_cie2000
 from palette import*
 setattr(numpy, "asscalar", patch_asscalar)
 
-palette_rgb = {}
-palette_numbers = {}
-palette_names = {}
 
 
 palette_rbg_list = list(palette_rgb.keys())
