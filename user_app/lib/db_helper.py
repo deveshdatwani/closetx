@@ -1,12 +1,15 @@
 import uuid
 import boto3
 import io, os
+import requests
 from PIL import Image
 import mysql.connector
 from base64 import encodebytes
 from mysql.connector import errorcode
 from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
+from mysql import connector
+
 
 
 def serve_response(data: str, status_code: int):
@@ -24,20 +27,21 @@ def get_s3_boto_client():
 
 
 def get_db_x():
-    password = os.getenv('DB_PASSWORD', 'hello')
-    db_host = os.getenv('DB_HOST', '127.0.0.1')
+    password = os.getenv('DB_PASSWORD', 'password')
+    db_host = os.getenv('DB_HOST', 'localhost')
     db_port = os.getenv('DB_PORT', '3306')
     database = 'closetx'
     user = 'closetx'
     current_app.logger.info("Connecting to mysql sever")
-    cnx = mysql.connector.connect(
-        user=user,
-        password=password,
+    conn = mysql.connector.connect(
+        database=database,   
+        user=user,  
+        password=password,  
         host=db_host,
-        database=database,
-        port=db_port)
+        port=db_port
+    )
     current_app.logger.info(f"Successfully connected to mysql")
-    return cnx
+    return conn
 
 
 def register_user(username: str, password: str, email: str) -> bool:
@@ -88,7 +92,7 @@ def post_apparel(userid, image):
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
     image.save('./file.png')
-    s3_client.upload_file('./file.png', 'closetx', apparel_uuid)
+    s3_client.upload_file('./file.png', 'closetx-images', apparel_uuid)
     os.remove('./file.png')
     crx = dbx.cursor()
     userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
@@ -103,7 +107,7 @@ def post_apparel(userid, image):
 def get_apparel(uri):
     s3 = get_s3_boto_client()
     with open('file', 'wb') as data:
-        s3.download_fileobj('closetx', uri, data)
+        s3.download_fileobj('closetx-images', uri, data)
     apparel_image = Image.open('./file')
     img_io = io.BytesIO()
     apparel_image.save(img_io, 'PNG')
@@ -122,36 +126,26 @@ def get_user_apparels(userid):
     return apparel_ids
 
 
-# --------- #
-
-
 def delete_apparel(userid, uri):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            crx.execute("DELETE FROM apparel WHERE uri = %s", (uri,))
-            dbx.commit()
-            crx.close() 
-            dbx.close()
-        except Exception as e:
-            current_app.logger.error("Could not delete apparel")
-            current_app.logger.error(e)
-            return False
-        return True
+    crx = dbx.cursor()  
+    crx.execute("DELETE FROM apparel WHERE uri = %s", (uri,))
+    dbx.commit()
+    crx.close() 
+    dbx.close()
+    return True
     
 
 def delete_closet(userid):
     dbx = get_db_x()
-    if dbx and dbx.is_connected():
-        try:
-            crx = dbx.cursor()
-            crx.execute("DELETE FROM apparel WHERE user = %s", (userid,))
-            dbx.commit()
-            crx.close() 
-            dbx.close()
-        except Exception as e:
-            current_app.logger.error("Could not delete closet")
-            current_app.logger.error(e)
-            return False
-        return True
+    crx = dbx.cursor()
+    crx.execute("DELETE FROM apparel WHERE user = %s", (userid,))
+    dbx.commit()
+    crx.close() 
+    dbx.close()
+    return True
+
+
+def rgb_from_img(image):
+    json_response = requests.post("http://127.0.0.1:5001/model/get-color-from-apparel", files={"image":image})
+    return json_response

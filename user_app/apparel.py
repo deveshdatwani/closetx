@@ -1,13 +1,11 @@
-import functools
-import jwt
 from .lib.db_helper import * 
-from flask import Blueprint, g, request, session, current_app, send_file, jsonify, url_for, redirect
+from flask import Blueprint, request, current_app, send_file, jsonify
 
 
-apparel = Blueprint("apparel", __name__, url_prefix="/closet_app")
+apparel = Blueprint("apparel", __name__, url_prefix="/closet")
 
 
-@apparel.route('/closet/apparel', methods=['GET',])
+@apparel.route('/apparel', methods=['GET',])
 def get_apparel_image():
     image_uri = request.form['uri']  
     current_app.logger.info("Getting apparel")
@@ -15,7 +13,7 @@ def get_apparel_image():
     return send_file(apparel_image, mimetype='image/png')
 
 
-@apparel.route('/closet', methods=['POST',])
+@apparel.route('/apparel', methods=['POST',])
 def add_apparel():
     userid = request.form['userid']
     image_file = request.files['image']
@@ -32,18 +30,16 @@ def get_user_closet():
     return data
 
 
-@apparel.route('/closet', methods=['DELETE',])
+@apparel.route('/apparel', methods=['DELETE',])
 def remove_apparel():
     userid = request.form['userid']
     uri = request.form['uri']
-    current_app.logger.info("Deleting apaprel")
-    delete_apparel(userid, uri)
-    return serve_response(data="delete successfull", status_code=201)
+    response = delete_apparel(userid, uri)
+    return serve_response(data="Deleted apparel", status_code=203)
 
 
-@apparel.route('/delete/all', methods=['DELETE',])
+@apparel.route('/closet', methods=['DELETE',])
 def remove_closet():
     userid = request.form['userid']
-    current_app.logger.info("Deleting user closet")
-    delete_closet(userid)
-    return serve_response(data="Closet deleted")
+    response = delete_closet(userid)
+    return serve_response(data="Closet deleted", status_code=203)

@@ -5,7 +5,6 @@ from PIL import Image
 from io import BytesIO
 from ..models.encoder.color_encoder import palette_rgb as palette
 from ..models.encoder.color_encoder import get_palette_color as match_color
-from ..models.encoder.color_encoder import palette_rbg_list as p_list
 from ..models.huggingface_cloth_segmentation.process import *
 from matplotlib import pyplot as plt
 
@@ -36,12 +35,12 @@ def get_outfit_colors(top_image, bottom_image, model):
     return top_color, bottom_color
 
 
-def get_match(top_color, bottom_color):
-    logger.info(f'{top_color} {bottom_color}')
-    bottom = p_list[bottom_color]
-    top = p_list[top_color]
-    if bottom in palette[top]: return 100
-    else: return 0
+# def get_match(top_color, bottom_color):
+#     logger.info(f'{top_color} {bottom_color}')
+#     bottom = p_list[bottom_color]
+#     top = p_list[top_color]
+#     if bottom in palette[top]: return 100
+#     else: return 0
 
 
 def seg_apparel(img, model, device='cpu', apparel_type=1):
@@ -54,13 +53,13 @@ def seg_apparel(img, model, device='cpu', apparel_type=1):
     return apparel
 
 
-def raw_match(img, closetx=None):
-    closetx = [(243,198,189), (174,182,189), (200,223,236), (255,255,255), (26,72,113)]
-    color = get_median_pixel(img)
-    color = match_color(color)
-    for closet in closetx:
-        closet = match_color(closet)
-        print(get_match(closet, color))    
+# def raw_match(img, closetx=None):
+#     closetx = [(243,198,189), (174,182,189), (200,223,236), (255,255,255), (26,72,113)]
+#     color = get_median_pixel(img)
+#     color = match_color(color)
+#     for closet in closetx:
+#         closet = match_color(closet)
+#         print(get_match(closet, color))    
 
 
 def return_segmented_image(segmented_image):
@@ -74,7 +73,6 @@ def return_segmented_image(segmented_image):
 def match_apparel_color(r1,g1,b1,r2,g2,b2):
     match_result = "False"
     return match_result 
-
 
 def classify_from_image(img, model, device='cpu'):
     img = Image.open(img)
