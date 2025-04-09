@@ -1,4 +1,5 @@
 import jwt
+from .lib.utils import session_check
 from .lib.db_helper import *  
 from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify, current_app
 
@@ -19,7 +20,7 @@ def register():
     current_app.logger.info("Registering user")
     register_user(username, password, email)
     return serve_response(data="User registered successfully" , status_code=200)
-    
+
 
 @auth.route('/login', methods=['POST',])
 def login():
@@ -48,15 +49,8 @@ def delete():
 
 
 @auth.route('/user', methods=['GET',])
+@session_check
 def user():
-    # username = request.form['username']
-    token = request.form['token']
-    try:
-        user = jwt.decode(token, algorithms="HS256", key=current_app.config['secret'])
-    except jwt.exceptions.InvalidSignatureError:
-        return redirect(url_for("auth.index"))
-    except jwt.exceptions.DecodeError: 
-        return redirect(url_for("auth.index"))
-    user = get_user(user['user'][1])
+    user = get_user(request.form['username'])
     current_app.logger.info('Getting user')
     return jsonify(user)
