@@ -1,5 +1,6 @@
+import jwt
 from .lib.db_helper import *  
-from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify
+from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify, current_app
 
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -26,7 +27,9 @@ def login():
     password = request.form['password']
     current_app.logger.info("Logging in user")
     user = login_user(username, password)
-    return jsonify(user)
+    jwt_token = jwt.encode({"user":user}, algorithm="HS256", key=current_app.config['secret'])
+    payload = {"token": jwt_token, "user": user}
+    return jsonify(payload)
     
 
 @auth.route('/logout', methods=['DELETE',])
@@ -46,7 +49,14 @@ def delete():
 
 @auth.route('/user', methods=['GET',])
 def user():
-    username = request.form['username']
-    user = get_user(username)
+    # username = request.form['username']
+    token = request.form['token']
+    try:
+        user = jwt.decode(token, algorithms="HS256", key=current_app.config['secret'])
+    except jwt.exceptions.InvalidSignatureError:
+        return redirect(url_for("auth.index"))
+    except jwt.exceptions.DecodeError: 
+        return redirect(url_for("auth.index"))
+    user = get_user(user['user'][1])
     current_app.logger.info('Getting user')
     return jsonify(user)

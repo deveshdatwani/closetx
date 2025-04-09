@@ -8,7 +8,7 @@ from base64 import encodebytes
 from mysql.connector import errorcode
 from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
-from mysql import connector
+import mysql.connector
 
 
 
@@ -27,7 +27,7 @@ def get_s3_boto_client():
 
 
 def get_db_x():
-    password = os.getenv('DB_PASSWORD', 'password')
+    password = os.getenv('DB_PASSWORD', 'hello')
     db_host = os.getenv('DB_HOST', 'localhost')
     db_port = os.getenv('DB_PORT', '3306')
     database = 'closetx'
@@ -63,7 +63,7 @@ def login_user(username, password):
     user = crx.fetchone()
     crx.close()
     dbx.close()  
-    if check_password_hash(user[3], password): return user
+    if check_password_hash(user[3], password): return user[:-1]
     else: return None
 
 
@@ -71,10 +71,10 @@ def get_user(username):
     dbx = get_db_x()
     crx = dbx.cursor()
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-    user = crx.fetchall()
+    user = crx.fetchone()
     crx.close()
-    dbx.close()     
-    return user
+    dbx.close() 
+    return user[:-1]
 
 
 def delete_user(username):
