@@ -56,25 +56,21 @@ if (!document.getElementById("my-sidebar")) {
     )
     .then(res => res.json()) 
     .then(data => {
-        const stringList = data.apparels[0];
-        stringList.forEach(uri => {
-            console.log(uri);
-            fetch("http://127.0.0.1:5000/closet/apparel", {
-                method: 'POST',
-                body: new URLSearchParams ({
-                    uri: uri
-                })
-            })
-            .then(res => res.blob())
-            .then(blob => {
-                const img = document.createElement("img");
-                img.src = URL.createObjectURL(blob);
-                img.style.width = "100px";
-                img.style.marginBottom = "10px";
-                container.appendChild(img);
-            })
-        } 
-    ) 
-    })
-    .catch(err => console.error("API error:", err));
+      const stringList = data.apparels[0];
+      stringList.forEach(uri => {
+          console.log(uri);
+          fetch("http://127.0.0.1:5000/closet/apparel", {
+              method: 'POST',
+              body: new URLSearchParams({ uri: uri })
+          })
+          .then(res => res.blob())
+          .then(blob => {
+              const img = document.createElement("img");
+              img.src = URL.createObjectURL(blob);
+              img.style.width = "100px";
+              img.style.margin = "10px";
+              document.getElementById("my-sidebar").appendChild(img);
+          })
+      });
+  })
 }  
