@@ -110,6 +110,7 @@ def get_apparel(uri):
     apparel_image.save(img_io, 'PNG')
     img_io.seek(0)
     os.remove('./file')
+    current_app.logger.info("Fetched image")
     return img_io 
 
 

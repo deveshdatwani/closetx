@@ -18,6 +18,7 @@ if (!document.getElementById("my-sidebar")) {
         width: 300px;
         height: 100%;
         z-index: 10000;
+        box-shadow: -3px 0 8px rgba(128, 128, 128, 0.05);
         }
       #welcome-message {
         opacity: 0;
@@ -34,7 +35,7 @@ if (!document.getElementById("my-sidebar")) {
     `;
     document.head.appendChild(style);
 
-    fetch("https://api.quotable.io/random")  // This returns a random quote
+    fetch("https://api.quotable.io/random")
     .then(res => res.json())
     .then(data => {
       const container = document.getElementById("welcome-message");
@@ -45,4 +46,35 @@ if (!document.getElementById("my-sidebar")) {
         </div>
       `);
     });
+
+    fetch("http://127.0.0.1:5000/closet/closet", {
+            method: "POST",
+            body: new URLSearchParams ({
+                    userid: 2
+            })
+        }
+    )
+    .then(res => res.json()) 
+    .then(data => {
+        const stringList = data.apparels[0];
+        stringList.forEach(uri => {
+            console.log(uri);
+            fetch("http://127.0.0.1:5000/closet/apparel", {
+                method: 'POST',
+                body: new URLSearchParams ({
+                    uri: uri
+                })
+            })
+            .then(res => res.blob())
+            .then(blob => {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(blob);
+                img.style.width = "100px";
+                img.style.marginBottom = "10px";
+                container.appendChild(img);
+            })
+        } 
+    ) 
+    })
+    .catch(err => console.error("API error:", err));
 }  
