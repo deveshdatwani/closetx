@@ -35,18 +35,6 @@ if (!document.getElementById("my-sidebar")) {
     `;
     document.head.appendChild(style);
 
-    fetch("https://api.quotable.io/random")
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById("welcome-message");
-      container.insertAdjacentHTML("beforeend", `
-        <div style="margin-top: 15px;">
-          <p>"${data.content}"</p>
-          <p style="font-size: 0.9em; color: gray;">— ${data.author}</p>
-        </div>
-      `);
-    });
-
     fetch("http://127.0.0.1:5000/closet/closet", {
             method: "POST",
             body: new URLSearchParams ({
