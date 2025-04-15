@@ -1,6 +1,6 @@
 Style up most affordably
 
-<div style="text-align:center; width:50%">
+<div style="text-align:center; width:50%; margin:0 auto">
   <img style="width:50%; text-align:center; margin: auto" src="https://github.com/deveshdatwani/closetx/blob/main/assets/ClosetX.jpg">  
 </div>
 
