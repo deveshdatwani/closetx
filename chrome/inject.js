@@ -63,19 +63,19 @@ if (!document.getElementById("my-sidebar")) {
         method: "POST",
         body: new URLSearchParams({userid: 2}),
       });
-      // const data = res.json();
       const data = await res.json();
       console.log(data);
       if (data.apparels.length > 0) {
+        const welcomeMessage = document.getElementById("welcome-message");
+        welcomeMessage.textContent = "My closet";
         inputField.style.display = "none";
         submitButton.style.display = "none";
+        prompt.style.display = "none";
         fetch("http://127.0.0.1:5000/closet/closet", {
                 method: "POST",
                 body: new URLSearchParams ({
-                        userid: 2
-                })
-            }
-        )
+                        userid: inputField.value
+                })})
         .then(res => res.json()) 
         .then(data => {
           const stringList = data.apparels;
