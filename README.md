@@ -1,6 +1,7 @@
 <div style="width:50%; margin:auto">
   <p align="center">
     <img style="display:block; width:50%; margin:auto" src="https://github.com/deveshdatwani/closetx/blob/main/assets/ClosetX.jpg">  
+    <br>
     Style up most affordably
   </p>
 </div>
