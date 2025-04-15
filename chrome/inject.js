@@ -9,6 +9,7 @@ if (!document.getElementById("my-sidebar")) {
     const style = document.createElement("style");
     style.textContent = `
       #my-sidebar {
+        text-align: center;
         position: fixed;
         color: black;
         background; solid;
@@ -35,30 +36,66 @@ if (!document.getElementById("my-sidebar")) {
     `;
     document.head.appendChild(style);
 
-    fetch("http://127.0.0.1:5000/closet/closet", {
-            method: "POST",
-            body: new URLSearchParams ({
-                    userid: 2
-            })
-        }
-    )
-    .then(res => res.json()) 
-    .then(data => {
-      const stringList = data.apparels[0];
-      stringList.forEach(uri => {
-          console.log(uri);
-          fetch("http://127.0.0.1:5000/closet/apparel", {
-              method: 'POST',
-              body: new URLSearchParams({ uri: uri })
-          })
-          .then(res => res.blob())
-          .then(blob => {
-              const img = document.createElement("img");
-              img.src = URL.createObjectURL(blob);
-              img.style.width = "100px";
-              img.style.margin = "10px";
-              document.getElementById("my-sidebar").appendChild(img);
-          })
+
+    const prompt = document.createElement("p");
+    prompt.innerHTML = `
+              Enter your username
+    `
+    sidebar.appendChild(prompt);
+
+    // const promptBr = document.createElement("br");
+    // sidebar.appendChild(promptBr);
+
+    const inputField = document.createElement("input");
+    sidebar.appendChild(inputField);
+
+    const inputBr = document.createElement("br");
+    sidebar.appendChild(inputBr);
+
+    const submitButton = document.createElement("button");
+    submitButton.setAttribute = ("id", "username-submit-button");
+    submitButton.textContent = "Go";
+    sidebar.appendChild(submitButton); 
+
+    submitButton.addEventListener('click', async () => {
+      console.log(inputField.value);
+      const res = await fetch("http://127.0.0.1:5000/closet/closet", {
+        method: "POST",
+        body: new URLSearchParams({userid: 2}),
       });
-  })
+      // const data = res.json();
+      const data = await res.json();
+      console.log(data);
+      if (data.apparels.length > 0) {
+        inputField.style.display = "none";
+        submitButton.style.display = "none";
+        fetch("http://127.0.0.1:5000/closet/closet", {
+                method: "POST",
+                body: new URLSearchParams ({
+                        userid: 2
+                })
+            }
+        )
+        .then(res => res.json()) 
+        .then(data => {
+          const stringList = data.apparels;
+          stringList.forEach(uri => {
+              fetch("http://127.0.0.1:5000/closet/apparel", {
+                  method: 'POST',
+                  body: new URLSearchParams({ uri: uri })
+              })
+              .then(res => res.blob())
+              .then(blob => {
+                  const img = document.createElement("img");
+                  img.src = URL.createObjectURL(blob);
+                  img.style.width = "100px";
+                  img.style.margin = "10px";
+                  document.getElementById("my-sidebar").appendChild(img);
+                  const breakSize = document.createElement("br");
+                  document.getElementById("my-sidebar").appendChild(breakSize);
+                })
+          });
+      })
+    }
+  });
 }  
