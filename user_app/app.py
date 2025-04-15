@@ -24,3 +24,6 @@ def create_app(config_file=None):
         app.config["secret_key"] = os.environ.get("AWS_SECRET_KEY", default=None)
         app.config["secret"] = "closetx_secret"
     return app
+
+#if __name__ == "__main__":
+app = create_app()
