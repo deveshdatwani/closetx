@@ -9,6 +9,7 @@ from mysql.connector import errorcode
 from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 from mysql import connector
+from io import BytesIO
 from matplotlib import pyplot as plt
 
 def serve_response(data: str, status_code: int):
@@ -26,7 +27,7 @@ def get_s3_boto_client():
 
 
 def get_db_x():
-    password = os.getenv('DB_PASSWORD', 'password')
+    password = os.getenv('DB_PASSWORD', 'hello')
     db_host = os.getenv('DB_HOST', 'localhost')
     db_port = os.getenv('DB_PORT', '3306')
     database = 'closetx'
@@ -87,7 +88,8 @@ def delete_user(username):
 
 
 def post_apparel(userid, image):
-    image = requests.post("ml-app:6000/model/segment", files=image)
+    response = requests.post("http://localhost:6000/model/segment", files={"image":image})
+    image = Image.open(BytesIO(response.content))
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()

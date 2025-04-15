@@ -58,13 +58,11 @@ if (!document.getElementById("my-sidebar")) {
     sidebar.appendChild(submitButton); 
 
     submitButton.addEventListener('click', async () => {
-      console.log(inputField.value);
       const res = await fetch("http://127.0.0.1:5000/closet/closet", {
         method: "POST",
-        body: new URLSearchParams({userid: 2}),
+        body: new URLSearchParams({userid: inputField.value}),
       });
       const data = await res.json();
-      console.log(data);
       if (data.apparels.length > 0) {
         const welcomeMessage = document.getElementById("welcome-message");
         welcomeMessage.textContent = "My closet";
@@ -80,7 +78,7 @@ if (!document.getElementById("my-sidebar")) {
         .then(data => {
           const stringList = data.apparels;
           stringList.forEach(uri => {
-              fetch("http://127.0.0.1:5000/closet/apparel", {
+              fetch("http://127.0.0.1:5000/closet/get/apparel", {
                   method: 'POST',
                   body: new URLSearchParams({ uri: uri })
               })
