@@ -5,7 +5,7 @@ from flask import Blueprint, request, current_app, send_file, jsonify
 apparel = Blueprint("apparel", __name__, url_prefix="/closet")
 
 
-@apparel.route('/apparel', methods=['GET', "POST"])
+@apparel.route('/get/apparel', methods=['GET', "POST"])
 def get_apparel_image():
     image_uri = request.form['uri']  
     current_app.logger.info("Getting apparel")
@@ -13,7 +13,7 @@ def get_apparel_image():
     return send_file(apparel_image, mimetype='image/png')
 
 
-@apparel.route('/apparel', methods=['POST',])
+@apparel.route('/post/apparel', methods=['POST',])
 def add_apparel():
     userid = request.form['userid']
     image_file = request.files['image']

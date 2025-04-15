@@ -85,6 +85,7 @@ def delete_user(username):
 
 
 def post_apparel(userid, image):
+    image = requests.post("ml-app:6000/model/segment", files=image)
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
