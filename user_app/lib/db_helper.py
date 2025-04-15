@@ -9,8 +9,7 @@ from mysql.connector import errorcode
 from flask import g, current_app, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 from mysql import connector
-
-
+from matplotlib import pyplot as plt
 
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
@@ -88,6 +87,7 @@ def delete_user(username):
 
 
 def post_apparel(userid, image):
+    image = requests.post("ml-app:6000/model/segment", files=image)
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
@@ -106,13 +106,14 @@ def post_apparel(userid, image):
 
 def get_apparel(uri):
     s3 = get_s3_boto_client()
-    with open('file', 'wb') as data:
+    with open(uri, 'wb') as data:
         s3.download_fileobj('closetx-images', uri, data)
-    apparel_image = Image.open('./file')
+    apparel_image = Image.open(uri)
     img_io = io.BytesIO()
     apparel_image.save(img_io, 'PNG')
     img_io.seek(0)
-    os.remove('./file')
+    os.remove(uri)
+    current_app.logger.info("Fetched image")
     return img_io 
 
 
