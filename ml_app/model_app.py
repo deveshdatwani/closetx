@@ -1,8 +1,7 @@
 from .lib.utils import *
 from flask import Blueprint, request, current_app, send_file, jsonify
-from .models.encoder.color_encoder import get_palette_color
-from .models.encoder.color_encoder import palette_rbg_list as palette, match_apparel_color
-from .models.encoder.color_config import *
+from .models.encoder.color_encoder import *
+# from .models.encoder.color_encoder import 
 
 
 serve_model = Blueprint("model_app", __name__, url_prefix="/model")
@@ -13,7 +12,7 @@ def index():
     return "Closetx model says, Hi"
 
 
-@serve_model.route("/segment", methods=['POST',])
+@serve_model.route("/segment", methods=['POST'])
 def segment():
     image = request.files['image']
     segmented_image = seg_apparel(image, current_app.segmentation_model)
@@ -21,11 +20,11 @@ def segment():
     return send_file(img_io, mimetype="image/png")
 
 
-@serve_model.route("/color", methods=['POST',])
+@serve_model.route("/get-color", methods=['POST',])
 def get_color():
     r, g, b = int(request.form['r']), int(request.form['g']), int(request.form['b'])
-    palette_color = get_palette_color((r,g,b))
-    return palette_color
+    palette_color = match_colors(match_color=(r,g,b))
+    return palette_names[palette_color]
 
 
 @serve_model.route("/match", methods=['POST',])
@@ -40,8 +39,15 @@ def match_color():
 def get_color_from_apparel():
     image = request.files['image']
     segmented_image = seg_apparel(image, current_app.segmentation_model)
+    plt.imshow(segmented_image)
+    plt.show()
     median_r, median_g, median_b = get_median_pixel(segmented_image)
-    color = get_palette_color((median_r, median_g, median_b))
-    color_rgb = palette_numbers[palette_names.index(color)]
-    json_response = jsonify({"color":color, "r":color_rgb[0], "g":color_rgb[1], "b":color_rgb[2]})
-    return json_response
+    color = match_colors(match_color=(median_r, median_g, median_b))
+    return jsonify({"color":color, "r":median_r, "g":median_g, "b":median_b})
+
+
+@serve_model.route("/classify", methods=['POST',])
+def classify_apparel():
+    image = request.files['image']
+    label = classify_from_image(image, current_app.segmentation_model)
+    return label
