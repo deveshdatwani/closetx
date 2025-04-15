@@ -2,10 +2,12 @@ import os
 import logging  
 from . import auth, apparel
 from flask import Flask
+from flask_cors import CORS
 
 
 def create_app(config_file=None): 
     app = Flask(__name__)
+    CORS(app)
     app.loggerlogger = logging.getLogger('my_logger')
     app.logger.setLevel(logging.INFO)
     app.register_blueprint(auth.auth)
