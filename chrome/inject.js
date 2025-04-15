@@ -36,15 +36,11 @@ if (!document.getElementById("my-sidebar")) {
     `;
     document.head.appendChild(style);
 
-
     const prompt = document.createElement("p");
     prompt.innerHTML = `
               Enter your username
     `
     sidebar.appendChild(prompt);
-
-    // const promptBr = document.createElement("br");
-    // sidebar.appendChild(promptBr);
 
     const inputField = document.createElement("input");
     sidebar.appendChild(inputField);
