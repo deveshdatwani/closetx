@@ -1,6 +1,6 @@
 <div style="width:50%; margin:auto">
   <p align="center">
-    <img style="display:block; width:50%; margin:auto" src="https://github.com/deveshdatwani/closetx/blob/main/assets/ClosetX.jpg">  
+    <img style="display:block; margin:auto" src="https://github.com/deveshdatwani/closetx/blob/main/assets/ClosetX.jpg">  
   </p>
 </div>
 
