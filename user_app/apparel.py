@@ -1,5 +1,5 @@
 from .lib.db_helper import * 
-from flask import Blueprint, request, current_app, send_file, jsonify
+from flask import Blueprint, request, current_app, send_file, jsonify, render_template
 
 
 apparel = Blueprint("apparel", __name__, url_prefix="/closet")
@@ -21,12 +21,12 @@ def add_apparel():
     return serve_response(data="Apparel added", status_code=201)
  
 
-@apparel.route('/closet', methods=['POST',])
+@apparel.route('/closet', methods=['POST', 'GET'])
 def get_user_closet():
-    userid = request.form['userid']
+    # userid = request.form['userid']
     current_app.logger.info("Getting closet apparels")
-    apparel_ids = get_user_apparels(userid)
-    data = jsonify({"apparels" : apparel_ids})
+    # apparel_ids = get_user_apparels(userid)
+    data = render_template("closet.html", apparels=20)
     return data
 
 

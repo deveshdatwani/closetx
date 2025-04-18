@@ -10,6 +10,11 @@ def index():
     return render_template('index.html')
 
 
+@auth.route('/main', methods=['GET'])
+def main():
+    return render_template('login.html')
+
+
 @auth.route('/register', methods=['POST',])
 def register():
     username = request.form['username']

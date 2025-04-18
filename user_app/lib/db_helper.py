@@ -60,7 +60,7 @@ def login_user(username, password):
     user = crx.fetchone()
     crx.close()
     dbx.close()  
-    if check_password_hash(user[3], password): return user
+    if check_password_hash(user[3], password): return user[:-1]
     else: return None
 
 
