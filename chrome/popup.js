@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const reader = new FileReader();
     
     reader.onload = function(e) {
-      const base64Image = e.target.result;
+      const base64Image =e .target.result;
       
       // Simulate color extraction - in a real app, you'd call the color extraction API
       // For demo purposes, we'll use a random color
