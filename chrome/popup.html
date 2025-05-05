@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ClosetX</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ClosetX</h1>
+    
+    <div id="closet-section">
+      <h2>My Closet</h2>
+      
+      <div id="closet-items" class="grid-container">
+        <!-- Items will be dynamically added here -->
+      </div>
+      
+      <div class="upload-section">
+        <h3>Add New Item</h3>
+        <input type="file" id="upload-image" accept="image/*">
+        <button id="upload-button">Upload</button>
+      </div>
+      
+      <div class="matches-section">
+        <h3>Matches Found</h3>
+        <div id="match-count">No matches found yet</div>
+      </div>
+      
+      <div class="options-section">
+        <button id="clear-closet">Clear Closet</button>
+        <button id="scan-page">Scan Page</button>
+      </div>
+    </div>
+    
+    <div id="status-message"></div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

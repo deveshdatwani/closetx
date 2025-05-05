@@ -1,13 +1,31 @@
 {
-    "manifest_version": 3,
-    "name": "Closetx Frontend",
-    "version": "1.0",
-    "permissions": ["scripting", "activeTab"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_title": "Inject Sidebar"
+  "manifest_version": 3,
+  "name": "ClosetX",
+  "version": "1.0",
+  "description": "Match clothing in your closet with items you're browsing online",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.gap.com/*",
+    "*://*.shopify.com/*",
+    "*://*.amazon.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.gap.com/*",
+        "*://*.shopify.com/*",
+        "*://*.amazon.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
     }
-  }
-  
+  ]
+
+}
