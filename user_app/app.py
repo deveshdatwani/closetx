@@ -2,22 +2,23 @@ import os
 import logging  
 from . import auth, apparel
 from flask import Flask
-from flask_cors import CORS
+from .config.config import Config 
 
 
 def create_app(config_file=None): 
     app = Flask(__name__)
-    CORS(app)
     app.loggerlogger = logging.getLogger('my_logger')
     app.logger.setLevel(logging.INFO)
     app.register_blueprint(auth.auth)
     app.register_blueprint(apparel.apparel)
     if config_file:
         try:
-            app.config.from_file(config_file)
+            app.config.from_object(config_file)
             app.logger.info("Application configured succesfully from config file")
+            app.logger.info(app.config["DB_HOST"])
         except Exception as e:
             app.logger.error(f"Corrupt config file")
+            print(e)
     else:
         app.logger.warning("No config file found") 
         app.config["access_key"] = os.environ.get("AWS_ACCESS_KEY", default=None)
@@ -25,5 +26,5 @@ def create_app(config_file=None):
         app.config["secret"] = "closetx_secret"
     return app
 
-#if __name__ == "__main__":
-app = create_app()
+
+app = create_app(Config)
