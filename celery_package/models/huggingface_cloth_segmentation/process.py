@@ -147,5 +147,5 @@ def main(image, device, model):
 
 
 def make_model():
-    model = load_seg_model("/home/deveshdatwani/closetx/ml_app/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
+    model = load_seg_model("/home/deveshdatwani/closetx/celery/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
     return model
