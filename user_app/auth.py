@@ -1,4 +1,5 @@
 from .lib.db_helper import *  
+from celery_tasks import add
 from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
@@ -50,3 +51,8 @@ def user():
     user = get_user(username)
     current_app.logger.info('Getting user')
     return jsonify(user)
+
+
+@auth.route("/task/<int:number1>/<int:number2>", methods=["GET", "POST"])
+def add_task(number1, number2):
+    return str(add.delay(number1, number2))
