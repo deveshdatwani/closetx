@@ -4,5 +4,10 @@ boto3
 mysql-connector-python
 pillow
 opencv-python-headless
-boto3
+requests
+psycopg2-binary
+gunicorn
+celery
+redis
+matplotlib
 pytest
