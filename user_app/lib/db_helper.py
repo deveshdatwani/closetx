@@ -27,25 +27,30 @@ def get_s3_boto_client():
 
 
 def get_db_x():
-    password = os.getenv('DB_PASSWORD', 'hello')
-    db_host = os.getenv('DB_HOST', 'localhost')
-    db_port = os.getenv('DB_PORT', '3306')
-    database = 'closetx'
+    password = current_app.config["DB_PASSWORD"]
+    db_host = current_app.config["DB_HOST"]
+    db_port = current_app.config["DB_PORT"]
+    database = current_app.config["DB_DATABASE"]
     user = 'closetx'
     current_app.logger.info("Connecting to mysql sever")
-    conn = mysql.connector.connect(
-        database=database,   
-        user=user,  
-        password=password,  
-        host=db_host,
-        port=db_port
-    )
+    try:
+        conn = mysql.connector.connect(
+            database=database,   
+            user=user,  
+            password=password,  
+            host=db_host,
+            port=db_port
+        )
+    except mysql.connector.errors.DatabaseError:
+        current_app.logger.error(f"No such host {db_host}")
+        return None
     current_app.logger.info(f"Successfully connected to mysql")
     return conn
 
 
 def register_user(username: str, password: str, email: str) -> bool:
     dbx = get_db_x()
+    if not dbx: return False
     crx = dbx.cursor()
     auth_string = generate_password_hash(password)
     crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
