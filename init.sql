@@ -1,4 +1,4 @@
 CREATE DATABASE IF NOT EXISTS closetx;
 CREATE USER 'closetx'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON my_database.* TO 'closetx'@'%';
+GRANT ALL PRIVILEGES ON closetx TO 'closetx'@'%';
 FLUSH PRIVILEGES;
