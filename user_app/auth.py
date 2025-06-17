@@ -1,5 +1,5 @@
 from .lib.db_helper import *  
-from celery_tasks import add
+from user_app.celery_tasks import add
 from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
