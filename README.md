@@ -1,5 +1,4 @@
 <div style="width:50%; margin:auto">
-  <h1> ClosetX </h1>
   <img src="https://github.com/deveshdatwani/closetx/blob/main/assets/ClosetX.jpg" style="display:block; margin:auto; width:20%;">
 </div>
 
