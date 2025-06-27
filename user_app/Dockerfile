@@ -17,3 +17,5 @@ CMD ["python3", "-u", "-m", "flask", "run", "--host", "0.0.0.0", "-p", "5000", "
 # WORKDIR /
 
 # ENTRYPOINT ["python3", "-u", "-m", "gunicorn", "-w", "4", "user_app.app:app", "--bind", "0.0.0.0:8000"]
+
+# CMD ["celery", "-A", "celery_app", "worker", "--loglevel=debug"] 
