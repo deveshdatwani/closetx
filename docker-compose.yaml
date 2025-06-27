@@ -9,21 +9,24 @@ services:
     networks:
       - closetx
 
-  flask:
-    image: user-app:latest
-    container_name: flask-app
+  user-app:
+    image: deveshdatwani/user-app:latest
+    container_name: user-app
     ports:
       - "5000:5000"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - AWS_ACCESS_KEY=AKIAS7YB3XG3TT5YR36U
+      - AWS_SECRET_KEY=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
+      - USER_APP_ENV=prod
     depends_on:
       - redis
     networks:
       - closetx
 
   celery:
-    image: celery-app:latest
+    image: deveshdatwani/celery-app:latest
     container_name: celery-worker
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -44,6 +47,18 @@ services:
       - closetx
     volumes:
       - /var/lib/docker/volumes/closetxdb/_data:/var/lib/mysql  
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - /home/deveshdatwani/closetx/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+    - closetx
+    depends_on:
+      - user-app
 
 volumes:
   closetxdb:  
