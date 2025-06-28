@@ -1,7 +1,7 @@
 FROM python:3.10
 
-COPY . /model
-WORKDIR /model
+COPY . /user_app
+WORKDIR /user_app
 
 RUN apt-get update && apt-get install -y libpq-dev build-essential
 RUN pip install --upgrade pip
