@@ -10,3 +10,5 @@ gdown
 gradio
 matplotlib
 joblib
+celery
+redis
