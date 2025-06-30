@@ -12,6 +12,7 @@ from mysql import connector
 from io import BytesIO
 from matplotlib import pyplot as plt
 
+
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response
@@ -39,10 +40,11 @@ def get_db_x():
             user=user,  
             password=password,  
             host=db_host,
-            port=db_port
+            port=db_port,
+            auth_plugin='mysql_native_password'
         )
-    except mysql.connector.errors.DatabaseError:
-        current_app.logger.error(f"No such host {db_host}")
+    except Exception as e:
+        current_app.logger.error(f"No such host {e}")
         return None
     current_app.logger.info(f"Successfully connected to mysql")
     return conn
@@ -63,7 +65,11 @@ def register_user(username: str, password: str, email: str) -> bool:
 def login_user(username, password):
     dbx = get_db_x()
     current_app.logger.info("Matching password for user")
-    crx = dbx.cursor()
+    try:
+        crx = dbx.cursor()
+    except Exception as e:
+        current_app.logger.error(f"Could not login user - {e}")
+        return False
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchone()
     crx.close()
@@ -74,7 +80,11 @@ def login_user(username, password):
 
 def get_user(username):
     dbx = get_db_x()
-    crx = dbx.cursor()
+    try:
+        crx = dbx.cursor()
+    except Exception as e:
+        current_app.logger.error(f"Could not get user {e}")
+        return ""
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchall()
     crx.close()
