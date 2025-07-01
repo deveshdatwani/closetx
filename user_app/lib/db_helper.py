@@ -50,12 +50,12 @@ def get_db_x():
     return conn
 
 
-def register_user(username: str, password: str, email: str) -> bool:
+def register_user(username: str, password: str) -> bool:
     dbx = get_db_x()
     if not dbx: return False
     crx = dbx.cursor()
     auth_string = generate_password_hash(password)
-    crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
+    crx.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, auth_string))
     dbx.commit()
     crx.close()
     dbx.close()
@@ -74,7 +74,7 @@ def login_user(username, password):
     user = crx.fetchone()
     crx.close()
     dbx.close()  
-    if check_password_hash(user[3], password): return user
+    if check_password_hash(user[2], password): return user
     else: return None
 
 

@@ -16,9 +16,8 @@ def register():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        email = "place@holder.com"
         current_app.logger.info("Registering user")
-        register_user(username, password, email)
+        register_user(username, password)
         return redirect(url_for("auth.user", username=username))
     else:
         return render_template("register.html")
