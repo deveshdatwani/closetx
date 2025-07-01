@@ -21,13 +21,10 @@ def add_apparel():
     return serve_response(data="Apparel added", status_code=201)
  
 
-@apparel.route('/closet', methods=['POST',])
-def get_user_closet():
-    userid = request.form['userid']
-    current_app.logger.info("Getting closet apparels")
-    apparel_ids = get_user_apparels(userid)
-    data = jsonify({"apparels" : apparel_ids})
-    return data
+@apparel.route('/closet/<string:uri>', methods=['GET',])
+def get_user_closet(uri):
+    data = get_apparel(uri)
+    return send_file(data, mimetype='image/png')
 
 
 @apparel.route('/apparel', methods=['DELETE',])

@@ -18,7 +18,7 @@ def register():
         password = request.form['password']
         current_app.logger.info("Registering user")
         register_user(username, password)
-        return redirect(url_for("auth.user", username=username))
+        return redirect(url_for("auth.closet", username=username))
     else:
         return render_template("register.html")
     
@@ -31,7 +31,7 @@ def login():
     current_app.logger.info("Logging in user")
     user = login_user(username, password)
     if not user: return redirect(url_for("auth.login"))
-    return redirect(url_for("auth.user", username=user[1]))
+    return redirect(url_for("auth.closet", username=user[1], userid=user[0]))
 
 
 @auth.route('/logout', methods=['DELETE',])
@@ -49,12 +49,12 @@ def delete():
     return serve_response(data="User deleted", status_code=200)
 
 
-@auth.route('/user', methods=['GET',])
-def user():
+@auth.route('/closet', methods=['GET',])
+def closet():
     username = request.args.get('username')
-    user = get_user(username)
-    current_app.logger.info('Getting user')
-    return render_template("closet.html", user=username)    
+    userid = request.args.get("userid")
+    current_app.logger.info('Getting user') 
+    return render_template("closet.html", username=username, userid=userid)    
 
 
 @auth.route("/task/<int:number1>/<int:number2>", methods=["GET", "POST"])

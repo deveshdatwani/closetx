@@ -22,8 +22,8 @@ def get_s3_boto_client():
     boto3.setup_default_session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
                                 aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
                                 region_name='us-east-2')
-    current_app.logger.info("S3 client connected")
     s3 = boto3.client('s3')
+    current_app.logger.info("S3 client connected")
     return s3
 
 
@@ -71,7 +71,6 @@ def login_user(username, password):
         return False
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchone()
-    print(user)
     crx.close()
     dbx.close()  
     if check_password_hash(user[2], password): 
@@ -107,8 +106,7 @@ def delete_user(username):
 
 
 def post_apparel(userid, image):
-    response = requests.post("http://localhost:6000/model/segment", files={"image":image})
-    image = Image.open(BytesIO(response.content))
+    image = Image.open(image.stream)
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
