@@ -10,7 +10,7 @@ services:
       - closetx
 
   user-app:
-    image: deveshdatwani/user-app:latest
+    image: deveshdatwani/user-app:webpage-c1
     container_name: user-app
     ports:
       - "5000:5000"
@@ -29,8 +29,7 @@ services:
     image: deveshdatwani/celery-app:latest
     container_name: celery-worker
     environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - USER_APP_ENV=prod
     depends_on:
       - redis
     networks:
