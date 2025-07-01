@@ -41,7 +41,6 @@ def get_db_x():
             password=password,  
             host=db_host,
             port=db_port,
-            auth_plugin='mysql_native_password'
         )
     except Exception as e:
         current_app.logger.error(f"No such host {e}")
@@ -72,10 +71,15 @@ def login_user(username, password):
         return False
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchone()
+    print(user)
     crx.close()
     dbx.close()  
-    if check_password_hash(user[2], password): return user
-    else: return None
+    if check_password_hash(user[2], password): 
+        current_app.logger.info("Password matches")
+        return user
+    else: 
+        current_app.logger.info("Incorrect password")
+        return None
 
 
 def get_user(username):
@@ -86,7 +90,7 @@ def get_user(username):
         current_app.logger.error(f"Could not get user {e}")
         return ""
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-    user = crx.fetchall()
+    user = crx.fetchone()
     crx.close()
     dbx.close()     
     return user

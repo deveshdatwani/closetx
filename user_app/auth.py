@@ -31,7 +31,7 @@ def login():
     current_app.logger.info("Logging in user")
     user = login_user(username, password)
     if not user: return redirect(url_for("auth.login"))
-    return jsonify(user)
+    return redirect(url_for("auth.user", username=user[1]))
 
 
 @auth.route('/logout', methods=['DELETE',])
@@ -54,7 +54,7 @@ def user():
     username = request.args.get('username')
     user = get_user(username)
     current_app.logger.info('Getting user')
-    return jsonify(user)
+    return render_template("closet.html", user=username)    
 
 
 @auth.route("/task/<int:number1>/<int:number2>", methods=["GET", "POST"])
