@@ -146,6 +146,10 @@ venv.bak/
 # mkdocs documentation
 /site
 
+
+#docker compose 
+.yaml
+
 # mypy
 .mypy_cache/
 .dmypy.json
