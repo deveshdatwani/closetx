@@ -54,7 +54,15 @@ def closet():
     username = request.args.get('username')
     userid = request.args.get("userid")
     current_app.logger.info('Getting user') 
-    return render_template("closet.html", username=username, userid=userid)    
+    image_s3_uris = get_user_apparels(userid)
+    images = [fetch_image_base64(uri[0]) for uri in image_s3_uris]
+    closet = []
+    for file in images:
+        file.seek(0)
+        encoded = base64.b64encode(file.read()).decode('utf-8')
+        img_uri = f'data:image/png;base64,{encoded}'  # adjust type if not PNG
+        closet.append(img_uri)
+    return render_template("closet.html", closet=closet, userid=userid, username=username) 
 
 
 @auth.route("/task/<int:number1>/<int:number2>", methods=["GET", "POST"])

@@ -1,6 +1,6 @@
 from .lib.db_helper import * 
-from flask import Blueprint, request, current_app, send_file, jsonify
-
+from flask import Blueprint, request, current_app, send_file, jsonify, redirect, url_for
+from . import auth
 
 apparel = Blueprint("apparel", __name__, url_prefix="/closet")
 
@@ -18,7 +18,7 @@ def add_apparel():
     userid = request.form['userid']
     image_file = request.files['image']
     post_apparel(userid, image_file)           
-    return serve_response(data="Apparel added", status_code=201)
+    return redirect(url_for("auth.closet", userid=userid))
  
 
 @apparel.route('/closet/<string:uri>', methods=['GET',])

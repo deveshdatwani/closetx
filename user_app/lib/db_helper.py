@@ -11,6 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from mysql import connector
 from io import BytesIO
 from matplotlib import pyplot as plt
+import base64
 
 
 def serve_response(data: str, status_code: int):
@@ -143,6 +144,7 @@ def get_user_apparels(userid):
     apparel_ids = crx.fetchall()
     crx.close()
     dbx.close()
+    print(apparel_ids)
     return apparel_ids
 
 
@@ -163,9 +165,9 @@ def delete_closet(userid):
     dbx.commit()
     crx.close() 
     dbx.close()
-    return True
+    return True    
 
 
-def rgb_from_img(image):
-    json_response = requests.post("http://127.0.0.1:5001/model/get-color-from-apparel", files={"image":image})
-    return json_response
+def fetch_image_base64(s3_uri):
+    encoded_string = get_apparel(s3_uri)
+    return encoded_string

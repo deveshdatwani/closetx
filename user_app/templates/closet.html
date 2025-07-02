@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
   <title>Closetx login</title>
   <style>
@@ -13,7 +14,37 @@
       background: white;
       border-radius: 6px;
     }
-  </style>
+    #grid {
+      margin: 3rem;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, auto);
+      gap: 1rem;
+      width: 100%;
+      max-width: 100vw;
+      margin-left: 0;
+    }
+    .cell {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      padding: 1rem; 
+      padding-left: 0;
+    }
+    .cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    @media (max-width: 1500px) {
+      #grid {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(16, auto);
+        gap: 0.5rem;
+        margin: 1rem;
+      }
+}
+</style>
 </head>
 <body>
   <div>
@@ -25,5 +56,22 @@
     <input type="hidden" name="userid" value="{{ userid }}">
     <input type="submit" value="Upload">
   </form>
+  <div id="grid"></div>
 </body>
+<script>
+  const myVar = {{ closet | tojson }};
+  function renderImages(imageList) {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = ''; 
+      imageList.forEach(src => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const img = document.createElement('img');
+        img.src = src;
+        cell.appendChild(img);
+        grid.appendChild(cell);
+      });
+    };
+  renderImages(myVar);
+</script>
 </html>
