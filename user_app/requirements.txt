@@ -11,4 +11,3 @@ celery
 redis
 matplotlib
 pytest
-base64
