@@ -12,6 +12,7 @@ from mysql import connector
 from io import BytesIO
 from matplotlib import pyplot as plt
 
+
 def serve_response(data: str, status_code: int):
     response = Response(response=data, status=status_code)
     return response
@@ -39,21 +40,21 @@ def get_db_x():
             user=user,  
             password=password,  
             host=db_host,
-            port=db_port
+            port=db_port,
         )
-    except mysql.connector.errors.DatabaseError:
-        current_app.logger.error(f"No such host {db_host}")
+    except Exception as e:
+        current_app.logger.error(f"No such host {e}")
         return None
     current_app.logger.info(f"Successfully connected to mysql")
     return conn
 
 
-def register_user(username: str, password: str, email: str) -> bool:
+def register_user(username: str, password: str) -> bool:
     dbx = get_db_x()
     if not dbx: return False
     crx = dbx.cursor()
     auth_string = generate_password_hash(password)
-    crx.execute("INSERT INTO user (username, password, email) VALUES (%s, %s, %s)", (username, auth_string, email))
+    crx.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, auth_string))
     dbx.commit()
     crx.close()
     dbx.close()
@@ -63,20 +64,33 @@ def register_user(username: str, password: str, email: str) -> bool:
 def login_user(username, password):
     dbx = get_db_x()
     current_app.logger.info("Matching password for user")
-    crx = dbx.cursor()
+    try:
+        crx = dbx.cursor()
+    except Exception as e:
+        current_app.logger.error(f"Could not login user - {e}")
+        return False
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
     user = crx.fetchone()
+    print(user)
     crx.close()
     dbx.close()  
-    if check_password_hash(user[3], password): return user
-    else: return None
+    if check_password_hash(user[2], password): 
+        current_app.logger.info("Password matches")
+        return user
+    else: 
+        current_app.logger.info("Incorrect password")
+        return None
 
 
 def get_user(username):
     dbx = get_db_x()
-    crx = dbx.cursor()
+    try:
+        crx = dbx.cursor()
+    except Exception as e:
+        current_app.logger.error(f"Could not get user {e}")
+        return ""
     crx.execute("SELECT * FROM user WHERE username = %s", (username,))
-    user = crx.fetchall()
+    user = crx.fetchone()
     crx.close()
     dbx.close()     
     return user
