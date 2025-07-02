@@ -1,6 +1,5 @@
 from .lib.db_helper import *  
 from user_app.celery_app import add
-from .. import celery_app
 from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify
 
 
@@ -12,24 +11,28 @@ def index():
     return render_template('index.html')
 
 
-@auth.route('/register', methods=['POST',])
+@auth.route('/register', methods=['POST', 'GET'])
 def register():
-    username = request.form['username']
-    password = request.form['password']
-    email = request.form['email']
-    current_app.logger.info("Registering user")
-    register_user(username, password, email)
-    return serve_response(data="User registered successfully" , status_code=200)
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        current_app.logger.info("Registering user")
+        register_user(username, password)
+        return redirect(url_for("auth.user", username=username))
+    else:
+        return render_template("register.html")
     
 
-@auth.route('/login', methods=['POST',])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET': return render_template("login.html")
     username = request.form['username']
     password = request.form['password']
     current_app.logger.info("Logging in user")
     user = login_user(username, password)
-    return jsonify(user)
-    
+    if not user: return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.user", username=user[1]))
+
 
 @auth.route('/logout', methods=['DELETE',])
 def logout():
@@ -48,10 +51,10 @@ def delete():
 
 @auth.route('/user', methods=['GET',])
 def user():
-    username = request.form['username']
+    username = request.args.get('username')
     user = get_user(username)
     current_app.logger.info('Getting user')
-    return jsonify(user)
+    return render_template("closet.html", user=username)    
 
 
 @auth.route("/task/<int:number1>/<int:number2>", methods=["GET", "POST"])
