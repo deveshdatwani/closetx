@@ -12,6 +12,7 @@ from mysql import connector
 from io import BytesIO
 from matplotlib import pyplot as plt
 import base64
+from model.models.huggingface_cloth_segmentation.process import main as segment_apparel
 
 
 def serve_response(data: str, status_code: int):
@@ -108,6 +109,7 @@ def delete_user(username):
 
 def post_apparel(userid, image):
     image = Image.open(image.stream)
+    image = segment_apparel(image)
     dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4()) + ".png"
     s3_client = get_s3_boto_client()
