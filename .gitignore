@@ -148,7 +148,7 @@ venv.bak/
 
 
 #docker compose 
-docker-compose.yaml
+#docker-compose.yaml
 
 # mypy
 .mypy_cache/
