@@ -17,8 +17,6 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - AWS_ACCESS_KEY=AKIAS7YB3XG3TT5YR36U
-      - AWS_SECRET_KEY=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
       - USER_APP_ENV=prod
     depends_on:
       - redis
