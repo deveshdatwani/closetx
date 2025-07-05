@@ -127,16 +127,24 @@ def post_apparel(userid, image):
         
 
 def get_apparel(uri):
-    s3 = get_s3_boto_client()
-    with open(uri, 'wb') as data:
-        s3.download_fileobj('closetx-images', uri, data)
-    apparel_image = Image.open(uri)
-    img_io = io.BytesIO()
-    apparel_image.save(img_io, 'PNG')
-    img_io.seek(0)
-    os.remove(uri)
-    current_app.logger.info("Fetched image")
-    return img_io 
+    if os.path.isfile(f"./.cache/{uri}"):
+        current_app.logger.info("Located apparel in cache")
+        apparel_image = Image.open(f"./.cache/{uri}")
+        img_io   = io.BytesIO()
+        apparel_image.save(img_io, 'PNG')
+        img_io.seek(0)
+        return img_io
+    else:
+        print("Downloading apparel from s3")
+        s3 = get_s3_boto_client()
+        with open(f"./.cache/{uri}", 'wb') as data:
+            s3.download_fileobj('closetx-images', uri, data)
+        apparel_image = Image.open(f"./.cache/{uri}")
+        img_io = io.BytesIO()
+        apparel_image.save(img_io, 'PNG')
+        img_io.seek(0)
+        current_app.logger.info("Fetched image")
+        return img_io 
 
 
 def get_user_apparels(userid):
@@ -146,7 +154,6 @@ def get_user_apparels(userid):
     apparel_ids = crx.fetchall()
     crx.close()
     dbx.close()
-    print(apparel_ids)
     return apparel_ids
 
 
