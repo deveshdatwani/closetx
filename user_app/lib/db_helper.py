@@ -13,7 +13,6 @@ from io import BytesIO
 from matplotlib import pyplot as plt
 import base64
 from celery import Celery
-from model.models.huggingface_cloth_segmentation.process import main as segment_apparel
 
 
 config = os.getenv("USER_APP_ENV", "prod")
@@ -125,13 +124,11 @@ def delete_user(username):
 def post_apparel(userid, image):
     apparel_uuid = str(uuid.uuid4()) + ".png"
     image = Image.open(image.stream)
-    image.save(f"./.cache/{apparel_uuid}")
-    image = segment_apparel(image)
-    image.save(f"./.cache/{apparel_uuid}")
-    image = celery_app.send_task("tasks.infer", args=[f"./.cache/{apparel_uuid}"])
+    image.save(f"/closet/.cache/{apparel_uuid}")
+    image = celery_app.send_task("tasks.infer", args=[f"/closet/.cache/{apparel_uuid}"])
     dbx = get_db_x()
     s3_client = get_s3_boto_client()
-    s3_client.upload_file(f"./.cache/{apparel_uuid}", "closetx-images", apparel_uuid)
+    s3_client.upload_file(f"/closet/.cache/{apparel_uuid}", "closetx-images", apparel_uuid)
     crx = dbx.cursor()
     userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
     dbx.commit()
@@ -143,9 +140,9 @@ def post_apparel(userid, image):
         
 
 def get_apparel(uri):
-    if os.path.isfile(f"./.cache/{uri}"):
+    if os.path.isfile(f"/closet/.cache/{uri}"):
         current_app.logger.info("Located apparel in cache")
-        apparel_image = Image.open(f"./.cache/{uri}")
+        apparel_image = Image.open(f"/closet/.cache/{uri}")
         img_io   = io.BytesIO()
         apparel_image.save(img_io, 'PNG')
         img_io.seek(0)
@@ -153,9 +150,9 @@ def get_apparel(uri):
     else:
         print("Downloading apparel from s3")
         s3 = get_s3_boto_client()
-        with open(f"./.cache/{uri}", 'wb') as data:
+        with open(f"/closet/.cache/{uri}", 'wb') as data:
             s3.download_fileobj('closetx-images', uri, data)
-        apparel_image = Image.open(f"./.cache/{uri}")
+        apparel_image = Image.open(f"/closet/.cache/{uri}")
         img_io = io.BytesIO()
         apparel_image.save(img_io, 'PNG')
         img_io.seek(0)

@@ -2,6 +2,7 @@ FROM python:3.10
 
 COPY ./user_app /user_app
 COPY ./model /model
+RUN mkdir /closet
 WORKDIR /
 
 RUN apt-get update && apt-get install -y libpq-dev build-essential

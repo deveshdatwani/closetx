@@ -24,10 +24,7 @@ app = Celery("flask",
 
 @app.task(name="tasks.infer")
 def segment_apparel_task(image_path):
-    print("received task")
-    print(image_path)
     image = Image.open(image_path)
     image = segment_apparel(image)
     image.save(image_path)
-    print(f"saved image {image_path}")
     return True
