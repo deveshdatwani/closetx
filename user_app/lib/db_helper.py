@@ -2,7 +2,7 @@ import uuid
 import boto3
 import io, os
 import requests
-from PIL import Image
+from PIL import Image, ExifTags
 import mysql.connector
 from base64 import encodebytes
 from mysql.connector import errorcode
@@ -17,12 +17,10 @@ from celery import Celery
 
 config = os.getenv("USER_APP_ENV", "prod")
 
-
 if config == "prod": 
     HOST = "redis"
 else: 
     HOST = "127.0.0.1"
-
 
 celery_app = Celery("flask",
              broker=f"redis://{HOST}:6379/0",
@@ -124,6 +122,7 @@ def delete_user(username):
 def post_apparel(userid, image):
     apparel_uuid = str(uuid.uuid4()) + ".png"
     image = Image.open(image.stream)
+    image = image.resize((786, 786))
     image.save(f"/closet/.cache/{apparel_uuid}")
     image = celery_app.send_task("tasks.infer", args=[f"/closet/.cache/{apparel_uuid}"])
     dbx = get_db_x()
@@ -193,3 +192,22 @@ def delete_closet(userid):
 def fetch_image_base64(s3_uri):
     encoded_string = get_apparel(s3_uri)
     return encoded_string
+
+
+def correct_image_orientation(image):
+    try:
+        exif = image._getexif()
+        if exif is not None:
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation] == 'Orientation':
+                    break
+            orientation_value = exif.get(orientation)
+            if orientation_value == 3:
+                image = image.rotate(180, expand=True)
+            elif orientation_value == 6:
+                image = image.rotate(270, expand=True)
+            elif orientation_value == 8:
+                image = image.rotate(90, expand=True)
+    except Exception as e:
+        current_app.logger.error(f"EXIF orientation correction failed: {e}")
+    return image

@@ -17,6 +17,7 @@ def get_apparel_image():
 def add_apparel():
     userid = request.form['userid']
     image_file = request.files['image']
+    image_file = correct_image_orientation(image_file)
     post_apparel(userid, image_file)           
     return redirect(url_for("auth.closet", userid=userid))
  

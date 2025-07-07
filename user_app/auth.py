@@ -1,5 +1,5 @@
 from .lib.db_helper import *  
-from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify
+from flask import Blueprint, redirect, render_template, request, session, url_for, current_app, jsonify, send_file
 
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -54,11 +54,13 @@ def closet():
     userid = request.args.get("userid")
     current_app.logger.info('Getting user') 
     image_s3_uris = get_user_apparels(userid)
-    images = [fetch_image_base64(uri[0]) for uri in image_s3_uris]
-    closet = []
-    for file in images:
-        file.seek(0)
-        encoded = base64.b64encode(file.read()).decode('utf-8')
-        img_uri = f'data:image/png;base64,{encoded}'  # adjust type if not PNG
-        closet.append(img_uri)
-    return render_template("closet.html", closet=closet, userid=userid, username=username) 
+    images = [uri[0] for uri in image_s3_uris]
+    return render_template("closet.html", closet=images, userid=userid, username=username) 
+
+
+@auth.route('/image_proxy', methods=['GET', 'POST'])
+def image_proxy():
+    uri = request.args.get('uri')
+    img_file = fetch_image_base64(uri)
+    img_file.seek(0)
+    return send_file(img_file, mimetype='image/png')
