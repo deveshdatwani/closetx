@@ -52,7 +52,7 @@
     {{ userid }} <br> <br>
   </div>
   <form action="/closet/post/apparel" method="POST" enctype="multipart/form-data">
-    <input id="files" name="image" type="file"><br><br> 
+    <input type="file" id="files" accept="image/*" capture="environment"><br><br>
     <input type="hidden" name="userid" value="{{ userid }}">
     <input type="submit" value="Upload">
   </form>

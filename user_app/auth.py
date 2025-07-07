@@ -62,8 +62,3 @@ def closet():
         img_uri = f'data:image/png;base64,{encoded}'  # adjust type if not PNG
         closet.append(img_uri)
     return render_template("closet.html", closet=closet, userid=userid, username=username) 
-
-
-@auth.route("/task/<int:number1>/<int:number2>", methods=["GET", "POST"])
-def add_task(number1, number2):
-    return str(add.delay(number1, number2))
