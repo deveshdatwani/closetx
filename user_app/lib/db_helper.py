@@ -12,7 +12,22 @@ from mysql import connector
 from io import BytesIO
 from matplotlib import pyplot as plt
 import base64
+from celery import Celery
 from model.models.huggingface_cloth_segmentation.process import main as segment_apparel
+
+
+config = os.getenv("USER_APP_ENV", "prod")
+
+
+if config == "prod": 
+    HOST = "redis"
+else: 
+    HOST = "127.0.0.1"
+
+
+celery_app = Celery("flask",
+             broker=f"redis://{HOST}:6379/0",
+             backend=f"redis://{HOST}:6379/0")
 
 
 def serve_response(data: str, status_code: int):
@@ -108,14 +123,15 @@ def delete_user(username):
 
 
 def post_apparel(userid, image):
-    image = Image.open(image.stream)
-    image = segment_apparel(image)
-    dbx = get_db_x()
     apparel_uuid = str(uuid.uuid4()) + ".png"
+    image = Image.open(image.stream)
+    image.save(f"./.cache/{apparel_uuid}")
+    image = segment_apparel(image)
+    image.save(f"./.cache/{apparel_uuid}")
+    image = celery_app.send_task("tasks.infer", args=[f"./.cache/{apparel_uuid}"])
+    dbx = get_db_x()
     s3_client = get_s3_boto_client()
-    image.save('./file.png')
-    s3_client.upload_file('./file.png', 'closetx-images', apparel_uuid)
-    os.remove('./file.png')
+    s3_client.upload_file(f"./.cache/{apparel_uuid}", "closetx-images", apparel_uuid)
     crx = dbx.cursor()
     userid = crx.execute("INSERT INTO apparel (user, uri) VALUES (%s, %s)",(userid, apparel_uuid))
     dbx.commit()

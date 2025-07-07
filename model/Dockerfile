@@ -10,4 +10,4 @@ RUN apt-get install -y default-libmysqlclient-dev
 RUN pip install -r model/requirements.txt
 RUN apt-get install -y default-mysql-client
 
-CMD ["celery", "-A", "celery_app", "worker", "--loglevel=debug"] 
+CMD ["python3", "-m", "celery", "-A", "user_app.celery_app", "worker", "--pool", "solo", "--loglevel=debug"] 

@@ -122,7 +122,8 @@ venv.bak/
 
 
 #docker compose 
-docker-compose.yaml
+.docker-compose.yaml
+.docker-compose.yaml
 
 # mypy
 .mypy_cache/
@@ -140,3 +141,4 @@ cython_debug/
 
 # Flask configuration
 *config.py
+docker-compose.yaml
