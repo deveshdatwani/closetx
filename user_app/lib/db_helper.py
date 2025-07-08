@@ -121,8 +121,7 @@ def delete_user(username):
 
 def post_apparel(userid, image):
     apparel_uuid = str(uuid.uuid4()) + ".png"
-    image = Image.open(image.stream)
-    image = image.resize((786, 786))
+    image = image.resize((1000, 786))
     image.save(f"/closet/.cache/{apparel_uuid}")
     image = celery_app.send_task("tasks.infer", args=[f"/closet/.cache/{apparel_uuid}"])
     dbx = get_db_x()
@@ -195,6 +194,7 @@ def fetch_image_base64(s3_uri):
 
 
 def correct_image_orientation(image):
+    image = Image.open(image.stream)
     try:
         exif = image._getexif()
         if exif is not None:
