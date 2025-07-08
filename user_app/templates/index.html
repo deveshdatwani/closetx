@@ -60,6 +60,20 @@
             text-decoration: none;
             color: #0077b6;
         }
+        .fade-in-2 {
+            font-size: 0.8rem;
+            opacity: 0;
+            animation: fadeIn 5s;
+            animation-delay: 2s;
+            animation-fill-mode: forwards;
+        }
+        .fade-in-3 {
+            font-size: 0.8rem;
+            opacity: 0;
+            animation: fadeIn 5s;
+            animation-delay: 4s;
+            animation-fill-mode: forwards;
+        }
     </style>
 </head>
 <body>
@@ -83,5 +97,13 @@
     <div class="fade-in-2">
         <a href="https://github.com/deveshdatwani/closetx"><p>Github</p></a>
     </div>
+    <div class="fade-in-2">
+        <a href="/auth/register" style="margin-right: 1rem;">
+            <button style="padding: 0.5rem 1.5rem; font-family: 'IBM Plex Mono', monospace;">Register</button>
+        </a>
+        <a href="/auth/login">
+            <button style="padding: 0.5rem 1.5rem; font-family: 'IBM Plex Mono', monospace;">Login</button>
+        </a>
+    </div>  
 </body>
 </html>
