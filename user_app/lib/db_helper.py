@@ -121,7 +121,8 @@ def delete_user(username):
 
 def post_apparel(userid, image):
     apparel_uuid = str(uuid.uuid4()) + ".png"
-    image = image.resize((1000, 786))
+    max_size = (800, 800)
+    image.thumbnail(max_size)
     image.save(f"/closet/.cache/{apparel_uuid}")
     image = celery_app.send_task("tasks.infer", args=[f"/closet/.cache/{apparel_uuid}"])
     dbx = get_db_x()

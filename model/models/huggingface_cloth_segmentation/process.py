@@ -143,7 +143,6 @@ def main(image, device='cpu', model=get_model()):
     palette = get_palette(4)
     img = image
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    print(np.unique(masks))
     img_np = np.array(img.convert("RGB"))
     mask_np = np.array(masks[0])  
     rgba = np.dstack((img_np, mask_np.astype(np.uint8))) 
