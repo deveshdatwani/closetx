@@ -55,6 +55,28 @@
         gap: 0.5rem;
       }
     }
+    .cell {
+      position: relative;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 14px;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .cell:hover .delete-btn {
+      display: flex;
+    }
   </style>
 </head>
 <body>
@@ -71,18 +93,32 @@
   <script>
     const imageURIs = {{ closet | tojson }};
     const grid = document.getElementById('grid');
-
     function renderImages(imageList) {
       grid.innerHTML = '';
       imageList.forEach(uri => {
         const cell = document.createElement('div');
         cell.className = 'cell';
         const img = document.createElement('img');
-        img.src = "{{ url_for('auth.image_proxy') }}?uri=" + encodeURIComponent(uri);
+        img.src = "{{ url_for('apparel.image_proxy') }}?uri=" + encodeURIComponent(uri);
         img.alt = "Closet Item";
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '×';
+        deleteBtn.onclick = async function () {
+            if (!confirm("Delete this image?")) return;
+            cell.remove();
+            const formData = new FormData();
+            formData.append('uri', uri);
+            formData.append('userid', "{{ userid }}");   
+              const response = await fetch('/closet/apparel', {
+                method: 'DELETE',
+                body: formData
+              });   
+        }
         cell.appendChild(img);
+        cell.appendChild(deleteBtn);
         grid.appendChild(cell);
-      });
+        });
     }
     renderImages(imageURIs);
   </script>

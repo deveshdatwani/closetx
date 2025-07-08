@@ -169,7 +169,7 @@ def get_user_apparels(userid):
     return apparel_ids
 
 
-def delete_apparel(userid, uri):
+def delete_apparel(uri):
     dbx = get_db_x()
     crx = dbx.cursor()  
     crx.execute("DELETE FROM apparel WHERE uri = %s", (uri,))

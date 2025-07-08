@@ -56,11 +56,3 @@ def closet():
     image_s3_uris = get_user_apparels(userid)
     images = [uri[0] for uri in image_s3_uris]
     return render_template("closet.html", closet=images, userid=userid, username=username) 
-
-
-@auth.route('/image_proxy', methods=['GET', 'POST'])
-def image_proxy():
-    uri = request.args.get('uri')
-    img_file = fetch_image_base64(uri)
-    img_file.seek(0)
-    return send_file(img_file, mimetype='image/png')
