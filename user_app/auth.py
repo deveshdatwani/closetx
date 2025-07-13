@@ -17,7 +17,7 @@ def register():
         password = request.form['password']
         current_app.logger.info("Registering user")
         register_user(username, password)
-        return redirect(url_for("auth.closet", username=username))
+        return redirect(url_for("auth.login", username=username))
     else:
         return render_template("register.html")
     
