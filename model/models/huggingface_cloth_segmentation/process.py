@@ -138,12 +138,15 @@ def get_model(checkpoint_path='./model/cloth_segm.pth', device='cpu'):
     return model
 
 
-def main(image, device, model):
+def main(image, device='cpu', model=get_model()):
     device = 'cuda:0' if device=='gpu' else 'cpu'
     palette = get_palette(4)
-    img = Image.open(image).convert('RGB')
+    img = image
     masks, cloth_seg = generate_mask(img, net=model, palette=palette, device=device)
-    return masks, cloth_seg, img
+    img_np = np.array(img.convert("RGB"))
+    mask_np = np.array(masks[0])  
+    rgba = np.dstack((img_np, mask_np.astype(np.uint8))) 
+    return Image.fromarray(rgba, mode='RGBA')
 
 
 def make_model():

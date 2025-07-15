@@ -7,7 +7,6 @@ DROP USER IF EXISTS closetx;
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NULL UNIQUE,
-    email VARCHAR(100) NULL,
     password VARCHAR(255) NULL
 );
 
