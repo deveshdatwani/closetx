@@ -7,13 +7,12 @@ import logging
 logger = logging.Logger(__name__)
 logger.setLevel(logging.INFO)
 
-
 config = os.getenv("USER_APP_ENV", "prod")
 
 
 if config == "prod": 
     HOST = "redis"
-else: 
+else:
     HOST = "127.0.0.1"
 
 

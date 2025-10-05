@@ -49,7 +49,7 @@ def image_proxy():
         if not uri:
             current_app.logger.warning("Missing uri parameter in image_proxy")
             return jsonify({"error": "uri parameter is required"}), 400
-        img_file = get_apparel(uri)  # get_apparel returns BytesIO or None
+        img_file = get_apparel(uri) 
         if not img_file:
             current_app.logger.warning(f"Image not found for uri: {uri}")
             return jsonify({"error": "Image not found"}), 404

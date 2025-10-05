@@ -28,8 +28,4 @@ def create_app(config_file=None):
     return app
 
 
-app = create_app(Config)
-
-@app.route("/")
-def index():
-    return render_template("index.html")
+application = create_app()
