@@ -1,5 +1,5 @@
 import pytest
-from closetx_app.app import create_app
+from user_app.app import create_app
 
 
 @pytest.fixture()

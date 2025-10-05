@@ -1,14 +1,14 @@
 import os
 from celery import Celery
 from PIL import Image
-from model.models.huggingface_cloth_segmentation.process import main as segment_apparel
+from model.models.huggingface_cloth_segmentation.process import main as segment_apparel, get_model
 import logging
 
 logger = logging.Logger(__name__)
 logger.setLevel(logging.INFO)
 
 config = os.getenv("USER_APP_ENV", "prod")
-
+model = get_model()
 
 if config == "prod": 
     HOST = "redis"
@@ -24,6 +24,6 @@ app = Celery("flask",
 @app.task(name="tasks.infer")
 def segment_apparel_task(image_path):
     image = Image.open(image_path)
-    image = segment_apparel(image)
+    image = segment_apparel(image=image, model=model)
     image.save(image_path)
     return True
