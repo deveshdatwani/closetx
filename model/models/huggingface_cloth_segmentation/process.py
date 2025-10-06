@@ -6,6 +6,7 @@ import argparse
 import numpy as np
 from PIL import Image
 from .options import opt
+import onnxruntime as ort
 from .network import U2NET
 import torch.nn.functional as F
 from collections import OrderedDict
@@ -16,15 +17,19 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
+session = ort.InferenceSession("./model/models/huggingface_cloth_segmentation/model/closetx_segmenation_model.onnx")
+input_name = session.get_inputs()[0].name
+output_name = session.get_outputs()[0].name
+
+
 def load_checkpoint(model, checkpoint_path):
     if not os.path.exists(checkpoint_path):
         return
     model_state_dict = torch.load(checkpoint_path, map_location=torch.device("cpu"))
     new_state_dict = OrderedDict()
     for k, v in model_state_dict.items():
-        name = k[7:]  # remove `module.`
+        name = k[7:]
         new_state_dict[name] = v
-
     model.load_state_dict(new_state_dict)
     return model
 
@@ -92,7 +97,8 @@ def generate_mask(input_image, net, palette, device = 'cpu'):
     os.makedirs(alpha_out_dir, exist_ok=True)
     os.makedirs(cloth_seg_out_dir, exist_ok=True)
     with torch.no_grad():
-        output_tensor = net(image_tensor.to(device))
+        output_tensor = torch.tensor(session.run([output_name], {input_name: image_tensor.to(device).numpy()}))
+        # output_tensor = net(image_tensor.to(device))
         output_tensor = F.log_softmax(output_tensor[0], dim=1)
         output_tensor = torch.max(output_tensor, dim=1, keepdim=True)[1]
         output_tensor = torch.squeeze(output_tensor, dim=0)
