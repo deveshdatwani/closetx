@@ -7,19 +7,14 @@ import logging
 logger = logging.Logger(__name__)
 logger.setLevel(logging.INFO)
 
-config = os.getenv("USER_APP_ENV", "prod")
 model = get_model()
+HOST = os.getenv("HOST", "localhost") 
 
-if config == "prod": 
-    HOST = "redis"
-else:
-    HOST = "127.0.0.1"
-
+logger.info(f"redis host set to {HOST}")
 
 app = Celery("flask",
              broker=f"redis://{HOST}:6379/0",
              backend=f"redis://{HOST}:6379/0")
-
 
 @app.task(name="tasks.infer")
 def segment_apparel_task(image_path):

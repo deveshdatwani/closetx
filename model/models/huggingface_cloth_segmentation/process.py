@@ -138,7 +138,8 @@ def get_model(checkpoint_path='./model/cloth_segm.pth', device='cpu'):
     return model
 
 
-def main(image, device='cpu', model=get_model()):
+def main(image, device='cpu', model=None):
+    if not model: return None
     device = 'cuda:0' if device=='gpu' else 'cpu'
     palette = get_palette(4)
     img = image
@@ -152,3 +153,4 @@ def main(image, device='cpu', model=get_model()):
 def make_model():
     model = load_seg_model("/home/deveshdatwani/closetx/celery/models/huggingface_cloth_segmentation/model/cloth_segm.pth")
     return model
+    
