@@ -142,3 +142,6 @@ cython_debug/
 # Flask configuration
 *config.py
 docker-compose.yaml
+
+# VS Code settings
+.vscode/
