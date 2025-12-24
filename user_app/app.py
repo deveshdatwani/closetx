@@ -16,7 +16,7 @@ def create_app(config_file=None):
             app.config.from_object(config_file)
             app.logger.info("Application configured succesfully from config file")
             app.logger.info(app.config["DB_HOST"])
-            os.makedirs(app.config["CACHE_DIR"], exist_ok=True)
+            # os.makedirs(app.config["CACHE_DIR"], exist_ok=True)
         except Exception as e:
             app.logger.error(f"Corrupt config file")
             print(e)
@@ -28,4 +28,4 @@ def create_app(config_file=None):
     return app
 
 
-application = create_app()
+application = create_app('user_app.config.config.Config')

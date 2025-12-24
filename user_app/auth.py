@@ -21,9 +21,9 @@ def register():
             register_user(username, password)
         except Exception as e:
             current_app.logger.error(f"Error registering user: {e}")
-            return render_template("register.html")
-        return redirect(url_for("auth.login", username=username))
-    return render_template("register.html")
+            return render_template("register.html"), 200
+        return redirect(url_for("auth.login", username=username), 302)
+    return render_template("register.html"), 200
 
 
 @auth.route('/login', methods=['GET', 'POST'])
