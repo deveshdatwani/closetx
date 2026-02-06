@@ -10,7 +10,6 @@ closet_router = APIRouter()
 def get_home():
     return {"status":"success", "data":"welcome to your closet"}
 
-
 @closet_router.get("/user/{user_id}")
 def get_user_images(user_id: int):
     try:
@@ -25,15 +24,17 @@ def get_user_images(user_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 @closet_router.post("/upload")
-def upload_image(user_id: int = Form(...), image: UploadFile = Form(...)):
+def upload_image(user: int = Form(...), image: UploadFile = Form(...)):
     try:
+        id = 1
+        uri = "asdsad123hsdfb"
         filename = image.filename
         save_path = os.path.join(UPLOAD_DIR, filename)
         with open(save_path, "wb") as f:
             shutil.copyfileobj(image.file, f)
         conn = get_conn()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO images (user_id, file_path, file_name) VALUES (%s,%s,%s)", (user_id, save_path, filename))
+        cursor.execute("INSERT INTO apparel (id, user, uri) VALUES (%s,%s,%s)", (id, user, uri))
         conn.commit()
         cursor.close()
         conn.close()
@@ -63,12 +64,14 @@ def delete_image(image_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@closet_router.get("/fetch/{image_id}")
-def fetch_image(image_id: int):
+@closet_router.get("/fetch/{uri}")
+def fetch_image(uri: int):
     try:
+        file = FileResponse("./cache/3af14ee2-3207-48ca-8a30-d20545182c77.png", filename=os.path.basename("./cache/3af14ee2-3207-48ca-8a30-d20545182c77.png"))
+        return file
         conn = get_conn()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT file_path FROM images WHERE id=%s", (image_id,))
+        cursor.execute("SELECT uri FROM images WHERE uri=%s", (uri,))
         row = cursor.fetchone()
         cursor.close()
         conn.close()
