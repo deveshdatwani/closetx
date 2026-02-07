@@ -1,6 +1,7 @@
 from celery_app.app import app
 import logging
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.Logger(__name__)
 logger.setLevel(logging.INFO)
 

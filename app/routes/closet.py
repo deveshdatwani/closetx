@@ -6,6 +6,11 @@ from closetx.app.utils.db import get_conn
 import os, shutil
 from closetx.celery_tasks.tasks import add_two_numbers
 import random
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.Logger(__name__)
+logger.setLevel(logging.INFO)
 
 UPLOAD_DIR = os.environ.get("UPLOAD_DIR","/absolute/path/to/save")
 closet_router = APIRouter()
