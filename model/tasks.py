@@ -1,4 +1,4 @@
-from celery_app.app import app
+from model.app import app
 import logging
 
 logging.basicConfig(level=logging.INFO)

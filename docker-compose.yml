@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: hello
+      MYSQL_DATABASE: closetx
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./closetx/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    restart: unless-stopped
+    networks:
+      - closetx_network
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    networks:
+      - closetx_network
+
+  closetx_app:
+    image: closetx_app:latest
+    env_file:
+      - /home/deveshdatwani/ddms/closetx/.env
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - closetx_network
+
+  model_app:
+    image: model_app:latest
+    command: python3 -m celery -A model.app worker --loglevel=info
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - closetx_network
+
+volumes:
+  db_data:
+
+networks:
+  closetx_network:

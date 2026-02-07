@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 import mysql.connector, os, shutil
 from closetx.app.utils.db import get_conn
 import os, shutil
-from closetx.celery_tasks.tasks import add_two_numbers
+from model.tasks import add_two_numbers
 import random
 import logging
 
