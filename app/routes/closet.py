@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, Form, HTTPException, Form
 from uuid import uuid4
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import Response
 import os, shutil
-from closetx.app.utils.db import get_conn
+from closetx.app.db.db_helper import get_conn
 import os, shutil
 import model.tasks
 import random
