@@ -21,6 +21,8 @@ services:
 
   closetx_app:
     image: closetx_app:latest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - /home/deveshdatwani/ddms/closetx/.env
     depends_on:

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, UploadFile, Form, HTTPException, Form
 from uuid import uuid4
 from fastapi.responses import FileResponse, JSONResponse, Response
-import mysql.connector, os, shutil
+import os, shutil
 from closetx.app.utils.db import get_conn
 import os, shutil
-from model.tasks import add_two_numbers
+import model.tasks
 import random
 import logging
 
@@ -17,7 +17,7 @@ closet_router = APIRouter()
 
 @closet_router.get("/")
 def get_home():
-    add_two_numbers.delay(random.randint(1, 100), 5)
+    # add_two_numbers.delay(random.randint(1, 100), 5)
     return {"status":"success", "data":"welcome to your closet"}
 
 @closet_router.get("/user/{user_id}")

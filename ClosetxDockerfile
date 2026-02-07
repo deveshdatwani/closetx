@@ -1,6 +1,7 @@
 FROM python:3.10
 
 COPY ./closetx /closetx
+COPY ./model /model
 WORKDIR /closetx
 
 RUN apt-get update && apt-get install -y libpq-dev build-essential
