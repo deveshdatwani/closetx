@@ -1,4 +1,4 @@
-from . import create_app
+from closetx.app import create_app
 import uvicorn
 
 app = create_app()
