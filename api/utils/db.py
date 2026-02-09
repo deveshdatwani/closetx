@@ -4,7 +4,7 @@ DB = {
     "host": os.getenv("DB_HOST","localhost"),
     "user": os.getenv("DB_USER","closetx"),
     "password": os.getenv("DB_PASS","hello"),
-    "database": "closetx"
+    "database": os.getenv("DB_NAME","closetx")
 }
 
 def get_conn():
