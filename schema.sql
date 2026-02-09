@@ -1,0 +1,14 @@
+USE closetx;
+DROP TABLE IF EXISTS apparel;
+DROP TABLE IF EXISTS user;
+CREATE TABLE user (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NULL UNIQUE,
+    password VARCHAR(255) NULL
+);
+CREATE TABLE apparel (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user INT,
+    uri VARCHAR(255),
+    FOREIGN KEY (user) REFERENCES user(id)
+);

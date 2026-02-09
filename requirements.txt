@@ -2,7 +2,9 @@ fastapi
 uvicorn
 mysql-connector-python
 python-multipart
-dotenv
-celery
+python-dotenv
+pydantic
+pyjwt
+celery  
+boto3
 redis
-flask
