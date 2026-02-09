@@ -5,4 +5,6 @@ python-multipart
 python-dotenv
 pydantic
 pyjwt
-celery
+celery  
+boto3
+redis
