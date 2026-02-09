@@ -1,129 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClosetX</title>
-    <link rel="stylesheet" href="popup.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { width: 600px; height: 900px; font-family: system-ui, sans-serif; padding: 12px; background: #f5f5f5; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .header { background: linear-gradient(135deg, #6366f1, #ec4899); color: white; padding: 12px; border-radius: 8px; margin-bottom: 12px; flex-shrink: 0; }
+        .header h1 { font-size: 18px; }
+        .logout { background: rgba(255,255,255,0.3); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 8px; }
+        
+        .view { display: none; flex: 1; overflow-y: auto; }
+        .view.active { display: flex; flex-direction: column; }
+        
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 13px; margin-bottom: 4px; font-weight: 500; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        input:focus { outline: none; border-color: #6366f1; }
+        
+        button { background: #6366f1; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; width: 100%; }
+        button:hover { background: #4f46e5; }
+        
+        .tabs { display: flex; gap: 0; border-bottom: 1px solid #ddd; margin-bottom: 12px; flex-shrink: 0; }
+        .tab-btn { background: none; border: none; padding: 10px; cursor: pointer; border-bottom: 2px solid transparent; color: #666; }
+        .tab-btn.active { border-bottom-color: #6366f1; color: #6366f1; }
+        
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; overflow-y: auto; }
+        .img-item { aspect-ratio: 1; background: #ddd; border-radius: 4px; overflow: hidden; cursor: pointer; }
+        .img-item img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .alert { padding: 10px; border-radius: 4px; margin-bottom: 12px; display: none; font-size: 13px; }
+        .alert.show { display: block; }
+        .error { background: #fee; color: #c00; border: 1px solid #fcc; }
+        .success { background: #efe; color: #060; border: 1px solid #cfc; }
+        
+        .hidden { display: none !important; }
+        .loading { text-align: center; color: #666; padding: 20px; }
+        
+        h2 { margin: 16px 0; font-size: 18px; }
+        a { color: #6366f1; text-decoration: none; }
+        p { font-size: 13px; margin: 12px 0; text-align: center; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
+    <div class="alert error" id="error"></div>
+    <div class="alert success" id="success"></div>
+    
+    <!-- Login -->
+    <div class="view active" id="loginView">
+        <div class="header"><h1>ClosetX</h1></div>
+        
+        <h2>Login</h2>
+        <div class="form-group">
+            <label>Username</label>
+            <input id="username" type="text">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input id="password" type="password">
+        </div>
+        <button id="loginBtn">Login</button>
+        
+        <p>No account? <a href="#" id="signupLink">Sign up</a></p>
+        
+        <div id="signupForm" class="hidden">
+            <h2>Sign Up</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input id="signupUsername" type="text">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input id="signupPassword" type="password">
+            </div>
+            <div class="form-group">
+                <label>Confirm</label>
+                <input id="signupConfirm" type="password">
+            </div>
+            <button id="signupBtn">Create Account</button>
+            <p><a href="#" id="backToLoginLink">Back</a></p>
+        </div>
+    </div>
+    
+    <!-- App -->
+    <div class="view" id="appView">
+        <div class="header">
             <h1>ClosetX</h1>
-            <div class="user-info" id="userInfo" style="display: none;">
-                <span id="username"></span>
-                <button class="btn btn-logout" id="logoutBtn">Logout</button>
-            </div>
-        </header>
-
-        <!-- Login View -->
-        <div class="view" id="loginView">
-            <div class="form-container">
-                <h2>Welcome to ClosetX</h2>
-                <p>Manage your wardrobe with ease</p>
-                
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="loginUsername">Username</label>
-                        <input type="text" id="loginUsername" placeholder="Enter username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" placeholder="Enter password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-
-                <div class="divider">or</div>
-
-                <div id="signupToggle">
-                    <p>Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
-                </div>
-            </div>
-
-            <div class="form-container" id="signupContainer" style="display: none;">
-                <h2>Create Account</h2>
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label for="signupUsername">Username</label>
-                        <input type="text" id="signupUsername" placeholder="Enter username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" placeholder="Enter password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signupConfirm">Confirm Password</label>
-                        <input type="password" id="signupConfirm" placeholder="Confirm password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Sign Up</button>
-                </form>
-                <p class="back-link"><a href="#" id="backToLogin">Back to login</a></p>
-            </div>
+            <button class="logout" id="logoutBtn">Logout</button>
         </div>
-
-        <!-- Main App View -->
-        <div class="view" id="mainView" style="display: none;">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="home">Home</button>
-                <button class="tab-btn" data-tab="upload">Upload</button>
-            </div>
-
-            <!-- Home Tab -->
-            <div class="tab-content active" id="homeTab">
-                <div class="images-grid" id="imagesGrid">
-                    <div class="loading">Loading your images...</div>
-                </div>
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <p>No images yet</p>
-                    <p class="text-muted">Upload your first item to get started</p>
-                </div>
-            </div>
-
-            <!-- Upload Tab -->
-            <div class="tab-content" id="uploadTab">
-                <div class="upload-area">
-                    <div class="upload-box" id="uploadBox">
-                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="16 16 12 12 8 16"></polyline>
-                            <line x1="12" y1="12" x2="12" y2="21"></line>
-                            <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
-                        </svg>
-                        <p>Drag and drop image here</p>
-                        <p class="text-muted">or click to select</p>
-                    </div>
-                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                    <button class="btn btn-primary" id="uploadBtn" style="margin-top: 10px; width: 100%;">Upload Image</button>
-                </div>
-                <div id="uploadProgress" class="upload-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <p id="progressText">Uploading...</p>
-                </div>
-                <div id="uploadSuccess" class="upload-success" style="display: none;">
-                    <p>✓ Image uploaded successfully</p>
-                </div>
-            </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" id="homeTabBtn">Home</button>
+            <button class="tab-btn" id="uploadTabBtn">Upload</button>
         </div>
-
-        <!-- Error/Message Display -->
-        <div class="alert alert-error" id="errorAlert" style="display: none;"></div>
-        <div class="alert alert-success" id="successAlert" style="display: none;"></div>
-    </div>
-
-    <!-- Image Viewer Modal -->
-    <div class="modal" id="imageModal" style="display: none;">
-        <div class="modal-content">
-            <button class="modal-close" id="closeModal">&times;</button>
-            <img id="modalImage" src="" alt="Image">
-            <div class="modal-actions">
-                <button class="btn btn-danger" id="deleteBtn">Delete</button>
-            </div>
+        
+        <!-- Home Tab -->
+        <div id="homeTab" class="view active">
+            <div id="imagesList" class="grid"></div>
+            <div id="emptyMsg" class="loading hidden">No images yet</div>
+        </div>
+        
+        <!-- Upload Tab -->
+        <div id="uploadTab" class="view">
+            <p style="margin: 20px 0; color: #666;">Upload images at:</p>
+            <p style="word-break: break-all; color: #6366f1; font-weight: 500;">http://localhost:8000</p>
         </div>
     </div>
-
     <script src="popup.js"></script>
 </body>
 </html>
+
+

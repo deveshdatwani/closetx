@@ -60,7 +60,7 @@ def login_user_db(username: str, password: str):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_jwt(user["id"])
     logger.info(f"User logged in: {username}")
-    return {"token": token}
+    return {"id": user["id"], "username": user["username"], "token": token, "access_token": token}
 
 def edit_user_db(user_id: int, username: str = None, password: str = None):
     if not username and not password:
