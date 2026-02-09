@@ -6,3 +6,4 @@ dotenv
 celery
 redis
 flask
+boto3
