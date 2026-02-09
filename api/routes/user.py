@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("user_routes")
 
-router = APIRouter(prefix="/user")
+router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
 @router.post("/create")

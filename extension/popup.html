@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClosetX</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>ClosetX</h1>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="username"></span>
+                <button class="btn btn-logout" id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <!-- Login View -->
+        <div class="view" id="loginView">
+            <div class="form-container">
+                <h2>Welcome to ClosetX</h2>
+                <p>Manage your wardrobe with ease</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+
+                <div class="divider">or</div>
+
+                <div id="signupToggle">
+                    <p>Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
+                </div>
+            </div>
+
+            <div class="form-container" id="signupContainer" style="display: none;">
+                <h2>Create Account</h2>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" placeholder="Enter password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirm">Confirm Password</label>
+                        <input type="password" id="signupConfirm" placeholder="Confirm password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </form>
+                <p class="back-link"><a href="#" id="backToLogin">Back to login</a></p>
+            </div>
+        </div>
+
+        <!-- Main App View -->
+        <div class="view" id="mainView" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="home">Home</button>
+                <button class="tab-btn" data-tab="upload">Upload</button>
+            </div>
+
+            <!-- Home Tab -->
+            <div class="tab-content active" id="homeTab">
+                <div class="images-grid" id="imagesGrid">
+                    <div class="loading">Loading your images...</div>
+                </div>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <p>No images yet</p>
+                    <p class="text-muted">Upload your first item to get started</p>
+                </div>
+            </div>
+
+            <!-- Upload Tab -->
+            <div class="tab-content" id="uploadTab">
+                <div class="upload-area">
+                    <div class="upload-box" id="uploadBox">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+                        </svg>
+                        <p>Drag and drop image here</p>
+                        <p class="text-muted">or click to select</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    <button class="btn btn-primary" id="uploadBtn" style="margin-top: 10px; width: 100%;">Upload Image</button>
+                </div>
+                <div id="uploadProgress" class="upload-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText">Uploading...</p>
+                </div>
+                <div id="uploadSuccess" class="upload-success" style="display: none;">
+                    <p>✓ Image uploaded successfully</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error/Message Display -->
+        <div class="alert alert-error" id="errorAlert" style="display: none;"></div>
+        <div class="alert alert-success" id="successAlert" style="display: none;"></div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div class="modal" id="imageModal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+            <img id="modalImage" src="" alt="Image">
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="deleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
