@@ -15,6 +15,10 @@ DB_CONFIG = {
 logger.info("db_config_loaded", extra={"config": {k: ("****" if k=="password" else v) for k,v in DB_CONFIG.items()}})
 
 def get_conn():
-    conn = mysql.connector.connect(**DB_CONFIG)
-    logger.info("db_connection_opened")
-    return conn
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        logger.info("db_connection_opened")
+        return conn
+    except Exception:
+        logger.exception("db_connection_failed")
+        raise

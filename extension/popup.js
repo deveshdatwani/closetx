@@ -1,36 +1,42 @@
 const API = 'http://localhost:8000';
 let user = null;
 
+window.addEventListener('error', (e) => {
+    try { console.error('Window error', e.error || e.message || e); } catch(_){}
+    try { const el = document.getElementById('error'); if (el) { el.textContent = String(e.error || e.message || e); el.classList.add('show'); } } catch(_){}
+});
+window.addEventListener('unhandledrejection', (ev) => {
+    try { console.error('Unhandled rejection', ev.reason); } catch(_){}
+    try { const el = document.getElementById('error'); if (el) { el.textContent = String(ev.reason || ev); el.classList.add('show'); } } catch(_){}
+});
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Popup loaded');
-    
-    // Restore user session
-    chrome.storage.local.get(['user', 'token'], r => {
-        if (r.user && r.token) {
-            user = r.user;
-            document.getElementById('loginView').classList.remove('active');
-            document.getElementById('appView').classList.add('active');
-            loadImages();
-        }
-    });
+    try {
+        console.log('Popup loaded');
+        chrome.storage.local.get(['user', 'token'], r => {
+            try {
+                if (r.user && r.token) {
+                    user = r.user;
+                    document.getElementById('loginView').classList.remove('active');
+                    document.getElementById('appView').classList.add('active');
+                    loadImages();
+                }
+            } catch (e) { console.error('Restore session error', e); }
+        });
 
-    // Login form listeners
-    document.getElementById('loginBtn').addEventListener('click', login);
-    document.getElementById('signupLink').addEventListener('click', e => {
-        e.preventDefault();
-        document.getElementById('signupForm').classList.toggle('hidden');
-    });
-    document.getElementById('backToLoginLink').addEventListener('click', e => {
-        e.preventDefault();
-        document.getElementById('signupForm').classList.toggle('hidden');
-    });
-    document.getElementById('signupBtn').addEventListener('click', signup);
+        try { document.getElementById('loginBtn').addEventListener('click', login); } catch(e){}
+        try { document.getElementById('signupLink').addEventListener('click', e => { e.preventDefault(); document.getElementById('signupForm').classList.toggle('hidden'); }); } catch(e){}
+        try { document.getElementById('backToLoginLink').addEventListener('click', e => { e.preventDefault(); document.getElementById('signupForm').classList.toggle('hidden'); }); } catch(e){}
+        try { document.getElementById('signupBtn').addEventListener('click', signup); } catch(e){}
 
-    // App listeners
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-    document.getElementById('homeTabBtn').addEventListener('click', () => switchTab('home'));
-    document.getElementById('uploadTabBtn').addEventListener('click', () => switchTab('upload'));
+        try { document.getElementById('logoutBtn').addEventListener('click', logout); } catch(e){}
+        try { document.getElementById('matchPageBtn').addEventListener('click', matchPage); } catch(e){}
+        try { document.getElementById('highlightAllBtn').addEventListener('click', highlightAll); } catch(e){}
+        try { document.getElementById('saveHighlightsBtn').addEventListener('click', saveHighlights); } catch(e){}
+        try { document.getElementById('homeTabBtn').addEventListener('click', () => switchTab('home')); } catch(e){}
+        try { document.getElementById('uploadTabBtn').addEventListener('click', () => switchTab('upload')); } catch(e){}
+    } catch (e) { console.error('DOMContentLoaded handler error', e); }
 });
 
 async function login() {
@@ -64,6 +70,49 @@ async function login() {
         console.error('Login error:', e);
         showError(String(e.message));
     }
+}
+
+async function highlightAll() {
+    try {
+        const tabs = await new Promise(resolve => chrome.tabs.query({ active: true, currentWindow: true }, resolve));
+        const tab = tabs && tabs[0];
+        if (!tab) return showError('No active tab');
+        await sendMessageToTabWithInject(tab.id, { action: 'highlightAll' });
+        showSuccess('All images highlighted');
+    } catch (e) {
+        showError(String(e.message || e));
+    }
+}
+
+function sendMessageToTabWithInject(tabId, message, timeout = 3000) {
+    return new Promise((resolve, reject) => {
+        try {
+            chrome.tabs.sendMessage(tabId, message, async (resp) => {
+                if (chrome.runtime.lastError && /Receiving end does not exist/i.test(chrome.runtime.lastError.message)) {
+                    try {
+                        await new Promise((res, rej) => {
+                            chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }, (injectionResults) => {
+                                if (chrome.runtime.lastError) return rej(chrome.runtime.lastError);
+                                res(injectionResults);
+                            });
+                        });
+                    } catch (injErr) {
+                        return reject(new Error('Failed to inject content script: ' + String(injErr)));
+                    }
+                    // retry
+                    chrome.tabs.sendMessage(tabId, message, (resp2) => {
+                        if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+                        resolve(resp2);
+                    });
+                    return;
+                }
+                if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+                resolve(resp);
+            });
+            // fallback timeout
+            setTimeout(() => reject(new Error('sendMessage timeout')), timeout);
+        } catch (e) { reject(e); }
+    });
 }
 
 async function signup() {
@@ -220,4 +269,128 @@ function showSuccess(msg) {
     s.textContent = String(msg).substring(0, 100);
     s.classList.add('show');
     setTimeout(() => s.classList.remove('show'), 3000);
+}
+
+async function matchPage() {
+    if (!user) return showError('Login first');
+    try {
+        const tabs = await new Promise(resolve => chrome.tabs.query({ active: true, currentWindow: true }, resolve));
+        const tab = tabs && tabs[0];
+        if (!tab) return showError('No active tab');
+        let pageImages = [];
+        try {
+            const exec = await new Promise((resolve, reject) => {
+                chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => {
+                    const imgs = Array.from(document.images || []);
+                    const urls = imgs.map(i => {
+                        const candidates = [i.currentSrc, i.src, i.getAttribute && i.getAttribute('data-src'), i.getAttribute && i.getAttribute('data-lazy')];
+                        if (i.srcset) {
+                            try { candidates.push(i.srcset.split(',')[0].trim().split(' ')[0]); } catch(e){}
+                        }
+                        for (const c of candidates) if (c) return c;
+                        return null;
+                    }).filter(Boolean).filter(u => typeof u === 'string' && u.startsWith('http'));
+                    return urls;
+                } }, (res) => {
+                    if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+                    resolve(res);
+                });
+            });
+            pageImages = (exec && exec[0] && exec[0].result) || [];
+        } catch (e) {
+            pageImages = [];
+        }
+        if (!pageImages.length) {
+            try {
+                const scraped = await new Promise((resolve) => {
+                    chrome.runtime.sendMessage({ action: 'scrapeImages', url: tab.url }, (resp) => resolve(resp));
+                });
+                if (scraped && scraped.ok && Array.isArray(scraped.images)) pageImages = scraped.images;
+            } catch (e) {}
+        }
+        if (!pageImages.length) return showError('No images found on page');
+        const resp = await fetch(`${API}/inference/match`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: user.id, page_images: pageImages }) });
+        if (!resp.ok) {
+            const d = await resp.json().catch(()=>({detail:'bad response'}));
+            return showError(d.detail || 'Match request failed');
+        }
+        const data = await resp.json();
+        const taskId = data.task_id;
+        const pageUriMap = data.page_uri_map || {};
+        showSuccess('Match queued');
+        const results = await pollResult(taskId);
+        const highlights = new Set();
+        if (results && Array.isArray(results)) {
+            results.forEach(r => {
+                if (r.highlight) {
+                    const src = pageUriMap[r.page_image_url] || r.page_image_url;
+                    highlights.add(src);
+                }
+            });
+        }
+        chrome.tabs.sendMessage(tab.id, { action: 'highlight', urls: Array.from(highlights) }, () => {});
+        showSuccess('Highlights applied');
+    } catch (e) {
+        showError(String(e.message || e));
+    }
+}
+
+async function pollResult(taskId) {
+    const url = `${API}/inference/result/${taskId}`;
+    for (let i=0;i<60;i++) {
+        try {
+            const r = await fetch(url);
+            if (!r.ok) { await new Promise(res=>setTimeout(res,1000)); continue; }
+            const d = await r.json();
+            if (d.result) return d.result;
+        } catch (e) {}
+        await new Promise(res=>setTimeout(res,1000));
+    }
+    throw new Error('Timeout waiting for match results');
+}
+
+function runtimeSend(msg) {
+    return new Promise((resolve, reject) => {
+        try {
+            chrome.runtime.sendMessage(msg, (resp) => {
+                if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
+                resolve(resp);
+            });
+        } catch (e) { reject(e); }
+    });
+}
+
+async function saveHighlights() {
+    if (!user) return showError('Login first');
+    try {
+        const tabs = await new Promise(resolve => chrome.tabs.query({ active: true, currentWindow: true }, resolve));
+        const tab = tabs && tabs[0];
+        if (!tab) return showError('No active tab');
+        let resp;
+        try { resp = await sendMessageToTabWithInject(tab.id, { action: 'getHighlights' }); } catch (e) {
+            try { resp = await runtimeSend({ action: 'getHighlights' }); } catch (e2) { resp = null }
+        }
+        const images = (resp && resp.images) || [];
+        if (!images.length) return showError('No highlighted images found');
+        showSuccess('Uploading ' + images.length + ' images');
+        const uploaded = [];
+        for (const url of images) {
+            try {
+                const fetched = await runtimeSend({ action: 'fetchImage', url });
+                if (!fetched || !fetched.ok) { console.warn('fetch failed', url, fetched); continue }
+                const dataUrl = `data:${fetched.contentType};base64,${fetched.b64}`;
+                const blob = await (await fetch(dataUrl)).blob();
+                const form = new FormData();
+                form.append('file', blob, url.split('/').pop() || 'image.png');
+                form.append('user', String(user.id));
+                const up = await fetch(`${API}/images/upload`, { method: 'POST', body: form });
+                if (!up.ok) { console.warn('upload failed', url, await up.text()); continue }
+                const data = await up.json();
+                if (data && data.uri) uploaded.push(data.uri);
+            } catch (e) { console.warn('upload error', e); }
+        }
+        if (uploaded.length) { showSuccess('Saved ' + uploaded.length + ' images'); loadImages(); } else { showError('No images uploaded'); }
+    } catch (e) {
+        showError(String(e.message || e));
+    }
 }
