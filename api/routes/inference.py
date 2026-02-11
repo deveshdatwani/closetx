@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
 from typing import List, Optional
 import os, logging
@@ -14,8 +14,15 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 logging.basicConfig(level=LOG_LEVEL)
 logger = logging.getLogger(__name__)
 CELERY_BROKER = os.getenv("CELERY_BROKER")
+CELERY_BACKEND = os.getenv("CELERY_BACKEND", CELERY_BROKER)
 ENABLE_CELERY = os.getenv("ENABLE_CELERY", "false").lower() == "true"
-celery = Celery(broker=CELERY_BROKER) if CELERY_BROKER else None
+if CELERY_BROKER:
+    # Configure Celery with a result backend if available (defaults to broker if not set)
+    celery = Celery(broker=CELERY_BROKER, backend=CELERY_BACKEND)
+    # Ensure result_backend is set on the app config for checks elsewhere
+    celery.conf.update(result_backend=CELERY_BACKEND)
+else:
+    celery = None
 
 class MatchRequest(BaseModel):
     user: Optional[int] = None
@@ -39,8 +46,8 @@ def match(req: MatchRequest):
     for img in req.page_images:
         if isinstance(img, str) and img.lower().startswith("http"):
             try:
-                req = Request(img, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Accept": "image/*,*/*;q=0.8"})
-                resp = urlopen(req, timeout=15)
+                img_req = Request(img, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Accept": "image/*,*/*;q=0.8"})
+                resp = urlopen(img_req, timeout=15)
                 data = resp.read()
                 ctype = None
                 try:
@@ -75,9 +82,50 @@ def match(req: MatchRequest):
 def result(task_id: str):
     if not CELERY_BROKER:
         raise HTTPException(status_code=500, detail="CELERY_BROKER not configured")
-    res = celery.AsyncResult(task_id)
-    if not res:
+    # Require a result backend to fetch task results
+    if not celery or not getattr(celery.conf, 'result_backend', None):
+        raise HTTPException(status_code=500, detail="result backend not configured")
+    try:
+        res = celery.AsyncResult(task_id)
+    except Exception as e:
+        logger.exception("async_result_failed", extra={"task_id": task_id, "error": str(e)})
+        raise HTTPException(status_code=500, detail="failed to fetch task result")
+    if res is None:
         raise HTTPException(status_code=404, detail="task not found")
     if not res.ready():
         return {"state": res.state}
     return {"state": res.state, "result": res.result}
+
+
+@router.post("/ingest")
+async def ingest(file: UploadFile):
+    """Accept a single image upload, save to raw cache and queue segmentation/ingest
+    without inserting into the apparel DB or associating with a user.
+    """
+    if not CELERY_BROKER:
+        raise HTTPException(status_code=500, detail="CELERY_BROKER not configured")
+    try:
+        data = await file.read()
+        filename = (file.filename or "")
+        ext = None
+        if "." in filename:
+            ext = filename.split('.')[-1]
+        else:
+            # try infer from content-type
+            ctype = (file.content_type or "").lower()
+            ext_map = {"image/jpeg": "jpg", "image/jpg": "jpg", "image/png": "png", "image/gif": "gif", "image/webp": "webp"}
+            ext = ext_map.get(ctype, None)
+        gen_uri = f"ingest_{uuid4().hex}"
+        save_raw_bytes(gen_uri, data, ext)
+        task_id = None
+        if celery and SEGMENT_TASK:
+            res = celery.send_task(SEGMENT_TASK, args=[gen_uri])
+            try:
+                task_id = res.id
+            except Exception:
+                task_id = None
+        logger.info("ingest_queued", extra={"uri": gen_uri, "task_id": task_id})
+        return {"uri": gen_uri, "task_id": task_id}
+    except Exception as e:
+        logger.exception("ingest_failed", extra={"error": str(e)})
+        raise HTTPException(status_code=500, detail="ingest failed")

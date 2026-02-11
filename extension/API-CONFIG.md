@@ -24,7 +24,7 @@ This file contains instructions on how to configure the extension to connect to 
 const API_BASE_URL = 'http://localhost:8000';
 
 // Local Network
-const API_BASE_URL = 'http://192.168.1.100:8000';
+const API_BASE_URL = 'http://localhost:8000';
 
 // Remote Server (HTTPS recommended)
 const API_BASE_URL = 'https://api.closetx.com';

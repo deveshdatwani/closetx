@@ -321,6 +321,9 @@ async function matchPage() {
         const results = await pollResult(taskId);
         const highlights = new Set();
         if (results && Array.isArray(results)) {
+            // render match pairs sorted by score desc
+            results.sort((a,b) => (b.score || 0) - (a.score || 0));
+            renderMatches(results, pageUriMap, tab.id);
             results.forEach(r => {
                 if (r.highlight) {
                     const src = pageUriMap[r.page_image_url] || r.page_image_url;
@@ -333,6 +336,68 @@ async function matchPage() {
     } catch (e) {
         showError(String(e.message || e));
     }
+}
+
+function renderMatches(results, pageUriMap, tabId) {
+    try {
+        const container = document.getElementById('matchesList');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!results || !results.length) { container.style.display='none'; return }
+        container.style.display = 'block';
+        results.forEach(r => {
+            const dash = r.dashboard_uri;
+            const pageUri = pageUriMap[r.page_image_url] || r.page_image_url;
+            const score = (r.score !== undefined) ? r.score : '';
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.gap = '8px';
+            row.style.padding = '6px';
+            row.style.borderRadius = '6px';
+            row.style.background = 'white';
+            row.style.marginBottom = '6px';
+            row.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+
+            const left = document.createElement('img');
+            left.src = `${API}/images/fetch/${dash}`;
+            left.style.width = '56px';
+            left.style.height = '56px';
+            left.style.objectFit = 'cover';
+            left.style.borderRadius = '4px';
+            left.title = 'Your closet item';
+            row.appendChild(left);
+
+            const mid = document.createElement('div');
+            mid.style.flex = '1';
+            mid.innerHTML = `<div style="font-size:13px;color:#333;margin-bottom:4px;">${pageUri}</div><div style="font-size:12px;color:#666">Score: ${score}</div>`;
+            row.appendChild(mid);
+
+            const rightImg = document.createElement('img');
+            rightImg.src = pageUri;
+            rightImg.style.width = '56px';
+            rightImg.style.height = '56px';
+            rightImg.style.objectFit = 'cover';
+            rightImg.style.borderRadius = '4px';
+            rightImg.title = 'Store item';
+            row.appendChild(rightImg);
+
+            const btn = document.createElement('button');
+            btn.textContent = 'Highlight';
+            btn.style.marginLeft = '8px';
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    // tell content script to highlight only this page image
+                    await sendMessageToTabWithInject(tabId, { action: 'highlight', urls: [pageUri] });
+                    showSuccess('Highlighted on page');
+                } catch (err) { showError('Failed to highlight'); }
+            });
+            row.appendChild(btn);
+
+            container.appendChild(row);
+        });
+    } catch (e) { console.error('renderMatches', e) }
 }
 
 async function pollResult(taskId) {
@@ -382,8 +447,7 @@ async function saveHighlights() {
                 const blob = await (await fetch(dataUrl)).blob();
                 const form = new FormData();
                 form.append('file', blob, url.split('/').pop() || 'image.png');
-                form.append('user', String(user.id));
-                const up = await fetch(`${API}/images/upload`, { method: 'POST', body: form });
+                const up = await fetch(`${API}/inference/ingest`, { method: 'POST', body: form });
                 if (!up.ok) { console.warn('upload failed', url, await up.text()); continue }
                 const data = await up.json();
                 if (data && data.uri) uploaded.push(data.uri);
